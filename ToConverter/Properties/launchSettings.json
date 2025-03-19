@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ToConverter (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "ToConverter (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
