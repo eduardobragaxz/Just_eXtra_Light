@@ -22,7 +22,7 @@ public sealed partial class MainWindow : Window
             SystemBackdrop = new MicaBackdrop() { Kind = MicaKind.Base };
         }
 
-        //AppWindow.SetIcon("Assets/Icons/DostodonIcon128.ico");
+        AppWindow.SetIcon("Assets/Icons/TitleBarIco.ico");
         ExtendsContentIntoTitleBar = true;
 
         double scale = ((MainPage)Content).RasterizationScale;
@@ -30,7 +30,7 @@ public sealed partial class MainWindow : Window
         OverlappedPresenter overlappedPresenter = (OverlappedPresenter)AppWindow.Presenter;
 
         overlappedPresenter.PreferredMinimumWidth = 1000;
-        overlappedPresenter.PreferredMaximumHeight = 900;
+        overlappedPresenter.PreferredMinimumHeight = 900;
 
 
         DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);

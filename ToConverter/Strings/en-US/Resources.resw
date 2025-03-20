@@ -150,4 +150,10 @@
   <data name="ConversionCompleteContent2" xml:space="preserve">
     <value>The images have been converted and can be saved now</value>
   </data>
+  <data name="FolderItem.Text" xml:space="preserve">
+    <value>Choose folder</value>
+  </data>
+  <data name="ImagesItem.Text" xml:space="preserve">
+    <value>Drag and drop images</value>
+  </data>
 </root>

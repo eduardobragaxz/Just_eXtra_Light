@@ -11,8 +11,12 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
+		<PublishAot>True</PublishAot>
+		<WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained>
+		<!--<IncludePublishItemsOutputGroup>True</IncludePublishItemsOutputGroup>-->
 	</PropertyGroup>
 	<ItemGroup>
+		<None Remove="Assets\Icons\TitleBarIco.ico" />
 		<None Remove="MainPage.xaml" />
 	</ItemGroup>
 
@@ -56,11 +60,5 @@
   -->
 	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
 		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
-	</PropertyGroup>
-
-	<!-- Publish Properties -->
-	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-		<PublishReadyToRun>True</PublishReadyToRun>
-		<PublishAot>True</PublishAot>
 	</PropertyGroup>
 </Project>

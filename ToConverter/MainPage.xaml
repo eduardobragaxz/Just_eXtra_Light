@@ -23,34 +23,42 @@
 
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
 
         </Grid.RowDefinitions>
 
-        <TitleBar Grid.Column="0"
+        <TitleBar Background="{ThemeResource ControlFillColorDefaultBrush}"
+                  Grid.Column="0"
                   Grid.ColumnSpan="3"
                   Grid.Row="0"
                   Height="32"
-                  Title="ToConverter"/>
+                  Title="ToConverter">
+
+            <TitleBar.IconSource>
+
+                <ImageIconSource ImageSource="/Assets/Icons/TitleBarIcon.png"/>
+
+            </TitleBar.IconSource>
+            
+        </TitleBar>
 
         <SelectorBar Grid.Column="0"
                      Grid.ColumnSpan="2"
                      Grid.Row="1"
                      HorizontalAlignment="Center"
-                     x:Name="AppSelectorBar"
-                     SelectionChanged="SelectorBar_SelectionChanged">
+                     x:Name="AppSelectorBar">
 
             <SelectorBar.Items>
 
                 <SelectorBarItem Icon="Folder"
                                  IsSelected="True"
-                                 x:Name="SelectFolderItem"
-                                 Text="Folder"/>
+                                 x:Name="FolderItem"
+                                 x:Uid="FolderItem"/>
 
-                <SelectorBarItem x:Name="DragAndDropImagesItem"
-                                 Text="Images">
+                <SelectorBarItem x:Name="ImagesItem"
+                                 x:Uid="ImagesItem">
 
                     <SelectorBarItem.Icon>
 
@@ -64,76 +72,19 @@
 
         </SelectorBar>
 
-        <RadioButtons Grid.Column="0"
-                      Grid.ColumnSpan="2"
-                      Grid.Row="2"
-                      Margin="10,0,0,10">
-
-            <RadioButton IsChecked="True">
-
-                <RadioButton.Content>
-
-                    <StackPanel Orientation="Horizontal">
-
-                        <TextBlock Margin="0,0,10,0"
-                                   Style="{StaticResource BodyStrongTextBlockStyle}"
-                                   Text="Friendly"/>
-
-                        <ComboBox Header="Quality">
-
-                            <ComboBox.Items>
-
-                                <ComboBoxItem Content="Great"/>
-                                <ComboBoxItem Content="Good"/>
-                                <ComboBoxItem Content="Normal"/>
-
-                            </ComboBox.Items>
-
-                        </ComboBox>
-
-                    </StackPanel>
-
-                </RadioButton.Content>
-
-            </RadioButton>
-
-            <RadioButton>
-
-                <StackPanel Orientation="Horizontal">
-
-                    <TextBlock Margin="0,0,10,0"
-                               Style="{StaticResource BodyStrongTextBlockStyle}"
-                               Text="Expert"/>
-
-                    <NumberBox Header="Effort"
-                               Margin="0,0,10,0"
-                               Maximum="10"
-                               x:Name="EffortNumberBox"
-                               Text="10"
-                               Width="200"/>
-
-                    <NumberBox Header="Distance"
-                               Maximum="0.3"
-                               x:Name="DistanceNumeberBox"
-                               Text="0"
-                               Width="200"/>
-
-                </StackPanel>
-
-            </RadioButton>
-
-        </RadioButtons>
-
         <ScrollView Grid.Column="0"
                     Grid.ColumnSpan="3"
-                    Grid.Row="3"
-                    Grid.RowSpan="2">
+                    Grid.Row="2"
+                    Grid.RowSpan="2"
+                    Padding="36">
 
-            <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}">
+            <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                  CornerRadius="{StaticResource ControlCornerRadius}">
 
                 <StackPanel x:Name="SelectFolderStackPanel"
                             Padding="36"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
 
                     <TextBlock Grid.Row="0"
                                Margin="0,0,0,10"
@@ -182,7 +133,8 @@
                 <Grid Grid.Row="1"
                       Margin="0,10,0,0"
                       x:Name="DragAndDropGrid"
-                      Padding="36">
+                      Padding="36"
+                      Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
 
                     <Grid.RowDefinitions>
 
@@ -199,8 +151,9 @@
 
                     <Button Click="ConvertButton_Click"
                             Grid.Row="1"
+                            HorizontalAlignment="Stretch"
                             IsEnabled="False"
-                            Margin="0,0,0,10"
+                            Margin="0,0,0,20"
                             x:Name="ConvertButton">
 
                         <Button.Content>
@@ -231,7 +184,6 @@
                                DragOver="PicturesView_DragOver"
                                Drop="PicturesView_Drop"
                                Grid.Row="3"
-                               Height="400"
                                x:Name="PicturesView">
 
                         <ItemsView.ItemTemplate>
@@ -325,7 +277,7 @@
 
         <InfoBar Grid.Column="0"
                  Grid.ColumnSpan="3"
-                 Grid.Row="3"
+                 Grid.Row="4"
                  IsOpen="False"
                  Margin="5"
                  x:Name="AppInfoBar"

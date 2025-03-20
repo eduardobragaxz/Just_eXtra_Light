@@ -19,7 +19,7 @@ public sealed partial class MainPage : Page
 {
     readonly StorageFolder localFolder;
     ObservableCollection<ImageInfo>? images;
-    ResourceLoader resourceLoader;
+    readonly ResourceLoader resourceLoader;
     public MainPage()
     {
         InitializeComponent();
@@ -27,6 +27,11 @@ public sealed partial class MainPage : Page
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        await DeleteImages();
+    }
+
+    private async Task DeleteImages()
     {
         IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
 
@@ -52,6 +57,7 @@ public sealed partial class MainPage : Page
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing.IsActive = true;
+        DisableControlsWhileConverting();
         FolderPicker folderPicker = new();
 
         MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
@@ -69,6 +75,7 @@ public sealed partial class MainPage : Page
         }
 
         LoadingRing.IsActive = false;
+        EnableControlsAfterConverting();
         AppInfoBar.IsOpen = true;
         SetInfoBarTexts();
     }
@@ -83,7 +90,7 @@ public sealed partial class MainPage : Page
         SaveImagesButton.IsEnabled = true;
         AppInfoBar.IsOpen = true;
 
-        ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = false;
+        ConvertButton.IsEnabled = false;
         SetInfoBarTexts();
     }
 
@@ -93,11 +100,11 @@ public sealed partial class MainPage : Page
 
         if (AppSelectorBar.SelectedItem == AppSelectorBar.Items[0])
         {
-            AppInfoBar.Content = resourceLoader.GetString("ConversionCompleteContent");
+            AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent");
         }
         else
         {
-            AppInfoBar.Content = resourceLoader.GetString("ConversionCompleteContent2");
+            AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent2");
         }
     }
 
@@ -122,8 +129,6 @@ public sealed partial class MainPage : Page
                 await file.MoveAsync(storageFolder);
             }
         }
-
-        files = await localFolder.GetFilesAsync();
     }
     private async Task ConvertFolderImages(StorageFolder folder)
     {
@@ -221,23 +226,27 @@ public sealed partial class MainPage : Page
                     BitmapImage bitmapImage = new();
 
                     StorageFile storageFile = (StorageFile)storageItem;
-                    StorageItemThumbnail? storageItemThumbnail = await storageFile.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.SingleItem, 200);
 
-                    if (storageItemThumbnail is not null)
+                    if (storageFile.FileType != ".exe")
                     {
-                        bitmapImage.SetSource(storageItemThumbnail);
-                        storageItemThumbnail.Dispose();
-                    }
-                    else
-                    {
-                        bitmapImage.DecodePixelHeight = 200;
-                        bitmapImage.DecodePixelWidth = 200;
-                        bitmapImage.UriSource = new Uri(storageFile.Path);
-                    }
+                        StorageItemThumbnail? storageItemThumbnail = await storageFile.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.SingleItem, 200);
 
-                    ImageInfo imageInfo = new(storageFile, bitmapImage);
+                        if (storageItemThumbnail is not null)
+                        {
+                            bitmapImage.SetSource(storageItemThumbnail);
+                            storageItemThumbnail.Dispose();
+                        }
+                        else
+                        {
+                            bitmapImage.DecodePixelHeight = 200;
+                            bitmapImage.DecodePixelWidth = 200;
+                            bitmapImage.UriSource = new Uri(storageFile.Path);
+                        }
 
-                    images.Add(imageInfo);
+                        ImageInfo imageInfo = new(storageFile, bitmapImage);
+
+                        images.Add(imageInfo);
+                    }
                 }
             }
 
@@ -257,6 +266,8 @@ public sealed partial class MainPage : Page
         ImageInfo imageInfo = (ImageInfo)((Button)sender).DataContext;
 
         images!.Remove(imageInfo);
+
+        ConvertButton.IsEnabled = images.Count != 0;
     }
 
     private async Task ConvertListOfImages()
@@ -314,32 +325,21 @@ public sealed partial class MainPage : Page
 
     private void DisableControlsWhileConverting()
     {
-        IncludeSubFoldersCheckBox.IsEnabled =
+        AppSelectorBar.IsEnabled =
+            IncludeSubFoldersCheckBox.IsEnabled =
             ConvertFolderButton.IsEnabled =
             ConvertButton.IsEnabled =
+            SaveImagesButton.IsEnabled =
             PicturesView.IsEnabled = false;
     }
 
     private void EnableControlsAfterConverting()
     {
-        IncludeSubFoldersCheckBox.IsEnabled =
+        AppSelectorBar.IsEnabled =
+            IncludeSubFoldersCheckBox.IsEnabled =
             ConvertFolderButton.IsEnabled =
             ConvertButton.IsEnabled =
             PicturesView.IsEnabled = true;
-    }
-
-    private void SelectorBar_SelectionChanged(SelectorBar sender, SelectorBarSelectionChangedEventArgs args)
-    {
-        if (sender.SelectedItem == sender.Items[0])
-        {
-            SelectFolderStackPanel.Visibility = Visibility.Visible;
-            DragAndDropGrid.Visibility = Visibility.Collapsed;
-        }
-        else
-        {
-            DragAndDropGrid.Visibility = Visibility.Visible;
-            SelectFolderStackPanel.Visibility = Visibility.Collapsed;
-        }
     }
 }
 
