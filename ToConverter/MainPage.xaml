@@ -23,6 +23,7 @@
 
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
 
@@ -63,9 +64,69 @@
 
         </SelectorBar>
 
+        <RadioButtons Grid.Column="0"
+                      Grid.ColumnSpan="2"
+                      Grid.Row="2"
+                      Margin="10,0,0,10">
+
+            <RadioButton IsChecked="True">
+
+                <RadioButton.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <TextBlock Margin="0,0,10,0"
+                                   Style="{StaticResource BodyStrongTextBlockStyle}"
+                                   Text="Friendly"/>
+
+                        <ComboBox Header="Quality">
+
+                            <ComboBox.Items>
+
+                                <ComboBoxItem Content="Great"/>
+                                <ComboBoxItem Content="Good"/>
+                                <ComboBoxItem Content="Normal"/>
+
+                            </ComboBox.Items>
+
+                        </ComboBox>
+
+                    </StackPanel>
+
+                </RadioButton.Content>
+
+            </RadioButton>
+
+            <RadioButton>
+
+                <StackPanel Orientation="Horizontal">
+
+                    <TextBlock Margin="0,0,10,0"
+                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                               Text="Expert"/>
+
+                    <NumberBox Header="Effort"
+                               Margin="0,0,10,0"
+                               Maximum="10"
+                               x:Name="EffortNumberBox"
+                               Text="10"
+                               Width="200"/>
+
+                    <NumberBox Header="Distance"
+                               Maximum="0.3"
+                               x:Name="DistanceNumeberBox"
+                               Text="0"
+                               Width="200"/>
+
+                </StackPanel>
+
+            </RadioButton>
+
+        </RadioButtons>
+
         <ScrollView Grid.Column="0"
                     Grid.ColumnSpan="3"
-                    Grid.Row="2"
+                    Grid.Row="3"
                     Grid.RowSpan="2">
 
             <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}">

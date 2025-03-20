@@ -26,7 +26,12 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
 
         double scale = ((MainPage)Content).RasterizationScale;
-        AppWindow.Resize(new SizeInt32((int)(800 * scale), (int)(700 * scale)));
+        AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(900 * scale)));
+        OverlappedPresenter overlappedPresenter = (OverlappedPresenter)AppWindow.Presenter;
+
+        overlappedPresenter.PreferredMinimumWidth = 1000;
+        overlappedPresenter.PreferredMaximumHeight = 900;
+
 
         DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);
         if (displayArea is not null)
