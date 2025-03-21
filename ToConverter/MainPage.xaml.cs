@@ -53,6 +53,10 @@ public sealed partial class MainPage : Page
             VisualStateManager.GoToState(this, "DefaultState", false);
         }
     }
+    private void PaneVisibleButton_Click(object sender, RoutedEventArgs e)
+    {
+        MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
+    }
 
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
