@@ -385,11 +385,6 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
 
                         </Grid.RowDefinitions>
 
@@ -416,24 +411,29 @@
                         <NumberBox Grid.Column="0"
                                    Grid.ColumnSpan="1"
                                    Grid.Row="2"
-                                   Header="Distance"
                                    Margin="0,0,10,10"
                                    Maximum="25.0"
-                                   PlaceholderText="0.0"/>
+                                   x:Name="DistanceNumberBox"
+                                   NumberFormatter="{x:Bind formatter}"
+                                   PlaceholderText="00,0"
+                                   x:Uid="DistanceNumberBox"/>
 
                         <NumberBox Grid.Column="1"
                                    Grid.Row="2"
-                                   Header="Effort"
                                    Margin="0,0,0,10"
                                    Maximum="10"
-                                   Text="7"/>
+                                   x:Name="EffortNumberBox"
+                                   Text="7"
+                                   x:Uid="EffortNumberBox"/>
 
                         <NumberBox Grid.Column="0"
                                    Grid.Row="3"
-                                   Header="Alpha distance"
                                    Margin="0,0,20,10"
                                    Maximum="25.0"
-                                   Text="0"/>
+                                   x:Name="AlphaDistanceNumberBox"
+                                   NumberFormatter="{x:Bind formatter}"
+                                   Text="00,0"
+                                   x:Uid="AlphaDistanceNumberBox"/>
 
                         <CheckBox Grid.Column="1"
                                   Grid.Row="3"

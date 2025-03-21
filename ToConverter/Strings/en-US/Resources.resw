@@ -156,4 +156,13 @@
   <data name="ImagesItem.Text" xml:space="preserve">
     <value>Drag and drop images</value>
   </data>
+  <data name="DistanceNumberBox.Header" xml:space="preserve">
+    <value>Distance</value>
+  </data>
+  <data name="EffortNumberBox.Header" xml:space="preserve">
+    <value>Effort</value>
+  </data>
+  <data name="AlphaDistanceNumberBox.Header" xml:space="preserve">
+    <value>Alpha distance</value>
+  </data>
 </root>

@@ -12,6 +12,8 @@ using Windows.Storage.Pickers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.FileProperties;
 using Microsoft.Windows.ApplicationModel.Resources;
+using System.Text;
+using Windows.Globalization.NumberFormatting;
 
 namespace ToConverter;
 
@@ -20,17 +22,24 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     ObservableCollection<ImageInfo>? images;
     readonly ResourceLoader resourceLoader;
+    StringBuilder finalParametersString;
+    DecimalFormatter formatter;
     public MainPage()
     {
         InitializeComponent();
         resourceLoader = new();
         localFolder = MApplicationData.GetDefault().LocalFolder;
+        finalParametersString = new();
+        formatter = new()
+        {
+            IntegerDigits = 2,
+            FractionDigits = 1
+        };
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         await DeleteImages();
     }
-
     private async Task DeleteImages()
     {
         IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
@@ -38,6 +47,47 @@ public sealed partial class MainPage : Page
         foreach (StorageFile file in files)
         {
             await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
+        }
+    }
+
+    private void ConstructParameters()
+    {
+        if (DistanceNumberBox.Text != "")
+        {
+            string distance;
+
+            if (DistanceNumberBox.Text[0] == '0')
+            {
+                distance = $" --distance {DistanceNumberBox.Text[1..].Replace(',', '.')}";
+            }
+            else
+            {
+                distance = $" --distance {DistanceNumberBox.Text.Replace(',', '.')}";
+            }
+
+            finalParametersString.Append(distance);
+        }
+
+        if (EffortNumberBox.Text != "7")
+        {
+            string effort = $" --effort {EffortNumberBox.Text}";
+            finalParametersString.Append(effort);
+        }
+
+        if (AlphaDistanceNumberBox.Text != "0")
+        {
+            string alphaDistance;
+
+            if (AlphaDistanceNumberBox.Text[0] == '0')
+            {
+                alphaDistance = $" --alpha_distance {AlphaDistanceNumberBox.Text[1..].Replace(',', '.')}";
+            }
+            else
+            {
+                alphaDistance = $" --alpha_distance {AlphaDistanceNumberBox.Text.Replace(',', '.')}";
+            }
+
+            finalParametersString.Append(alphaDistance);
         }
     }
     private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -57,7 +107,6 @@ public sealed partial class MainPage : Page
     {
         MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
     }
-
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing.IsActive = true;

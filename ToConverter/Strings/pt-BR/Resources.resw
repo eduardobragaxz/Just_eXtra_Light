@@ -169,4 +169,16 @@
     <value>Arrastar e soltar imagens</value>
     <comment>Text for the selector bar item to drag and drop images</comment>
   </data>
+  <data name="DistanceNumberBox.Header" xml:space="preserve">
+    <value>Distância</value>
+    <comment>Header text for the distance number box</comment>
+  </data>
+  <data name="EffortNumberBox.Header" xml:space="preserve">
+    <value>Esforço</value>
+    <comment>Header text for the effort number box</comment>
+  </data>
+  <data name="AlphaDistanceNumberBox.Header" xml:space="preserve">
+    <value>Distância alpha</value>
+    <comment>Header text for the alpha distance number box</comment>
+  </data>
 </root>
