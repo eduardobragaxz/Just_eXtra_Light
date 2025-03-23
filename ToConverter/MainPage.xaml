@@ -21,7 +21,7 @@
 
         <TitleBar Background="{ThemeResource ControlFillColorDefaultBrush}"
                   Grid.Row="0"
-                  Height="32"
+                  Height="48"
                   Title="ToConverter">
 
             <TitleBar.IconSource>
@@ -30,9 +30,29 @@
 
             </TitleBar.IconSource>
 
+            <TitleBar.RightHeader>
+
+                <Button Content="&#xE946;"
+                        FontFamily="Segoe Fluent Icons">
+
+                    <Button.Flyout>
+
+                        <Flyout>
+                            
+                            
+                            
+                        </Flyout>
+                        
+                    </Button.Flyout>
+                    
+                </Button>
+                
+            </TitleBar.RightHeader>
+
         </TitleBar>
 
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1"
+              Padding="36">
 
             <Grid.ColumnDefinitions>
 
@@ -50,7 +70,9 @@
 
             </Grid.RowDefinitions>
 
-            <SelectorBar Grid.Column="0"
+            <SelectorBar Background="{ThemeResource ControlFillColorDefault}"
+                         CornerRadius="{StaticResource ControlCornerRadius}"
+                         Grid.Column="0"
                          Grid.ColumnSpan="2"
                          Grid.Row="0"
                          HorizontalAlignment="Center"
@@ -88,7 +110,8 @@
 
                 <Expander.Content>
 
-                    <TextBox Margin="18" x:Name="ArgumentsTextBox"
+                    <TextBox Margin="18"
+                             x:Name="ArgumentsTextBox"
                              x:Uid="ArgumentsTextBox"/>
 
                 </Expander.Content>
@@ -107,7 +130,7 @@
 
                             <TextBlock.Inlines>
 
-                                <Run x:Uid="ExpertsSection2"/>
+                                <Run x:Uid="ExpertsSection1"/>
                                 <LineBreak/>
                                 <Run FontSize="12"
                                      x:Uid="ExpertsSection2"/>
@@ -124,8 +147,7 @@
             <ScrollView Grid.Column="0"
                         Grid.ColumnSpan="3"
                         Grid.Row="2"
-                        Grid.RowSpan="2"
-                        Padding="36">
+                        Grid.RowSpan="2">
 
                 <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                       CornerRadius="{StaticResource ControlCornerRadius}">
@@ -175,6 +197,62 @@
 
                             </Button.Content>
 
+                            <Button.Resources>
+
+                                <ResourceDictionary>
+
+                                    <ResourceDictionary.ThemeDictionaries>
+
+                                        <ResourceDictionary x:Key="Light">
+
+                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
+                                            </LinearGradientBrush>
+
+                                        </ResourceDictionary>
+
+                                        <ResourceDictionary x:Key="Default">
+
+                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                            </LinearGradientBrush>
+
+                                        </ResourceDictionary>
+
+                                    </ResourceDictionary.ThemeDictionaries>
+
+                                </ResourceDictionary>
+
+                            </Button.Resources>
+
                         </Button>
 
                     </StackPanel>
@@ -194,12 +272,8 @@
 
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="0"
-                                   Margin="0,0,0,10"
-                                   x:Uid="DragAndDropInstructions"/>
-
                         <Button Click="ConvertListOfImages_Click"
-                                Grid.Row="1"
+                                Grid.Row="0"
                                 HorizontalAlignment="Stretch"
                                 IsEnabled="False"
                                 Margin="0,0,0,20"
@@ -219,14 +293,74 @@
 
                             </Button.Content>
 
+                            <Button.Resources>
+
+                                <ResourceDictionary>
+
+                                    <ResourceDictionary.ThemeDictionaries>
+
+                                        <ResourceDictionary x:Key="Light">
+
+                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
+                                            </LinearGradientBrush>
+
+                                        </ResourceDictionary>
+
+                                        <ResourceDictionary x:Key="Default">
+
+                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                            </LinearGradientBrush>
+
+                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
+                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                            </LinearGradientBrush>
+
+                                        </ResourceDictionary>
+
+                                    </ResourceDictionary.ThemeDictionaries>
+
+                                </ResourceDictionary>
+
+                            </Button.Resources>
+
                         </Button>
 
                         <Button Click="SaveImagesButton_Click"
-                                Grid.Row="2"
+                                Grid.Row="1"
                                 IsEnabled="False"
                                 Margin="0,0,0,10"
                                 x:Name="SaveImagesButton"
                                 x:Uid="SaveImagesButton"/>
+
+                        <TextBlock Grid.Row="2"
+                                   Margin="0,0,0,10"
+                                   x:Uid="DragAndDropInstructions"/>
 
                         <ItemsView AllowDrop="True"
                                    Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"

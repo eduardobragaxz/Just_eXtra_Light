@@ -11,10 +11,15 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
-		<PublishAot>True</PublishAot>
-		<WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained>
-		<!--<IncludePublishItemsOutputGroup>True</IncludePublishItemsOutputGroup>-->
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
+
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<PublishTrimmed>True</PublishTrimmed>
+		
+	</PropertyGroup>
+	
 	<ItemGroup>
 		<None Remove="Assets\Icons\TitleBarIco.ico" />
 		<None Remove="Assets\Package icons\StoreLogo.scale-400.png" />

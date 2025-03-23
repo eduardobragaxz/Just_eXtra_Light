@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace ToConverter;
 
@@ -84,7 +85,8 @@ public sealed partial class MainPage : Page
 
         void EnableOrDisableControls(bool enable)
         {
-            IncludeSubFoldersCheckBox.IsEnabled =
+            ArgumentsTextBox.IsEnabled =
+                IncludeSubFoldersCheckBox.IsEnabled =
                 ConvertFolderButton.IsEnabled = enable;
         }
     }
@@ -103,94 +105,101 @@ public sealed partial class MainPage : Page
             }
         }
 
-        try
+        const string folderNameConst = "ConvertedImages";
+        IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
+        IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
+
+        int foldersCount = foldersSameName.Count();
+        StringBuilder stringBuilder = new(folderNameConst);
+        StorageFolder jxlFolder;
+
+        if (foldersCount != 0)
         {
-            StorageFolder jxlFolder = await folder.CreateFolderAsync("ConvertedImages");
+            while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
+            {
+                foldersCount++;
+            }
+
+            jxlFolder = await folder.CreateFolderAsync($"{stringBuilder.Append($"{foldersCount}")}");
+        }
+        else
+        {
+            jxlFolder = await folder.CreateFolderAsync($"{folderNameConst}");
+        }
+
+
 
             IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
-            StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
-            StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
+        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
+        StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
 
-            ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+        ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+        {
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
+            ? $"{ArgumentsTextBox.Text} "
+            : "";
+
+        bool success = true;
+
+        foreach (StorageFile file in files)
+        {
+            switch (file.FileType)
             {
-                CreateNoWindow = true,
-                UseShellExecute = false
-            };
+                case ".exr":
+                case ".gif":
+                case ".jpg" or ".jpeg":
+                case ".pam" or ".pgm" or ".ppm":
+                case ".pfm":
+                case ".pgx":
+                case ".png" or "apng":
+                    {
+                        StorageFile newFile = await file.CopyAsync(localFolder);
 
-            string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
-                ? $"{ArgumentsTextBox.Text} "
-                : "";
-
-            bool success = true;
-
-            foreach (StorageFile file in files)
-            {
-                switch (file.FileType)
-                {
-                    case ".exr":
-                    case ".gif":
-                    case ".jpg" or ".jpeg":
-                    case ".pam" or ".pgm" or ".ppm":
-                    case ".pfm":
-                    case ".pgx":
-                    case ".png" or "apng":
+                        if (newFile.Name.Contains(' '))
                         {
-                            StorageFile newFile = await file.CopyAsync(localFolder);
-
-                            if (newFile.Name.Contains(' '))
-                            {
-                                string newName = newFile.Name.Replace(' ', '_');
-                                await newFile.RenameAsync(newName);
-                            }
-
-                            string path = localFolder.Path;
-                            string arguments = $@"{finalParametersString}{path}\{newFile.Name} {jxlFolder.Path}\{newFile.DisplayName}.jxl";
-
-                            processStart.Arguments = arguments;
-
-                            using Process? process = Process.Start(processStart);
-                            if (process is not null)
-                            {
-                                process.WaitForExit();
-
-                                if (process.ExitCode != 0)
-                                {
-                                    SetInfoBarTexts(false);
-                                    success = false;
-                                    break;
-                                }
-
-                                process.Close();
-                            }
-
-                            break;
+                            string newName = newFile.Name.Replace(' ', '_');
+                            await newFile.RenameAsync(newName);
                         }
-                }
-            }
 
-            if (success)
-            {
-                SetInfoBarTexts(success);
-            }
+                        string path = localFolder.Path;
+                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {jxlFolder.Path}\{newFile.DisplayName}.jxl";
 
-            foreach (StorageFile storageFile in await localFolder.GetFilesAsync())
-            {
-                await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+                        processStart.Arguments = arguments;
+
+                        using Process? process = Process.Start(processStart);
+                        if (process is not null)
+                        {
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                SetInfoBarTexts(false);
+                                success = false;
+                                break;
+                            }
+
+                            process.Close();
+                        }
+
+                        break;
+                    }
             }
         }
-        catch(Exception)
-        {
-            ContentDialog contentDialog = new()
-            {
-                CloseButtonText = resourceLoader.GetString("CloseDialogButton"),
-                Content = resourceLoader.GetString("FolderErrorContent"),
-                Title = resourceLoader.GetString("FolderErrorTitle"),
-                XamlRoot = XamlRoot
-            };
 
-            await contentDialog.ShowAsync();
+        if (success)
+        {
+            SetInfoBarTexts(success);
+        }
+
+        foreach (StorageFile storageFile in await localFolder.GetFilesAsync())
+        {
+            await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
     }
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
@@ -300,63 +309,30 @@ public sealed partial class MainPage : Page
 
         folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
-        StorageFolder storageFolder = await folderPicker.PickSingleFolderAsync();
-        List<StorageFile> files = [.. await localFolder.GetFilesAsync()];
+        StorageFolder chosenFolder = await folderPicker.PickSingleFolderAsync();
+        List<StorageFile> localFolderFiles = [.. await localFolder.GetFilesAsync()];
+        List<StorageFile> storageFiles = [.. await chosenFolder.GetFilesAsync()];
 
-        if (storageFolder is not null)
+        if (chosenFolder is not null)
         {
-            foreach (StorageFile convertedFile in files)
+            foreach (StorageFile convertedFile in localFolderFiles)
             {
                 if (convertedFile.FileType == ".jxl")
                 {
-                    try
+                    List<StorageFile> sameNameFiles = [.. storageFiles.Where(f => f.DisplayName == convertedFile.DisplayName)];
+                    int count = sameNameFiles.Count;
+
+                    if (count != 0)
                     {
-                        await convertedFile.MoveAsync(storageFolder);
-                    }
-                    catch (COMException)
-                    {
-                        ContentDialog contentDialog = new()
+                        while (storageFiles.Any(f => f.DisplayName == $"{convertedFile.DisplayName}{count}"))
                         {
-                            DefaultButton = ContentDialogButton.Primary,
-                            PrimaryButtonText = resourceLoader.GetString("NameConflictDialogPrimaryButton"),
-                            Title = resourceLoader.GetString("NameConflictDialogTitle"),
-                            XamlRoot = XamlRoot
-                        };
-
-                        StackPanel stackPanel = new();
-
-                        stackPanel.Children.Add(new TextBlock()
-                        {
-                            Margin = new(0, 0, 0, 10),
-                            Text = resourceLoader.GetString("NameConflictDialogContent")
-                        });
-
-                        TextBox textBox = new()
-                        {
-                            Header = resourceLoader.GetString("RenameTextBoxHeader"),
-                            Text = convertedFile.DisplayName
-                        };
-
-                        stackPanel.Children.Add(textBox);
-
-                        contentDialog.Content = stackPanel;
-
-                        ContentDialogResult result = await contentDialog.ShowAsync();
-
-                        if (result == ContentDialogResult.Primary)
-                        {
-                            await convertedFile.RenameAsync($"{textBox.Text}.jxl");
-
-                            try
-                            {
-                                await convertedFile.MoveAsync(storageFolder);
-                            }
-                            catch(COMException)
-                            {
-
-                            }
+                            count++;
                         }
+
+                        await convertedFile.RenameAsync($"{convertedFile.DisplayName}{count}.jxl");
                     }
+
+                    await convertedFile.MoveAsync(chosenFolder);
                 }
             }
         }
@@ -458,15 +434,6 @@ public sealed partial class MainPage : Page
             AppInfoBar.Title = resourceLoader.GetString("ConversionFailedTitle");
             AppInfoBar.Message = resourceLoader.GetString("ConversionFailedMessage");
         }
-    }
-
-    private void EnableControlsAfterConverting()
-    {
-        AppSelectorBar.IsEnabled =
-            IncludeSubFoldersCheckBox.IsEnabled =
-            ConvertFolderButton.IsEnabled =
-            ConvertButton.IsEnabled =
-            PicturesView.IsEnabled = true;
     }
 }
 
