@@ -168,4 +168,25 @@
   <data name="ExpertsSection2.Text" xml:space="preserve">
     <value>Add arguments for the conversion</value>
   </data>
+  <data name="NameConflictDialogTitle" xml:space="preserve">
+    <value>Arquivo já existe!</value>
+  </data>
+  <data name="NameConflictDialogContent" xml:space="preserve">
+    <value>One or more images could not be saved because files with the same name already exist in the folder you chose. Rename the file in the text field below. The app will try again only once.</value>
+  </data>
+  <data name="NameConflictDialogPrimaryButton" xml:space="preserve">
+    <value>Rename and try again</value>
+  </data>
+  <data name="RenameTextBoxHeader" xml:space="preserve">
+    <value>New name</value>
+  </data>
+  <data name="FolderErrorContent" xml:space="preserve">
+    <value>A folder named ConvertedImages already exists in the folder you chose.</value>
+  </data>
+  <data name="FolderErrorTitle" xml:space="preserve">
+    <value>Folder already exists!</value>
+  </data>
+  <data name="CloseDialogButton" xml:space="preserve">
+    <value>Close</value>
+  </data>
 </root>

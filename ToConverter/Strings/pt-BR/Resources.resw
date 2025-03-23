@@ -185,4 +185,32 @@
     <value>Adicionar argumentos para a conversão.</value>
     <comment>Text for the content portion of the enable arguments check box</comment>
   </data>
+  <data name="NameConflictDialogTitle" xml:space="preserve">
+    <value>Conflito de nomes</value>
+    <comment>Content text for the name conflict dialog</comment>
+  </data>
+  <data name="NameConflictDialogContent" xml:space="preserve">
+    <value>Algumas das imagens não puderam ser salvadas porque um arquivo com o mesmo nome já existe na pasta que você escolheu.</value>
+    <comment>Content text for the naming conflict dialog</comment>
+  </data>
+  <data name="NameConflictDialogPrimaryButton" xml:space="preserve">
+    <value>Renomear e tentar novamente</value>
+    <comment>Text for the naming conflict dialog primary button</comment>
+  </data>
+  <data name="RenameTextBoxHeader" xml:space="preserve">
+    <value>Novo nome</value>
+    <comment>Header text for the rename text box</comment>
+  </data>
+  <data name="FolderErrorContent" xml:space="preserve">
+    <value>Uma pasta com nome ConvertedImages já exist na pasta que você escolheu.</value>
+    <comment>Content text for the folder error dialog</comment>
+  </data>
+  <data name="FolderErrorTitle" xml:space="preserve">
+    <value>Pasta já existe!</value>
+    <comment>Title text for the folder error dialog</comment>
+  </data>
+  <data name="CloseDialogButton" xml:space="preserve">
+    <value>Fechar</value>
+    <comment>Text for close button in dialogs</comment>
+  </data>
 </root>
