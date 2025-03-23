@@ -17,7 +17,7 @@
   <Properties>
     <DisplayName>ToConverter</DisplayName>
     <PublisherDisplayName>braga</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\Package icons\StoreLogo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -37,10 +37,10 @@
         DisplayName="ToConverter"
         Description="ToConverter is a GUI application for cjxl, to convert images into the jxl format"
         BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        Square150x150Logo="Assets\Package icons\Square150x150Logo.png"
+        Square44x44Logo="Assets\Package icons\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Package icons\Wide310x150Logo.png"  Square71x71Logo="Assets\Package icons\SmallTile.png" Square310x310Logo="Assets\Package icons\LargeTile.png"/>
+        <uap:SplashScreen Image="Assets\Package icons\SplashScreen.png" />
         <uap:InitialRotationPreference>
           <uap:Rotation Preference="landscape"/>
           <uap:Rotation Preference="landscapeFlipped"/></uap:InitialRotationPreference>

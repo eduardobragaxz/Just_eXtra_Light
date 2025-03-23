@@ -12,8 +12,7 @@ using Windows.Storage.Pickers;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.FileProperties;
 using Microsoft.Windows.ApplicationModel.Resources;
-using System.Text;
-using Windows.Globalization.NumberFormatting;
+using System.ComponentModel.Design;
 
 namespace ToConverter;
 
@@ -22,19 +21,11 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     ObservableCollection<ImageInfo>? images;
     readonly ResourceLoader resourceLoader;
-    StringBuilder finalParametersString;
-    DecimalFormatter formatter;
     public MainPage()
     {
         InitializeComponent();
         resourceLoader = new();
         localFolder = MApplicationData.GetDefault().LocalFolder;
-        finalParametersString = new();
-        formatter = new()
-        {
-            IntegerDigits = 2,
-            FractionDigits = 1
-        };
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
@@ -49,47 +40,6 @@ public sealed partial class MainPage : Page
             await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
     }
-
-    private void ConstructParameters()
-    {
-        if (DistanceNumberBox.Text != "")
-        {
-            string distance;
-
-            if (DistanceNumberBox.Text[0] == '0')
-            {
-                distance = $" --distance {DistanceNumberBox.Text[1..].Replace(',', '.')}";
-            }
-            else
-            {
-                distance = $" --distance {DistanceNumberBox.Text.Replace(',', '.')}";
-            }
-
-            finalParametersString.Append(distance);
-        }
-
-        if (EffortNumberBox.Text != "7")
-        {
-            string effort = $" --effort {EffortNumberBox.Text}";
-            finalParametersString.Append(effort);
-        }
-
-        if (AlphaDistanceNumberBox.Text != "0")
-        {
-            string alphaDistance;
-
-            if (AlphaDistanceNumberBox.Text[0] == '0')
-            {
-                alphaDistance = $" --alpha_distance {AlphaDistanceNumberBox.Text[1..].Replace(',', '.')}";
-            }
-            else
-            {
-                alphaDistance = $" --alpha_distance {AlphaDistanceNumberBox.Text.Replace(',', '.')}";
-            }
-
-            finalParametersString.Append(alphaDistance);
-        }
-    }
     private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
@@ -102,10 +52,6 @@ public sealed partial class MainPage : Page
         {
             VisualStateManager.GoToState(this, "DefaultState", false);
         }
-    }
-    private void PaneVisibleButton_Click(object sender, RoutedEventArgs e)
-    {
-        MainSplitView.IsPaneOpen = !MainSplitView.IsPaneOpen;
     }
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
@@ -130,34 +76,42 @@ public sealed partial class MainPage : Page
         LoadingRing.IsActive = false;
         EnableControlsAfterConverting();
         AppInfoBar.IsOpen = true;
-        SetInfoBarTexts();
     }
     private async void ConvertButton_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing2.IsActive = true;
         DisableControlsWhileConverting();
         await ConvertListOfImages();
+        await DeleteImages();
         LoadingRing2.IsActive = false;
         EnableControlsAfterConverting();
 
         SaveImagesButton.IsEnabled = true;
         AppInfoBar.IsOpen = true;
-
         ConvertButton.IsEnabled = false;
-        SetInfoBarTexts();
     }
 
-    private void SetInfoBarTexts()
+    private void SetInfoBarTexts(bool success)
     {
-        AppInfoBar.Title = resourceLoader.GetString("ConversionCompleteTitle");
-
-        if (AppSelectorBar.SelectedItem == AppSelectorBar.Items[0])
+        if (success)
         {
-            AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent");
+            AppInfoBar.Severity = InfoBarSeverity.Success;
+            AppInfoBar.Title = resourceLoader.GetString("ConversionCompleteTitle");
+
+            if (AppSelectorBar.SelectedItem == AppSelectorBar.Items[0])
+            {
+                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent");
+            }
+            else
+            {
+                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent2");
+            }
         }
         else
         {
-            AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent2");
+            AppInfoBar.Severity = InfoBarSeverity.Error;
+            AppInfoBar.Title = resourceLoader.GetString("ConversionFailedTitle");
+            AppInfoBar.Message = resourceLoader.GetString("ConversionFailedMessage");
         }
     }
 
@@ -201,7 +155,6 @@ public sealed partial class MainPage : Page
         StorageFolder jxlFolder = await folder.CreateFolderAsync("ConvertedImages");
 
         IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
-        int exitCode = 0;
 
         StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
         StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
@@ -212,6 +165,12 @@ public sealed partial class MainPage : Page
             CreateNoWindow = true,
             UseShellExecute = false
         };
+
+        string finalParametersString = EnableArgumentsCheckBox.IsChecked is not null and true && ArgumentsTextBox.Text[0..2] == "--"
+            ? ArgumentsTextBox.Text
+            : "";
+
+        bool success = true;
 
         foreach (StorageFile file in files)
         {
@@ -234,7 +193,7 @@ public sealed partial class MainPage : Page
                         }
 
                         string path = localFolder.Path;
-                        string arguments = $@"{path}\{newFile.Name} {jxlFolder.Path}\{newFile.DisplayName}.jxl";
+                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {jxlFolder.Path}\{newFile.DisplayName}.jxl";
 
                         processStart.Arguments = arguments;
 
@@ -242,22 +201,30 @@ public sealed partial class MainPage : Page
                         if (process is not null)
                         {
                             process.WaitForExit();
-                            exitCode = process.ExitCode;
+
+                            if (process.ExitCode != 0)
+                            {
+                                SetInfoBarTexts(false);
+                                success = false;
+                                break;
+                            }
+
                             process.Close();
                         }
+
                         break;
                     }
             }
         }
 
+        if (success)
+        {
+            SetInfoBarTexts(success);
+        }
+
         foreach (StorageFile storageFile in await localFolder.GetFilesAsync())
         {
             await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
-        }
-
-        if (exitCode == 0)
-        {
-
         }
     }
     private void PicturesView_DragOver(object sender, DragEventArgs e)
@@ -335,6 +302,12 @@ public sealed partial class MainPage : Page
             UseShellExecute = false
         };
 
+        string finalParametersString = EnableArgumentsCheckBox.IsChecked is not null and true && ArgumentsTextBox.Text[0..2] == "--"
+            ? ArgumentsTextBox.Text
+            : "";
+
+        bool success = true;
+
         foreach (ImageInfo imageInfo in images!)
         {
             switch (imageInfo.StorageFile.FileType)
@@ -356,7 +329,7 @@ public sealed partial class MainPage : Page
                         }
 
                         string path = localFolder.Path;
-                        string arguments = $@"{path}\{newFile.Name} {localFolder.Path}\{newFile.DisplayName}.jxl";
+                        string arguments = $@"{finalParametersString} {path}\{newFile.Name} {localFolder.Path}\{newFile.DisplayName}.jxl";
 
                         processStart.Arguments = arguments;
 
@@ -364,13 +337,25 @@ public sealed partial class MainPage : Page
                         if (process is not null)
                         {
                             process.WaitForExit();
+                            
+                            if (process.ExitCode != 0)
+                            {
+                                SetInfoBarTexts(false);
+                                success = false;
+                                break;
+                            }
+
                             process.Close();
                         }
 
-                        await newFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
                         break;
                     }
             }
+        }
+
+        if (success)
+        {
+            SetInfoBarTexts(success);
         }
 
         images.Clear();

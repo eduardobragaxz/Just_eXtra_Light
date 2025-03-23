@@ -27,7 +27,6 @@ public sealed partial class MainWindow : Window
 
         double scale = ((MainPage)Content).RasterizationScale;
         AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(900 * scale)));
-        AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
         OverlappedPresenter overlappedPresenter = (OverlappedPresenter)AppWindow.Presenter;
 
         overlappedPresenter.PreferredMinimumWidth = 1000;

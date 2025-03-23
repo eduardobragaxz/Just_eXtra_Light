@@ -12,30 +12,6 @@
 
     <Grid>
 
-        <VisualStateManager.VisualStateGroups>
-
-            <VisualStateGroup>
-
-                <VisualState>
-
-                    <VisualState.StateTriggers>
-
-                        <AdaptiveTrigger MinWindowWidth="1200"/>
-
-                    </VisualState.StateTriggers>
-
-                    <VisualState.Setters>
-
-                        <Setter Target="MainSplitView.DisplayMode" Value="Inline"/>
-
-                    </VisualState.Setters>
-                    
-                </VisualState>
-                
-            </VisualStateGroup>
-            
-        </VisualStateManager.VisualStateGroups>
-
         <Grid.RowDefinitions>
 
             <RowDefinition Height="Auto"/>
@@ -45,666 +21,290 @@
 
         <TitleBar Background="{ThemeResource ControlFillColorDefaultBrush}"
                   Grid.Row="0"
-                  Height="48"
+                  Height="32"
                   Title="ToConverter">
 
             <TitleBar.IconSource>
 
-                <ImageIconSource ImageSource="/Assets/Icons/TitleBarIcon.png"/>
+                <ImageIconSource ImageSource="/Assets/Icons/TitleBarIco.ico"/>
 
             </TitleBar.IconSource>
 
-            <TitleBar.LeftHeader>
-
-                <Button Click="PaneVisibleButton_Click"
-                        Margin="10,0"
-                        x:Name="PaneVisibleButton">
-
-                    <Button.Content>
-
-                        <FontIcon Glyph="&#xEA5B;"/>
-
-                    </Button.Content>
-                    
-                </Button>
-                
-            </TitleBar.LeftHeader>
-
         </TitleBar>
 
-        <SplitView DisplayMode="Overlay"
-                   Grid.Row="1"
-                   x:Name="MainSplitView"
-                   OpenPaneLength="600"
-                   PaneBackground="{ThemeResource AcrylicInAppFillColorBaseBrush}">
+        <Grid Grid.Row="1">
 
-            <SplitView.Content>
+            <Grid.ColumnDefinitions>
 
-                <Grid>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
 
-                    <Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions>
 
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+            <Grid.RowDefinitions>
 
-                    </Grid.ColumnDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
 
-                    <Grid.RowDefinitions>
+            </Grid.RowDefinitions>
 
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
+            <SelectorBar Grid.Column="0"
+                         Grid.ColumnSpan="2"
+                         Grid.Row="1"
+                         HorizontalAlignment="Center"
+                         x:Name="AppSelectorBar">
 
-                    </Grid.RowDefinitions>
+                <SelectorBar.Items>
 
-                    <SelectorBar Grid.Column="0"
-                                 Grid.ColumnSpan="2"
-                                 Grid.Row="1"
-                                 HorizontalAlignment="Center"
-                                 x:Name="AppSelectorBar">
+                    <SelectorBarItem Icon="Folder"
+                                     IsSelected="True"
+                                     x:Name="FolderItem"
+                                     x:Uid="FolderItem"/>
 
-                        <SelectorBar.Items>
+                    <SelectorBarItem x:Name="ImagesItem"
+                                     x:Uid="ImagesItem">
 
-                            <SelectorBarItem Icon="Folder"
-                                             IsSelected="True"
-                                             x:Name="FolderItem"
-                                             x:Uid="FolderItem"/>
+                        <SelectorBarItem.Icon>
 
-                            <SelectorBarItem x:Name="ImagesItem"
-                                             x:Uid="ImagesItem">
+                            <FontIcon Glyph="&#xE8B9;" />
 
-                                <SelectorBarItem.Icon>
+                        </SelectorBarItem.Icon>
 
-                                    <FontIcon Glyph="&#xE8B9;" />
+                    </SelectorBarItem>
 
-                                </SelectorBarItem.Icon>
+                </SelectorBar.Items>
 
-                            </SelectorBarItem>
+            </SelectorBar>
 
-                        </SelectorBar.Items>
+            <StackPanel Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="1"
+                        Padding="36">
 
-                    </SelectorBar>
+                <CheckBox Margin="0,0,0,10"
+                          x:Name="EnableArgumentsCheckBox"
+                          x:Uid="EnableArgumentsCheckBox"/>
 
-                    <ScrollView Grid.Column="0"
-                                Grid.ColumnSpan="3"
+                <TextBox x:Name="ArgumentsTextBox"
+                         x:Uid="ArgumentsTextBox"
+                         Visibility="{x:Bind EnableArgumentsCheckBox.IsChecked, Mode=OneWay}"/>
+
+            </StackPanel>
+
+            <ScrollView Grid.Column="0"
+                        Grid.ColumnSpan="3"
+                        Grid.Row="2"
+                        Grid.RowSpan="2"
+                        Padding="36">
+
+                <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                      CornerRadius="{StaticResource ControlCornerRadius}">
+
+                    <StackPanel x:Name="SelectFolderStackPanel"
+                                Padding="36"
+                                VerticalAlignment="Center"
+                                Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
+
+                        <TextBlock Grid.Row="0"
+                                   Margin="0,0,0,10"
+                                   Style="{StaticResource SubtitleTextBlockStyle}"
+                                   TextWrapping="Wrap">
+
+                            <TextBlock.Inlines>
+
+                                <Run x:Uid="Instructions1"/>
+                                <LineBreak/>
+                                <Run x:Uid="Instructions2"/>
+
+                            </TextBlock.Inlines>
+
+                        </TextBlock>
+
+                        <CheckBox Grid.Row="1"
+                                  x:Name="IncludeSubFoldersCheckBox"
+                                  x:Uid="IncludeSubFolders"/>
+
+                        <Button Click="ConvertFolderButton_Click"
                                 Grid.Row="2"
-                                Grid.RowSpan="2"
-                                Padding="36">
+                                Height="50"
+                                HorizontalAlignment="Center"
+                                x:Name="ConvertFolderButton">
 
-                        <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                              CornerRadius="{StaticResource ControlCornerRadius}">
+                            <Button.Content>
 
-                            <StackPanel x:Name="SelectFolderStackPanel"
-                                        Padding="36"
-                                        VerticalAlignment="Center"
-                                        Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
+                                <Grid>
 
-                                <TextBlock Grid.Row="0"
-                                           Margin="0,0,0,10"
-                                           Style="{StaticResource SubtitleTextBlockStyle}"
-                                           TextWrapping="Wrap">
+                                    <TextBlock x:Uid="ChooseFolderButton"
+                                               VerticalAlignment="Center"/>
 
-                                    <TextBlock.Inlines>
+                                    <ProgressRing IsActive="False"
+                                                  x:Name="LoadingRing"
+                                                  VerticalAlignment="Center"/>
 
-                                        <Run x:Uid="Instructions1"/>
-                                        <LineBreak/>
-                                        <Run x:Uid="Instructions2"/>
+                                </Grid>
 
-                                    </TextBlock.Inlines>
+                            </Button.Content>
 
-                                </TextBlock>
+                        </Button>
 
-                                <CheckBox Grid.Row="1"
-                                          x:Name="IncludeSubFoldersCheckBox"
-                                          x:Uid="IncludeSubFolders"/>
+                    </StackPanel>
 
-                                <Button Click="ConvertFolderButton_Click"
-                                        Grid.Row="2"
-                                        Height="50"
-                                        HorizontalAlignment="Center"
-                                        x:Name="ConvertFolderButton">
-
-                                    <Button.Content>
-
-                                        <Grid>
-
-                                            <TextBlock x:Uid="ChooseFolderButton"
-                                                       VerticalAlignment="Center"/>
-
-                                            <ProgressRing IsActive="False"
-                                                          x:Name="LoadingRing"
-                                                          VerticalAlignment="Center"/>
-
-                                        </Grid>
-
-                                    </Button.Content>
-
-                                </Button>
-
-                            </StackPanel>
-
-                            <Grid Grid.Row="1"
-                                  Margin="0,10,0,0"
-                                  x:Name="DragAndDropGrid"
-                                  Padding="36"
-                                  Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
-
-                                <Grid.RowDefinitions>
-
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0"
-                                           Margin="0,0,0,10"
-                                           x:Uid="DragAndDropInstructions"/>
-
-                                <Button Click="ConvertButton_Click"
-                                        Grid.Row="1"
-                                        HorizontalAlignment="Stretch"
-                                        IsEnabled="False"
-                                        Margin="0,0,0,20"
-                                        x:Name="ConvertButton">
-
-                                    <Button.Content>
-
-                                        <Grid>
-
-                                            <TextBlock x:Uid="ConvertButton"
-                                                       VerticalAlignment="Center"/>
-
-                                            <ProgressRing IsActive="False"
-                                                          x:Name="LoadingRing2"/>
-
-                                        </Grid>
-
-                                    </Button.Content>
-
-                                </Button>
-
-                                <Button Click="SaveImagesButton_Click"
-                                        Grid.Row="2"
-                                        IsEnabled="False"
-                                        Margin="0,0,0,10"
-                                        x:Name="SaveImagesButton"
-                                        x:Uid="SaveImagesButton"/>
-
-                                <ItemsView AllowDrop="True"
-                                           Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"
-                                           DragOver="PicturesView_DragOver"
-                                           Drop="PicturesView_Drop"
-                                           Grid.Row="3"
-                                           x:Name="PicturesView">
-
-                                    <ItemsView.ItemTemplate>
-
-                                        <DataTemplate x:DataType="local:ImageInfo">
-
-                                            <ItemContainer>
-
-                                                <Grid CornerRadius="5"
-                                                      DataContext="{x:Bind}"
-                                                      Height="200"
-                                                      x:Name="AttachmentTemplateGrid"
-                                                      Padding="5"
-                                                      Width="200">
-
-                                                    <Grid.Background>
-
-                                                        <ImageBrush ImageSource="{x:Bind Source}"
-                                                                    Stretch="UniformToFill"/>
-
-                                                    </Grid.Background>
-
-                                                    <Grid.Children>
-
-                                                        <Button Background="Red"
-                                                                Click="AtachmentDataTemplateRemoveButton_Click"
-                                                                Content="&#xE738;"
-                                                                FontFamily="Segoe Fluent Icons"
-                                                                HorizontalAlignment="Right"
-                                                                x:Name="AtachmentDataTemplateRemoveButton"
-                                                                x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
-                                                                VerticalAlignment="Top">
-
-                                                            <Button.Resources>
-
-                                                                <ResourceDictionary>
-
-                                                                    <ResourceDictionary.ThemeDictionaries>
-
-                                                                        <ResourceDictionary x:Key="Light">
-
-                                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                             Color="DarkRed"/>
-
-                                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                             Color="IndianRed"/>
-
-                                                                        </ResourceDictionary>
-
-                                                                        <ResourceDictionary x:Key="Default">
-
-                                                                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                             Color="DarkRed"/>
-
-                                                                            <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                             Color="IndianRed"/>
-
-                                                                        </ResourceDictionary>
-
-                                                                    </ResourceDictionary.ThemeDictionaries>
-
-                                                                </ResourceDictionary>
-
-                                                            </Button.Resources>
-
-                                                        </Button>
-
-                                                    </Grid.Children>
-
-                                                </Grid>
-
-                                            </ItemContainer>
-
-                                        </DataTemplate>
-
-                                    </ItemsView.ItemTemplate>
-
-                                    <ItemsView.Layout>
-
-                                        <UniformGridLayout />
-
-                                    </ItemsView.Layout>
-
-                                </ItemsView>
-
-                            </Grid>
-
-                        </Grid>
-
-                    </ScrollView>
-
-                    <InfoBar Grid.Column="0"
-                             Grid.ColumnSpan="3"
-                             Grid.Row="4"
-                             IsOpen="False"
-                             Margin="5"
-                             x:Name="AppInfoBar"
-                             Severity="Success"/>
-
-                </Grid>
-                
-            </SplitView.Content>
-
-            <SplitView.Pane>
-
-                <ScrollView>
-
-                    <Grid Padding="16">
-
-                        <Grid.ColumnDefinitions>
-
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-
-                        </Grid.ColumnDefinitions>
+                    <Grid Grid.Row="1"
+                          Margin="0,10,0,0"
+                          x:Name="DragAndDropGrid"
+                          Padding="36"
+                          Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
 
                         <Grid.RowDefinitions>
 
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
 
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0"
-                                   Grid.Row="0"
+                        <TextBlock Grid.Row="0"
                                    Margin="0,0,0,10"
-                                   Style="{StaticResource TitleLargeTextBlockStyle}"
-                                   Text="Experts sidebar"/>
+                                   x:Uid="DragAndDropInstructions"/>
 
-                        <Button Grid.Column="1"
-                                Grid.Row="0"
-                                HorizontalAlignment="Right"
-                                Content="Reset values"/>
+                        <Button Click="ConvertButton_Click"
+                                Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                IsEnabled="False"
+                                Margin="0,0,0,20"
+                                x:Name="ConvertButton">
 
-                        <InfoBar Grid.Column="0"
-                                 Grid.ColumnSpan="2"
-                                 Grid.Row="1"
-                                 IsClosable="False"
-                                 IsOpen="True"
-                                 Margin="0,0,0,10"
-                                 Message="Make the right changes"
-                                 Severity="Warning"/>
+                            <Button.Content>
 
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="1"
-                                   Grid.Row="2"
-                                   Margin="0,0,10,10"
-                                   Maximum="25.0"
-                                   x:Name="DistanceNumberBox"
-                                   NumberFormatter="{x:Bind formatter}"
-                                   PlaceholderText="00,0"
-                                   x:Uid="DistanceNumberBox"/>
+                                <Grid>
 
-                        <NumberBox Grid.Column="1"
-                                   Grid.Row="2"
-                                   Margin="0,0,0,10"
-                                   Maximum="10"
-                                   x:Name="EffortNumberBox"
-                                   Text="7"
-                                   x:Uid="EffortNumberBox"/>
+                                    <TextBlock x:Uid="ConvertButton"
+                                               VerticalAlignment="Center"/>
 
-                        <NumberBox Grid.Column="0"
+                                    <ProgressRing IsActive="False"
+                                                  x:Name="LoadingRing2"/>
+
+                                </Grid>
+
+                            </Button.Content>
+
+                        </Button>
+
+                        <Button Click="SaveImagesButton_Click"
+                                Grid.Row="2"
+                                IsEnabled="False"
+                                Margin="0,0,0,10"
+                                x:Name="SaveImagesButton"
+                                x:Uid="SaveImagesButton"/>
+
+                        <ItemsView AllowDrop="True"
+                                   Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"
+                                   DragOver="PicturesView_DragOver"
+                                   Drop="PicturesView_Drop"
                                    Grid.Row="3"
-                                   Margin="0,0,20,10"
-                                   Maximum="25.0"
-                                   x:Name="AlphaDistanceNumberBox"
-                                   NumberFormatter="{x:Bind formatter}"
-                                   Text="00,0"
-                                   x:Uid="AlphaDistanceNumberBox"/>
+                                   x:Name="PicturesView">
 
-                        <CheckBox Grid.Column="1"
-                                  Grid.Row="3"
-                                  Content="Enable (more) progressive/responsive decoding"
-                                  Margin="0,10,0,0"/>
+                            <ItemsView.ItemTemplate>
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="4"
-                                      Header="Group order"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="2">
+                                <DataTemplate x:DataType="local:ImageInfo">
 
-                            <RadioButton Content="Scanline order"
-                                         IsChecked="True"/>
-                            <RadioButton Content="Center-first order"/>
+                                    <ItemContainer>
 
-                        </RadioButtons>
+                                        <Grid CornerRadius="5"
+                                              DataContext="{x:Bind}"
+                                              Height="200"
+                                              x:Name="AttachmentTemplateGrid"
+                                              Padding="5"
+                                              Width="200">
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="5"
-                                      Header="Container"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="2">
+                                            <Grid.Background>
 
-                            <RadioButton Content="Avoid container"/>
-                            
-                            <RadioButton Content="Force container"
-                                         IsChecked="True"/>
+                                                <ImageBrush ImageSource="{x:Bind Source}"
+                                                            Stretch="UniformToFill"/>
 
-                        </RadioButtons>
+                                            </Grid.Background>
 
-                        <CheckBox Content="Compress boxes"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="6"
-                                  IsChecked="True"
-                                  Margin="0,0,0,10"/>
+                                            <Grid.Children>
 
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="1"
-                                   Grid.Row="7"
-                                   Header="Brotli effort"
-                                   Margin="0,0,20,10"
-                                   Maximum="11"
-                                   Text="9"/>
+                                                <Button Background="Red"
+                                                        Click="AtachmentDataTemplateRemoveButton_Click"
+                                                        Content="&#xE738;"
+                                                        FontFamily="Segoe Fluent Icons"
+                                                        HorizontalAlignment="Right"
+                                                        x:Name="AtachmentDataTemplateRemoveButton"
+                                                        x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
+                                                        VerticalAlignment="Top">
 
-                        <CheckBox Content="Use modular mode"
-                                  Grid.Column="1"
-                                  Grid.ColumnSpan="1"
-                                  Grid.Row="7"
-                                  IsChecked="{x:Null}"
-                                  Margin="0,20,0,0"/>
+                                                    <Button.Resources>
 
-                        <CheckBox Content="Lossless JPEG"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="8"
-                                  IsChecked="True"
-                                  Margin="0,0,0,10"/>
+                                                        <ResourceDictionary>
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="9"
-                                      Header="Number of threads"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="2">
+                                                            <ResourceDictionary.ThemeDictionaries>
 
-                            <RadioButton Content="Use machine default"/>
+                                                                <ResourceDictionary x:Key="Light">
 
-                            <RadioButton Content="Do not use multithreading"/>
+                                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                                     Color="DarkRed"/>
 
-                        </RadioButtons>
+                                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                                     Color="IndianRed"/>
 
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Grid.Row="10"
-                                   Header="Photon noise ISO"
-                                   Margin="0,0,0,10"
-                                   Text="0"/>
+                                                                </ResourceDictionary>
 
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Grid.Row="11"
-                                   Header="Intensity target"
-                                   Margin="0,0,0,10"
-                                   Text="0"/>
+                                                                <ResourceDictionary x:Key="Default">
 
-                        <CheckBox Content="Allow JPEG reconstruction"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="12"
-                                  Margin="0,0,0,10"/>
+                                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                                     Color="DarkRed"/>
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="13"
-                                      Header="Codestream level"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="3">
+                                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                                     Color="IndianRed"/>
 
-                            <RadioButton Content="-1"/>
-                            <RadioButton Content="5"/>
-                            <RadioButton Content="10"/>
+                                                                </ResourceDictionary>
 
-                        </RadioButtons>
+                                                            </ResourceDictionary.ThemeDictionaries>
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="14"
-                                      Header="Faster decoding"
-                                      Margin="0,0,0,10">
+                                                        </ResourceDictionary>
 
-                            <RadioButton Content="0"/>
-                            <RadioButton Content="1"/>
-                            <RadioButton Content="2"/>
-                            <RadioButton Content="3"/>
-                            <RadioButton Content="4"/>
+                                                    </Button.Resources>
 
-                        </RadioButtons>
+                                                </Button>
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="15"
-                                      Header="Force premultiplied (associated) alpha"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="3">
-                            
-                            <RadioButton Content="-1"/>
-                            <RadioButton Content="0"/>
-                            <RadioButton Content="1"/>
+                                            </Grid.Children>
 
-                        </RadioButtons>
+                                        </Grid>
 
-                        <CheckBox Content="Disable/enable preserving color of invisible pixels"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="16"
-                                  IsChecked="{x:Null}"
-                                  Margin="0,0,0,10"/>
+                                    </ItemContainer>
 
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="1"
-                                   Grid.Row="17"
-                                   Header="Center X axis"
-                                   Margin="0,0,10,10"
-                                   Text="-1"/>
+                                </DataTemplate>
 
-                        <NumberBox Grid.Column="1"
-                                   Grid.ColumnSpan="1"
-                                   Grid.Row="17"
-                                   Header="Center Y axis"
-                                   Margin="0,0,0,10"
-                                   Text="-1"/>
+                            </ItemsView.ItemTemplate>
 
-                        <CheckBox Content="Use the progressive mode for AC"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="18"
-                                  IsChecked="False"
-                                  Margin="0,0,0,10"/>
+                            <ItemsView.Layout>
 
-                        <CheckBox Content="Use the progressive mode for AC with shift quantization"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="19"
-                                  IsChecked="False"
-                                  Margin="0,0,0,10"/>
+                                <UniformGridLayout />
 
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="20"
-                                      Header="Progressive DC setting"
-                                      Margin="0,0,0,10">
+                            </ItemsView.Layout>
 
-                            <RadioButton Content="-1"/>
-                            <RadioButton Content="0"/>
-                            <RadioButton Content="1"/>
-                            <RadioButton Content="2"/>
-
-                        </RadioButtons>
-
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="21"
-                                      Header="Resampling for color channels"
-                                      Margin="0,0,0,10">
-
-                            <RadioButton Content="-1"
-                                         IsChecked="True"/>
-                            
-                            <RadioButton Content="1"/>
-                            <RadioButton Content="2"/>
-                            <RadioButton Content="4"/>
-                            <RadioButton Content="8"/>
-
-                        </RadioButtons>
-
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="22"
-                                      Header="Resampling for extra channels"
-                                      Margin="0,0,0,10">
-
-                            <RadioButton Content="-1"
-                                         IsChecked="True"/>
-
-                            <RadioButton Content="1"/>
-                            <RadioButton Content="2"/>
-                            <RadioButton Content="4"/>
-                            <RadioButton Content="8"/>
-
-                        </RadioButtons>
-
-                        <CheckBox Content="Already downsampled"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="23"
-                                  Margin="0,0,0,10"/>
-
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="24"
-                                      Header="Upsampling mode the decoder should use"
-                                      Margin="0,0,0,10"
-                                      MaxColumns="2">
-
-                            <RadioButton Content="Non-separable upsampling"
-                                         IsChecked="True"/>
-
-                            <RadioButton Content="Nearest neighbor"/>
-
-                        </RadioButtons>
-
-                        <RadioButtons Grid.Column="0"
-                                      Grid.ColumnSpan="2"
-                                      Grid.Row="25"
-                                      Header="Edge preserving filter level"
-                                      Margin="0,0,0,10">
-
-                            <RadioButton Content="-1"
-                                         IsChecked="True"/>
-
-                            <RadioButton Content="0"/>
-                            <RadioButton Content="1"/>
-                            <RadioButton Content="2"/>
-                            <RadioButton Content="3"/>
-
-                        </RadioButtons>
-
-                        <CheckBox Content="Force disable/enable the gaborish filter"
-                                  Grid.Column="0"
-                                  Grid.ColumnSpan="2"
-                                  Grid.Row="26"
-                                  IsChecked="{x:Null}"
-                                  Margin="0,0,0,10"/>
-
-                        <NumberBox Grid.Column="0"
-                                   Grid.ColumnSpan="2"
-                                   Grid.Row="27"
-                                   Header="Override bit depth"
-                                   Text="0"/>
+                        </ItemsView>
 
                     </Grid>
 
-                </ScrollView>
+                </Grid>
 
-            </SplitView.Pane>
-            
-        </SplitView>
+            </ScrollView>
+
+            <InfoBar Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Grid.Row="3"
+                     IsOpen="False"
+                     Margin="5"
+                     x:Name="AppInfoBar"
+                     Severity="Success"/>
+
+        </Grid>
 
     </Grid>
 
