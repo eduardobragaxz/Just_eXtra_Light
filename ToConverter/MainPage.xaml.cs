@@ -13,6 +13,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.FileProperties;
 using Microsoft.Windows.ApplicationModel.Resources;
 using System.ComponentModel.Design;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ToConverter;
 
@@ -21,10 +23,12 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     ObservableCollection<ImageInfo>? images;
     readonly ResourceLoader resourceLoader;
+    bool canDropImages;
     public MainPage()
     {
         InitializeComponent();
         resourceLoader = new();
+        canDropImages = true;
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -56,7 +60,7 @@ public sealed partial class MainPage : Page
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing.IsActive = true;
-        DisableControlsWhileConverting();
+        EnableOrDisableControls(false);
         FolderPicker folderPicker = new();
 
         MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
@@ -74,67 +78,12 @@ public sealed partial class MainPage : Page
         }
 
         LoadingRing.IsActive = false;
-        EnableControlsAfterConverting();
-        AppInfoBar.IsOpen = true;
-    }
-    private async void ConvertButton_Click(object sender, RoutedEventArgs e)
-    {
-        LoadingRing2.IsActive = true;
-        DisableControlsWhileConverting();
-        await ConvertListOfImages();
-        await DeleteImages();
-        LoadingRing2.IsActive = false;
-        EnableControlsAfterConverting();
+        EnableOrDisableControls(true);
 
-        SaveImagesButton.IsEnabled = true;
-        AppInfoBar.IsOpen = true;
-        ConvertButton.IsEnabled = false;
-    }
-
-    private void SetInfoBarTexts(bool success)
-    {
-        if (success)
+        void EnableOrDisableControls(bool enable)
         {
-            AppInfoBar.Severity = InfoBarSeverity.Success;
-            AppInfoBar.Title = resourceLoader.GetString("ConversionCompleteTitle");
-
-            if (AppSelectorBar.SelectedItem == AppSelectorBar.Items[0])
-            {
-                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent");
-            }
-            else
-            {
-                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent2");
-            }
-        }
-        else
-        {
-            AppInfoBar.Severity = InfoBarSeverity.Error;
-            AppInfoBar.Title = resourceLoader.GetString("ConversionFailedTitle");
-            AppInfoBar.Message = resourceLoader.GetString("ConversionFailedMessage");
-        }
-    }
-
-    private async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
-    {
-        FolderPicker folderPicker = new();
-
-        MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
-        var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
-
-        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
-
-        folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
-
-        StorageFolder storageFolder = await folderPicker.PickSingleFolderAsync();
-        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
-
-        if (storageFolder is not null)
-        {
-            foreach (StorageFile file in files)
-            {
-                await file.MoveAsync(storageFolder);
-            }
+            IncludeSubFoldersCheckBox.IsEnabled =
+                ConvertFolderButton.IsEnabled = enable;
         }
     }
     private async Task ConvertFolderImages(StorageFolder folder)
@@ -166,8 +115,8 @@ public sealed partial class MainPage : Page
             UseShellExecute = false
         };
 
-        string finalParametersString = EnableArgumentsCheckBox.IsChecked is not null and true && ArgumentsTextBox.Text[0..2] == "--"
-            ? ArgumentsTextBox.Text
+        string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
+            ? $"{ArgumentsTextBox.Text} "
             : "";
 
         bool success = true;
@@ -227,9 +176,134 @@ public sealed partial class MainPage : Page
             await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
     }
+    private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
+    {
+        LoadingRing2.IsActive = true;
+        EnableOrDisableControls(false);
+        await ConvertListOfImages();
+        LoadingRing2.IsActive = false;
+        EnableOrDisableControls(true);
+
+        void EnableOrDisableControls(bool enable)
+        {
+            ConvertButton.IsEnabled = !enable;
+            SaveImagesButton.IsEnabled =
+                canDropImages = enable;
+        }
+    }
+    private async Task ConvertListOfImages()
+    {
+        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
+        StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
+
+        ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+        {
+            CreateNoWindow = true,
+            UseShellExecute = false
+        };
+
+        string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
+            ? $"{ArgumentsTextBox.Text }"
+            : "";
+
+        bool success = true;
+
+        foreach (ImageInfo imageInfo in images!)
+        {
+            switch (imageInfo.StorageFile.FileType)
+            {
+                case ".exr":
+                case ".gif":
+                case ".jpg" or ".jpeg":
+                case ".pam" or ".pgm" or ".ppm":
+                case ".pfm":
+                case ".pgx":
+                case ".png" or "apng":
+                    {
+                        StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder);
+
+                        if (newFile.Name.Contains(' '))
+                        {
+                            string newName = newFile.Name.Replace(' ', '_');
+                            await newFile.RenameAsync(newName);
+                        }
+
+                        string path = localFolder.Path;
+                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {localFolder.Path}\{newFile.DisplayName}.jxl";
+
+                        processStart.Arguments = arguments;
+
+                        using Process? process = Process.Start(processStart);
+                        if (process is not null)
+                        {
+                            process.WaitForExit();
+
+                            if (process.ExitCode != 0)
+                            {
+                                SetInfoBarTexts(false);
+                                success = false;
+                                break;
+                            }
+                            else
+                            {
+                                imageInfo.ShowSuccess = true;
+                                imageInfo.ShowDeleteButton = false;
+                                imageInfo.Thickness = new(2);
+                            }
+
+                            process.Close();
+                        }
+
+                        break;
+                    }
+            }
+        }
+
+        if (success)
+        {
+            SetInfoBarTexts(success);
+        }
+    }
+    private async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
+    {
+        await SaveImages();
+        AppInfoBar.IsOpen = false;
+    }
+    private async Task SaveImages()
+    {
+        FolderPicker folderPicker = new();
+
+        MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
+        var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
+
+        WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
+
+        folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
+
+        StorageFolder storageFolder = await folderPicker.PickSingleFolderAsync();
+        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
+
+        if (storageFolder is not null)
+        {
+            for (int index = 0; index <= files.Count - 1; index++)
+            {
+                StorageFile storageFile = files[index];
+                await storageFile.MoveAsync(storageFolder);
+            }
+        }
+
+        ConvertButton.IsEnabled =
+            canDropImages = true;
+        SaveImagesButton.IsEnabled = false;
+        images!.Clear();
+    }
     private void PicturesView_DragOver(object sender, DragEventArgs e)
     {
-        e.AcceptedOperation = DataPackageOperation.Copy;
+        if (canDropImages)
+        {
+            e.AcceptedOperation = DataPackageOperation.Copy;
+        }
     }
     private async void PicturesView_Drop(object sender, DragEventArgs e)
     {
@@ -289,86 +363,30 @@ public sealed partial class MainPage : Page
 
         ConvertButton.IsEnabled = images.Count != 0;
     }
-
-    private async Task ConvertListOfImages()
+    private void SetInfoBarTexts(bool success)
     {
-        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
-        StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
-
-        ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
-        {
-            CreateNoWindow = true,
-            UseShellExecute = false
-        };
-
-        string finalParametersString = EnableArgumentsCheckBox.IsChecked is not null and true && ArgumentsTextBox.Text[0..2] == "--"
-            ? ArgumentsTextBox.Text
-            : "";
-
-        bool success = true;
-
-        foreach (ImageInfo imageInfo in images!)
-        {
-            switch (imageInfo.StorageFile.FileType)
-            {
-                case ".exr":
-                case ".gif":
-                case ".jpg" or ".jpeg":
-                case ".pam" or ".pgm" or ".ppm":
-                case ".pfm":
-                case ".pgx":
-                case ".png" or "apng":
-                    {
-                        StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder);
-
-                        if (newFile.Name.Contains(' '))
-                        {
-                            string newName = newFile.Name.Replace(' ', '_');
-                            await newFile.RenameAsync(newName);
-                        }
-
-                        string path = localFolder.Path;
-                        string arguments = $@"{finalParametersString} {path}\{newFile.Name} {localFolder.Path}\{newFile.DisplayName}.jxl";
-
-                        processStart.Arguments = arguments;
-
-                        using Process? process = Process.Start(processStart);
-                        if (process is not null)
-                        {
-                            process.WaitForExit();
-                            
-                            if (process.ExitCode != 0)
-                            {
-                                SetInfoBarTexts(false);
-                                success = false;
-                                break;
-                            }
-
-                            process.Close();
-                        }
-
-                        break;
-                    }
-            }
-        }
+        AppInfoBar.IsOpen = true;
 
         if (success)
         {
-            SetInfoBarTexts(success);
+            AppInfoBar.Severity = InfoBarSeverity.Success;
+            AppInfoBar.Title = resourceLoader.GetString("ConversionCompleteTitle");
+
+            if (AppSelectorBar.SelectedItem == AppSelectorBar.Items[0])
+            {
+                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent");
+            }
+            else
+            {
+                AppInfoBar.Message = resourceLoader.GetString("ConversionCompleteContent2");
+            }
         }
-
-        images.Clear();
-    }
-
-    private void DisableControlsWhileConverting()
-    {
-        AppSelectorBar.IsEnabled =
-            IncludeSubFoldersCheckBox.IsEnabled =
-            ConvertFolderButton.IsEnabled =
-            ConvertButton.IsEnabled =
-            SaveImagesButton.IsEnabled =
-            PicturesView.IsEnabled = false;
+        else
+        {
+            AppInfoBar.Severity = InfoBarSeverity.Error;
+            AppInfoBar.Title = resourceLoader.GetString("ConversionFailedTitle");
+            AppInfoBar.Message = resourceLoader.GetString("ConversionFailedMessage");
+        }
     }
 
     private void EnableControlsAfterConverting()
@@ -381,8 +399,54 @@ public sealed partial class MainPage : Page
     }
 }
 
-public class ImageInfo(StorageFile storageFile, BitmapImage source)
+public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : INotifyPropertyChanged
 {
     public BitmapImage Source => source;
     public StorageFile StorageFile => storageFile;
+    public bool ShowSuccess
+    {
+        get => successful;
+        set
+        {
+            if (successful != value)
+            {
+                successful = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    public bool ShowDeleteButton
+    {
+        get => showDeleteButton;
+        set
+        {
+            if (showDeleteButton != value)
+            {
+                showDeleteButton = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private bool showDeleteButton = true;
+    private bool successful;
+    public Thickness Thickness
+    {
+        get => thickness;
+        set
+        {
+            if (thickness != value)
+            {
+                thickness = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private Thickness thickness;
+
+    protected void OnPropertyChanged([CallerMemberName] string? name = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 }

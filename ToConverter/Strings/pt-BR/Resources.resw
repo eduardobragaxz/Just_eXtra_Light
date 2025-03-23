@@ -153,10 +153,6 @@
     <value>Arrastar e soltar imagens</value>
     <comment>Text for the selector bar item to drag and drop images</comment>
   </data>
-  <data name="EnableArgumentsCheckBox.Content" xml:space="preserve">
-    <value>Adicionar argumentos para a conversão.</value>
-    <comment>Text for the content portion of the enable arguments check box</comment>
-  </data>
   <data name="ArgumentsTextBox.Header" xml:space="preserve">
     <value>Argumentos</value>
     <comment>Header text for the arguments text box</comment>
@@ -180,5 +176,13 @@
   <data name="ConversionFailedMessage" xml:space="preserve">
     <value>Se estiver adicionando argumentos, certifique-se de que estão corretos e que não há espaço no começo e no final.</value>
     <comment>Message text for conversion failed info bar</comment>
+  </data>
+  <data name="ExpertsSection1.Text" xml:space="preserve">
+    <value>Configurações para experts</value>
+    <comment>Text for the content portion of the enable arguments check box</comment>
+  </data>
+  <data name="ExpertsSection2.Text" xml:space="preserve">
+    <value>Adicionar argumentos para a conversão.</value>
+    <comment>Text for the content portion of the enable arguments check box</comment>
   </data>
 </root>
