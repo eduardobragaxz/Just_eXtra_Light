@@ -189,4 +189,7 @@
   <data name="CloseDialogButton" xml:space="preserve">
     <value>Close</value>
   </data>
+  <data name="AppMadeWith.Text" xml:space="preserve">
+    <value>This app was made with</value>
+  </data>
 </root>

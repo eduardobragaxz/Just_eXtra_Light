@@ -213,4 +213,8 @@
     <value>Fechar</value>
     <comment>Text for close button in dialogs</comment>
   </data>
+  <data name="AppMadeWith.Text" xml:space="preserve">
+    <value>Este aplicativo foi feito com</value>
+    <comment>Text for the info flyout</comment>
+  </data>
 </root>

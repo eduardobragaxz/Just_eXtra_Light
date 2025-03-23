@@ -6,6 +6,7 @@
     xmlns:local="using:ToConverter"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:applicationModel="using:Windows.ApplicationModel"
     mc:Ignorable="d"
     Loaded="Page_Loaded"
     SizeChanged="Page_SizeChanged">
@@ -38,8 +39,73 @@
                     <Button.Flyout>
 
                         <Flyout>
-                            
-                            
+
+                            <Grid Width="300">
+
+                                <Grid.ColumnDefinitions>
+
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+
+                                </Grid.ColumnDefinitions>
+
+                                <Grid.RowDefinitions>
+
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+
+                                </Grid.RowDefinitions>
+
+                                <Image Grid.Column="0"
+                                       Grid.Row="0"
+                                       Grid.RowSpan="2">
+
+                                    <Image.Source>
+
+                                        <BitmapImage DecodePixelHeight="60"
+                                                     DecodePixelType="Logical"
+                                                     UriSource="/Assets/Icons/TitleBarIco.ico"/>
+
+                                    </Image.Source>
+
+                                </Image>
+
+                                <TextBlock Grid.Column="1"
+                                           Grid.Row="0"
+                                           Grid.RowSpan="2"
+                                           HorizontalAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center">
+                                    
+                                    <Run FontWeight="SemiBold"
+                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Major}"/>
+                                    <Run FontWeight="SemiBold"
+                                         Text="."/>
+                                    <Run FontWeight="SemiBold"
+                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Minor}"/>
+                                    <Run FontWeight="SemiBold"
+                                         Text="."/>
+                                    <Run FontWeight="SemiBold"
+                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Build}"/>
+                                    
+                                    <LineBreak/>
+                                    
+                                    <Run x:Uid="AppMadeWith"/>
+                                    
+                                    <Hyperlink NavigateUri="https://github.com/libjxl/libjxl">
+                                        
+                                        <Hyperlink.Inlines>
+                                            
+                                            <Run Text="libjxl"/>
+                                            
+                                        </Hyperlink.Inlines>
+                                        
+                                    </Hyperlink>
+
+                                </TextBlock>
+
+                            </Grid>
                             
                         </Flyout>
                         

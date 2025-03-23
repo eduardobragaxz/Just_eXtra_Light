@@ -49,7 +49,10 @@
 		</Page>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Assets\Icons\Package icons\" />
+	  <None Update="Assets\Icons\TitleBarIcon128.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 
 	<!--
