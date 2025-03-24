@@ -1,6 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 
-namespace ToConverter;
+namespace JustExtraLively;
 
 public partial class App : Application
 {
