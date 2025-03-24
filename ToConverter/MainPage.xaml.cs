@@ -18,7 +18,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace JustExtraLively;
+namespace JustExtraLight;
 
 public sealed partial class MainPage : Page
 {

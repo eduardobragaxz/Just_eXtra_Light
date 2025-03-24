@@ -8,14 +8,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ToConverter"
+    Name="JustExtraLight"
     Publisher="CN=braga"
-    Version="1.0.0.0" />
+    Version="0.1.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="322d6ae8-dddb-475c-8e88-259500d9620c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>ToConverter</DisplayName>
+    <DisplayName>Just eXtra Light</DisplayName>
     <PublisherDisplayName>braga</PublisherDisplayName>
     <Logo>Assets\Package icons\StoreLogo.png</Logo>
   </Properties>
@@ -34,8 +34,8 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="ToConverter"
-        Description="ToConverter is a GUI application for cjxl, to convert images into the jxl format"
+        DisplayName="Just eXtra Light"
+        Description="Just eXtra Light is a GUI application for cjxl, to convert images into the JPEG XL format, with a focus on converting images in bulk."
         BackgroundColor="transparent"
         Square150x150Logo="Assets\Package icons\Square150x150Logo.png"
         Square44x44Logo="Assets\Package icons\Square44x44Logo.png">

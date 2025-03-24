@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustExtraLively", "ToConverter\JustExtraLively.csproj", "{95D723FA-AC50-4528-8AA9-5E9A65B0DC29}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JustExtraLight", "ToConverter\JustExtraLight.csproj", "{95D723FA-AC50-4528-8AA9-5E9A65B0DC29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -130,7 +130,7 @@
     <value>Include subfolders</value>
   </data>
   <data name="Instructions1.Text" xml:space="preserve">
-    <value>Click on the button below to choose a folder</value>
+    <value>Click on the button above to choose a folder</value>
   </data>
   <data name="Instructions2.Text" xml:space="preserve">
     <value>The app will convert the images and save them in a folder called ConvertedImages in the folder the images are in</value>

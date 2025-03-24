@@ -134,7 +134,7 @@
     <comment>Content for the check box to include subfolders</comment>
   </data>
   <data name="Instructions1.Text" xml:space="preserve">
-    <value>Clique no botão abaixo para escolher um pasta</value>
+    <value>Clique no botão acima para escolher um pasta</value>
     <comment>First part of the instructions text</comment>
   </data>
   <data name="Instructions2.Text" xml:space="preserve">

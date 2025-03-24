@@ -4,7 +4,7 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
 
-namespace JustExtraLively;
+namespace JustExtraLight;
 
 public sealed partial class MainWindow : Window
 {

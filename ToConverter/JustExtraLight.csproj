@@ -20,11 +20,15 @@
 		<PublishTrimmed>True</PublishTrimmed>
 		
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Remove="Assets\Icons\Just eXtra Light app icon.png" />
+	  <Content Remove="Assets\Package icons\StoreLogo.scale-400.png" />
+	</ItemGroup>
 	
 	<ItemGroup>
 		<None Remove="Assets\Icons\TitleBarIco.ico" />
 		<None Remove="Assets\Icons\TitleBarIcon128.png" />
-		<None Remove="Assets\Package icons\StoreLogo.scale-400.png" />
 		<None Remove="MainPage.xaml" />
 	</ItemGroup>
 
