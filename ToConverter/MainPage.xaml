@@ -8,8 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:applicationModel="using:Windows.ApplicationModel"
     mc:Ignorable="d"
-    Loaded="Page_Loaded"
-    SizeChanged="Page_SizeChanged">
+    Loaded="Page_Loaded">
 
     <Grid>
 
@@ -106,13 +105,13 @@
                                 </TextBlock>
 
                             </Grid>
-                            
+
                         </Flyout>
-                        
+
                     </Button.Flyout>
-                    
+
                 </Button>
-                
+
             </TitleBar.RightHeader>
 
         </TitleBar>
@@ -202,7 +201,7 @@
                                      x:Uid="ExpertsSection2"/>
 
                             </TextBlock.Inlines>
-                            
+
                         </TextBlock>
                     </StackPanel>
 
@@ -526,7 +525,7 @@
                                                                   Glyph="&#xE8FB;" />
 
                                                     </Border.Child>
-                                                    
+
                                                 </Border>
 
                                             </Grid.Children>

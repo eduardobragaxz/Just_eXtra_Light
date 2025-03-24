@@ -25,7 +25,6 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     ObservableCollection<ImageInfo>? images;
     readonly ResourceLoader resourceLoader;
-    StorageFolder? parentFolder;
     bool canDropImages;
     public MainPage()
     {
@@ -36,30 +35,15 @@ public sealed partial class MainPage : Page
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        await DeleteImages();
+        await CreateFolders();
     }
-    private async Task DeleteImages()
-    {
-        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
 
-        foreach (StorageFile file in files)
-        {
-            await file.DeleteAsync(StorageDeleteOption.PermanentDelete);
-        }
-    }
-    private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+    private async Task CreateFolders()
     {
-        MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
-
-        if (mainWindow.AppWindow.Size.Width > 700)
-        {
-            VisualStateManager.GoToState(this, "WideState", false);
-        }
-        else
-        {
-            VisualStateManager.GoToState(this, "DefaultState", false);
-        }
+        await localFolder.CreateFolderAsync("Conversions1", CreationCollisionOption.ReplaceExisting);
+        await localFolder.CreateFolderAsync("Conversions2", CreationCollisionOption.ReplaceExisting);
     }
+
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing.IsActive = true;
@@ -90,6 +74,7 @@ public sealed partial class MainPage : Page
                 ConvertFolderButton.IsEnabled = enable;
         }
     }
+
     private async Task ConvertFolderImages(StorageFolder folder)
     {
         if (IncludeSubFoldersCheckBox.IsChecked is not null and true)
@@ -128,8 +113,7 @@ public sealed partial class MainPage : Page
         }
 
 
-
-            IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
+        IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
         StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
         StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
@@ -146,6 +130,8 @@ public sealed partial class MainPage : Page
             : "";
 
         bool success = true;
+
+        StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions");
 
         foreach (StorageFile file in files)
         {
@@ -168,7 +154,8 @@ public sealed partial class MainPage : Page
                         }
 
                         string path = localFolder.Path;
-                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {jxlFolder.Path}\{newFile.DisplayName}.jxl";
+                        string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
+                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {newFilePath}";
 
                         processStart.Arguments = arguments;
 
@@ -177,7 +164,12 @@ public sealed partial class MainPage : Page
                         {
                             process.WaitForExit();
 
-                            if (process.ExitCode != 0)
+                            if (process.ExitCode == 0)
+                            {
+                                StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newFile.DisplayName}.jxl");
+                                await jxlFile.MoveAsync(jxlFolder);
+                            }
+                            else if (process.ExitCode != 0)
                             {
                                 SetInfoBarTexts(false);
                                 success = false;
@@ -201,7 +193,13 @@ public sealed partial class MainPage : Page
         {
             await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
         }
+
+        foreach (StorageFile storageFile in await conversionsFolder.GetFilesAsync())
+        {
+            await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+        }
     }
+
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing2.IsActive = true;
@@ -217,6 +215,7 @@ public sealed partial class MainPage : Page
                 canDropImages = enable;
         }
     }
+
     private async Task ConvertListOfImages()
     {
         StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -235,6 +234,8 @@ public sealed partial class MainPage : Page
 
         bool success = true;
 
+        StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
+
         foreach (ImageInfo imageInfo in images!)
         {
             switch (imageInfo.StorageFile.FileType)
@@ -247,7 +248,6 @@ public sealed partial class MainPage : Page
                 case ".pgx":
                 case ".png" or "apng":
                     {
-                        parentFolder = await imageInfo.StorageFile.GetParentAsync();
                         StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder);
 
                         if (newFile.Name.Contains(' '))
@@ -257,7 +257,7 @@ public sealed partial class MainPage : Page
                         }
 
                         string path = localFolder.Path;
-                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {localFolder.Path}\{newFile.DisplayName}.jxl";
+                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newFile.DisplayName}.jxl";
 
                         processStart.Arguments = arguments;
 
@@ -293,11 +293,13 @@ public sealed partial class MainPage : Page
             SetInfoBarTexts(success);
         }
     }
+
     private async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
     {
         await SaveImages();
         AppInfoBar.IsOpen = false;
     }
+
     private async Task SaveImages()
     {
         FolderPicker folderPicker = new();
@@ -310,12 +312,13 @@ public sealed partial class MainPage : Page
         folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
         StorageFolder chosenFolder = await folderPicker.PickSingleFolderAsync();
-        List<StorageFile> localFolderFiles = [.. await localFolder.GetFilesAsync()];
+        StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
+        IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder.GetFilesAsync();
         List<StorageFile> storageFiles = [.. await chosenFolder.GetFilesAsync()];
 
         if (chosenFolder is not null)
         {
-            foreach (StorageFile convertedFile in localFolderFiles)
+            foreach (StorageFile convertedFile in convertedFiles)
             {
                 if (convertedFile.FileType == ".jxl")
                 {
@@ -337,7 +340,6 @@ public sealed partial class MainPage : Page
             }
         }
 
-        await DeleteImages();
         ConvertButton.IsEnabled =
             canDropImages = true;
         SaveImagesButton.IsEnabled = false;
@@ -351,6 +353,7 @@ public sealed partial class MainPage : Page
             e.AcceptedOperation = DataPackageOperation.Copy;
         }
     }
+
     private async void PicturesView_Drop(object sender, DragEventArgs e)
     {
         if (e.DataView.Contains(StandardDataFormats.StorageItems))
