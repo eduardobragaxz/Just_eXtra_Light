@@ -1,22 +1,21 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
 using System;
+using System.Linq;
+using System.Text;
+using Windows.Storage;
+using Microsoft.UI.Xaml;
+using System.Diagnostics;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using Windows.Storage.Pickers;
+using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using Windows.Storage;
-using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
-using Windows.Storage.Pickers;
-using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.FileProperties;
-using Microsoft.Windows.ApplicationModel.Resources;
-using System.ComponentModel;
+using Microsoft.UI.Xaml.Media.Imaging;
 using System.Runtime.CompilerServices;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
+using Windows.ApplicationModel.DataTransfer;
+using Microsoft.Windows.ApplicationModel.Resources;
+using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
 
 namespace JustExtraLight;
 
@@ -36,18 +35,22 @@ public sealed partial class MainPage : Page
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        await DeleteFiles();
         await CreateFolders();
+    }
+
+    private async Task DeleteFiles()
+    {
+        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
+
+        foreach (StorageFile file in files)
+        {
+            await file.DeleteAsync();
+        }
     }
 
     private async Task CreateFolders()
     {
-        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
-
-        foreach(StorageFile file in files)
-        {
-            await file.DeleteAsync();
-        }
-
         await localFolder.CreateFolderAsync("Conversions1", CreationCollisionOption.ReplaceExisting);
         await localFolder.CreateFolderAsync("Conversions2", CreationCollisionOption.ReplaceExisting);
     }
@@ -213,14 +216,14 @@ public sealed partial class MainPage : Page
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing2.IsActive = true;
-        EnableOrDisableControls(false, false);
+        EnableOrDisableControls(false);
         await ConvertListOfImages();
         LoadingRing2.IsActive = false;
-        EnableOrDisableControls(true, false);
+        EnableOrDisableControls(true);
 
-        void EnableOrDisableControls(bool enable, bool enableConvertButton)
+        void EnableOrDisableControls(bool enable)
         {
-            ConvertButton.IsEnabled = enableConvertButton;
+            ConvertButton.IsEnabled = false;
             SaveImagesButton.IsEnabled =
                 canDropImages = enable;
         }
@@ -338,7 +341,7 @@ public sealed partial class MainPage : Page
 
                     if (count != 0)
                     {
-                        while (storageFiles.Any(f => f.DisplayName == $"{convertedFile.DisplayName}{count}"))
+                        while (storageFiles.Any(f => f.DisplayName == $"{convertedFile.DisplayName}_{count}"))
                         {
                             count++;
                         }
@@ -355,6 +358,7 @@ public sealed partial class MainPage : Page
             canDropImages = true;
         SaveImagesButton.IsEnabled = false;
         images.Clear();
+        await DeleteFiles();
     }
 
     private void PicturesView_DragOver(object sender, DragEventArgs e)

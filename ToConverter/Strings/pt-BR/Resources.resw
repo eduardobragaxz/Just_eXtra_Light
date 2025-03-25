@@ -134,11 +134,11 @@
     <comment>Content for the check box to include subfolders</comment>
   </data>
   <data name="Instructions1.Text" xml:space="preserve">
-    <value>Clique no botão acima para escolher uma pasta</value>
+    <value>Clique no botão abaixo para escolher uma pasta</value>
     <comment>First part of the instructions text</comment>
   </data>
   <data name="Instructions2.Text" xml:space="preserve">
-    <value>O aplicativo vai converter as imagens e salvá-las numa pasta chamada ConvertedImages na pasta em que as imagens a ser convertidas estão</value>
+    <value>O aplicativo vai, automaticamente, converter as imagens e salvá-las numa pasta chamada ConvertedImages. A pasta vai ser salvada na localização que você escolheu.</value>
     <comment>Second part of instructions text</comment>
   </data>
   <data name="ConversionCompleteContent" xml:space="preserve">
