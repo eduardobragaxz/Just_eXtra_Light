@@ -190,8 +190,7 @@
                                   Glyph="&#xE756;"
                                   Margin="0,0,18,0"/>
 
-                        <TextBlock Margin="0,0,0,10"
-                                   VerticalAlignment="Center">
+                        <TextBlock VerticalAlignment="Center">
 
                             <TextBlock.Inlines>
 
@@ -209,348 +208,353 @@
 
             </Expander>
 
-            <ScrollView Grid.Column="0"
-                        Grid.ColumnSpan="3"
-                        Grid.Row="2"
-                        Grid.RowSpan="2">
+            <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                  CornerRadius="{StaticResource ControlCornerRadius}"
+                  Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Grid.Row="2"
+                  Grid.RowSpan="2">
 
-                <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                      CornerRadius="{StaticResource ControlCornerRadius}">
+                <Grid x:Name="SelectFolderStackPanel"
+                      Padding="36"
+                      VerticalAlignment="Stretch"
+                      Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
 
-                    <Grid x:Name="SelectFolderStackPanel"
-                          Padding="36"
-                          VerticalAlignment="Stretch"
-                          Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
+                    <Grid.RowDefinitions>
 
-                        <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
 
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                        </Grid.RowDefinitions>
+                    <CheckBox Grid.Row="0"
+                              x:Name="IncludeSubFoldersCheckBox"
+                              x:Uid="IncludeSubFolders"
+                              VerticalAlignment="Center"/>
 
-                        <Button Click="ConvertFolderButton_Click"
-                                Grid.Row="0"
-                                Height="50"
-                                HorizontalAlignment="Stretch"
-                                x:Name="ConvertFolderButton">
+                    <TextBlock Grid.Row="1"
+                               Margin="0,0,0,10"
+                               Style="{StaticResource BodyStrongTextBlockStyle}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center">
 
-                            <Button.Content>
+                        <TextBlock.Inlines>
 
-                                <Grid>
+                            <Run x:Uid="Instructions1"/>
+                            <LineBreak/>
+                            <LineBreak/>
+                            <Run x:Uid="Instructions2"/>
 
-                                    <TextBlock x:Uid="ChooseFolderButton"
-                                               VerticalAlignment="Center"/>
+                        </TextBlock.Inlines>
 
-                                    <ProgressRing IsActive="False"
-                                                  x:Name="LoadingRing"
-                                                  VerticalAlignment="Center"/>
+                    </TextBlock>
 
-                                </Grid>
+                    <Button Click="ConvertFolderButton_Click"
+                            Grid.Row="2"
+                            HorizontalAlignment="Stretch"
+                            x:Name="ConvertFolderButton"
+                            VerticalAlignment="Stretch">
 
-                            </Button.Content>
+                        <Button.Content>
 
-                            <Button.Resources>
+                            <Grid>
 
-                                <ResourceDictionary>
+                                <TextBlock Style="{StaticResource TitleLargeTextBlockStyle}"
+                                           x:Uid="ChooseFolderButton"
+                                           VerticalAlignment="Center"/>
 
-                                    <ResourceDictionary.ThemeDictionaries>
+                                <ProgressRing Height="100"
+                                              IsActive="False"
+                                              x:Name="LoadingRing"
+                                              VerticalAlignment="Center"
+                                              Width="100"/>
 
-                                        <ResourceDictionary x:Key="Light">
+                            </Grid>
 
-                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
-                                            </LinearGradientBrush>
+                        </Button.Content>
 
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
-                                            </LinearGradientBrush>
+                        <Button.Resources>
 
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
-                                            </LinearGradientBrush>
+                            <ResourceDictionary>
 
-                                        </ResourceDictionary>
+                                <ResourceDictionary.ThemeDictionaries>
 
-                                        <ResourceDictionary x:Key="Default">
+                                    <ResourceDictionary x:Key="Light">
 
-                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
-                                            </LinearGradientBrush>
+                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
+                                        </LinearGradientBrush>
 
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
-                                            </LinearGradientBrush>
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                        </LinearGradientBrush>
 
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
-                                            </LinearGradientBrush>
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
+                                        </LinearGradientBrush>
 
-                                        </ResourceDictionary>
+                                    </ResourceDictionary>
 
-                                    </ResourceDictionary.ThemeDictionaries>
+                                    <ResourceDictionary x:Key="Default">
 
-                                </ResourceDictionary>
+                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                        </LinearGradientBrush>
 
-                            </Button.Resources>
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                        </LinearGradientBrush>
 
-                        </Button>
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                        </LinearGradientBrush>
 
-                        <CheckBox Grid.Row="1"
-                                  x:Name="IncludeSubFoldersCheckBox"
-                                  x:Uid="IncludeSubFolders"
-                                  VerticalAlignment="Top"/>
+                                    </ResourceDictionary>
 
-                        <TextBlock Grid.Row="2"
-                                   Style="{StaticResource SubtitleTextBlockStyle}"
-                                   TextWrapping="Wrap"
-                                   VerticalAlignment="Top">
+                                </ResourceDictionary.ThemeDictionaries>
 
-                            <TextBlock.Inlines>
+                            </ResourceDictionary>
 
-                                <Run x:Uid="Instructions1"/>
-                                <LineBreak/>
-                                <LineBreak/>
-                                <Run x:Uid="Instructions2"/>
+                        </Button.Resources>
 
-                            </TextBlock.Inlines>
-
-                        </TextBlock>
-
-                    </Grid>
-
-                    <Grid Grid.Row="1"
-                          x:Name="DragAndDropGrid"
-                          Padding="36"
-                          Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
-
-                        <Grid.RowDefinitions>
-
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-
-                        </Grid.RowDefinitions>
-
-                        <Button Click="ConvertListOfImages_Click"
-                                Grid.Row="0"
-                                HorizontalAlignment="Stretch"
-                                IsEnabled="False"
-                                Margin="0,0,0,20"
-                                x:Name="ConvertButton">
-
-                            <Button.Content>
-
-                                <Grid>
-
-                                    <TextBlock x:Uid="ConvertButton"
-                                               VerticalAlignment="Center"/>
-
-                                    <ProgressRing IsActive="False"
-                                                  x:Name="LoadingRing2"/>
-
-                                </Grid>
-
-                            </Button.Content>
-
-                            <Button.Resources>
-
-                                <ResourceDictionary>
-
-                                    <ResourceDictionary.ThemeDictionaries>
-
-                                        <ResourceDictionary x:Key="Light">
-
-                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
-                                            </LinearGradientBrush>
-
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
-                                            </LinearGradientBrush>
-
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
-                                            </LinearGradientBrush>
-
-                                        </ResourceDictionary>
-
-                                        <ResourceDictionary x:Key="Default">
-
-                                            <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
-                                            </LinearGradientBrush>
-
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
-                                            </LinearGradientBrush>
-
-                                            <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
-                                                <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
-                                            </LinearGradientBrush>
-
-                                        </ResourceDictionary>
-
-                                    </ResourceDictionary.ThemeDictionaries>
-
-                                </ResourceDictionary>
-
-                            </Button.Resources>
-
-                        </Button>
-
-                        <Button Click="SaveImagesButton_Click"
-                                Grid.Row="1"
-                                IsEnabled="False"
-                                Margin="0,0,0,10"
-                                x:Name="SaveImagesButton"
-                                x:Uid="SaveImagesButton"/>
-
-                        <TextBlock Grid.Row="2"
-                                   Margin="0,0,0,10"
-                                   x:Uid="DragAndDropInstructions"/>
-
-                        <ItemsView AllowDrop="True"
-                                   Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"
-                                   DragOver="PicturesView_DragOver"
-                                   Drop="PicturesView_Drop"
-                                   Grid.Row="3"
-                                   x:Name="PicturesView"
-                                   SelectionMode="None">
-
-                            <ItemsView.ItemTemplate>
-
-                                <DataTemplate x:DataType="local:ImageInfo">
-
-                                    <ItemContainer>
-
-                                        <Grid BorderBrush="LightGreen"
-                                              BorderThickness="{x:Bind Thickness, Mode=OneWay}"
-                                              CornerRadius="5"
-                                              DataContext="{x:Bind}"
-                                              Height="200"
-                                              x:Name="AttachmentTemplateGrid"
-                                              Padding="5"
-                                              Width="200">
-
-                                            <Grid.Background>
-
-                                                <ImageBrush ImageSource="{x:Bind Source}"
-                                                            Stretch="UniformToFill"/>
-
-                                            </Grid.Background>
-
-                                            <Grid.Children>
-
-                                                <Button Background="Red"
-                                                        Click="AtachmentDataTemplateRemoveButton_Click"
-                                                        Content="&#xE738;"
-                                                        FontFamily="Segoe Fluent Icons"
-                                                        HorizontalAlignment="Right"
-                                                        x:Name="AtachmentDataTemplateRemoveButton"
-                                                        x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
-                                                        VerticalAlignment="Top"
-                                                        Visibility="{x:Bind ShowDeleteButton, Mode=OneWay}">
-
-                                                    <Button.Resources>
-
-                                                        <ResourceDictionary>
-
-                                                            <ResourceDictionary.ThemeDictionaries>
-
-                                                                <ResourceDictionary x:Key="Light">
-
-                                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                     Color="DarkRed"/>
-
-                                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                     Color="IndianRed"/>
-
-                                                                </ResourceDictionary>
-
-                                                                <ResourceDictionary x:Key="Default">
-
-                                                                    <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                     Color="DarkRed"/>
-
-                                                                    <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                     Color="IndianRed"/>
-
-                                                                </ResourceDictionary>
-
-                                                            </ResourceDictionary.ThemeDictionaries>
-
-                                                        </ResourceDictionary>
-
-                                                    </Button.Resources>
-
-                                                </Button>
-
-                                                <Border Background="LightGreen"
-                                                        CornerRadius="{StaticResource ControlCornerRadius}"
-                                                        HorizontalAlignment="Right"
-                                                        Padding="5"
-                                                        VerticalAlignment="Top"
-                                                        Visibility="{x:Bind ShowSuccess, Mode=OneWay}">
-
-                                                    <Border.Child>
-
-                                                        <FontIcon Foreground="White"
-                                                                  Glyph="&#xE8FB;" />
-
-                                                    </Border.Child>
-
-                                                </Border>
-
-                                            </Grid.Children>
-
-                                        </Grid>
-
-                                    </ItemContainer>
-
-                                </DataTemplate>
-
-                            </ItemsView.ItemTemplate>
-
-                            <ItemsView.Layout>
-
-                                <UniformGridLayout />
-
-                            </ItemsView.Layout>
-
-                        </ItemsView>
-
-                    </Grid>
+                    </Button>
 
                 </Grid>
 
-            </ScrollView>
+                <Grid Grid.Row="1"
+                      x:Name="DragAndDropGrid"
+                      Padding="36"
+                      Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
+
+                    <Grid.RowDefinitions>
+
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+
+                    </Grid.RowDefinitions>
+
+                    <Button Click="ConvertListOfImages_Click"
+                            Grid.Row="0"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="False"
+                            Margin="0,0,0,10"
+                            x:Name="ConvertButton">
+
+                        <Button.Content>
+
+                            <Grid>
+
+                                <TextBlock x:Uid="ConvertButton"
+                                           VerticalAlignment="Center"/>
+
+                                <ProgressRing IsActive="False"
+                                              x:Name="LoadingRing2"/>
+
+                            </Grid>
+
+                        </Button.Content>
+
+                        <Button.Resources>
+
+                            <ResourceDictionary>
+
+                                <ResourceDictionary.ThemeDictionaries>
+
+                                    <ResourceDictionary x:Key="Light">
+
+                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
+                                        </LinearGradientBrush>
+
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                        </LinearGradientBrush>
+
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
+                                        </LinearGradientBrush>
+
+                                    </ResourceDictionary>
+
+                                    <ResourceDictionary x:Key="Default">
+
+                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                        </LinearGradientBrush>
+
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                        </LinearGradientBrush>
+
+                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
+                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                        </LinearGradientBrush>
+
+                                    </ResourceDictionary>
+
+                                </ResourceDictionary.ThemeDictionaries>
+
+                            </ResourceDictionary>
+
+                        </Button.Resources>
+
+                    </Button>
+
+                    <Button Click="SaveImagesButton_Click"
+                            Grid.Row="1"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="False"
+                            Margin="0,0,0,10"
+                            x:Name="SaveImagesButton"
+                            x:Uid="SaveImagesButton"/>
+
+                    <TextBlock Grid.Row="2"
+                               Margin="0,0,0,10"
+                               Style="{StaticResource BaseTextBlockStyle}"
+                               x:Uid="DragAndDropInstructions"/>
+
+                    <ItemsView AllowDrop="True"
+                               Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"
+                               DragOver="PicturesView_DragOver"
+                               Drop="PicturesView_Drop"
+                               Grid.Row="3"
+                               ItemsSource="{x:Bind images}"
+                               x:Name="PicturesView"
+                               SelectionMode="None"
+                               VerticalAlignment="Stretch">
+
+                        <ItemsView.ItemTemplate>
+
+                            <DataTemplate x:DataType="local:ImageInfo">
+
+                                <ItemContainer>
+
+                                    <Grid BorderBrush="LightGreen"
+                                          BorderThickness="{x:Bind Thickness, Mode=OneWay}"
+                                          CornerRadius="5"
+                                          DataContext="{x:Bind}"
+                                          Height="200"
+                                          x:Name="AttachmentTemplateGrid"
+                                          Padding="5"
+                                          Width="200">
+
+                                        <Grid.Background>
+
+                                            <ImageBrush ImageSource="{x:Bind Source}"
+                                                        Stretch="UniformToFill"/>
+
+                                        </Grid.Background>
+
+                                        <Grid.Children>
+
+                                            <Button Background="Red"
+                                                    Click="AtachmentDataTemplateRemoveButton_Click"
+                                                    Content="&#xE738;"
+                                                    FontFamily="Segoe Fluent Icons"
+                                                    HorizontalAlignment="Right"
+                                                    x:Name="AtachmentDataTemplateRemoveButton"
+                                                    x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
+                                                    VerticalAlignment="Top"
+                                                    Visibility="{x:Bind ShowDeleteButton, Mode=OneWay}">
+
+                                                <Button.Resources>
+
+                                                    <ResourceDictionary>
+
+                                                        <ResourceDictionary.ThemeDictionaries>
+
+                                                            <ResourceDictionary x:Key="Light">
+
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                                 Color="DarkRed"/>
+
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                                 Color="IndianRed"/>
+
+                                                            </ResourceDictionary>
+
+                                                            <ResourceDictionary x:Key="Default">
+
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                                 Color="DarkRed"/>
+
+                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                                 Color="IndianRed"/>
+
+                                                            </ResourceDictionary>
+
+                                                        </ResourceDictionary.ThemeDictionaries>
+
+                                                    </ResourceDictionary>
+
+                                                </Button.Resources>
+
+                                            </Button>
+
+                                            <Border Background="LightGreen"
+                                                    CornerRadius="{StaticResource ControlCornerRadius}"
+                                                    HorizontalAlignment="Right"
+                                                    Padding="5"
+                                                    VerticalAlignment="Top"
+                                                    Visibility="{x:Bind ShowSuccess, Mode=OneWay}">
+
+                                                <Border.Child>
+
+                                                    <FontIcon Foreground="White"
+                                                              Glyph="&#xE8FB;" />
+
+                                                </Border.Child>
+
+                                            </Border>
+
+                                        </Grid.Children>
+
+                                    </Grid>
+
+                                </ItemContainer>
+
+                            </DataTemplate>
+
+                        </ItemsView.ItemTemplate>
+
+                        <ItemsView.Layout>
+
+                            <UniformGridLayout />
+
+                        </ItemsView.Layout>
+
+                    </ItemsView>
+
+                </Grid>
+
+            </Grid>
 
             <InfoBar Grid.Column="0"
                      Grid.ColumnSpan="3"

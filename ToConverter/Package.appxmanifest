@@ -50,7 +50,7 @@
 	</Applications>
 
 	<Capabilities>
-		<rescap:Capability Name="broadFileSystemAccess" />
+		
 		<rescap:Capability Name="runFullTrust" />
 	</Capabilities>
 </Package>

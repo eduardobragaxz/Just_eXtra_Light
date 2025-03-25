@@ -23,7 +23,7 @@ namespace JustExtraLight;
 public sealed partial class MainPage : Page
 {
     readonly StorageFolder localFolder;
-    ObservableCollection<ImageInfo>? images;
+    readonly ObservableCollection<ImageInfo> images;
     readonly ResourceLoader resourceLoader;
     bool canDropImages;
     public MainPage()
@@ -31,6 +31,7 @@ public sealed partial class MainPage : Page
         InitializeComponent();
         resourceLoader = new();
         canDropImages = true;
+        images = [];
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -90,127 +91,129 @@ public sealed partial class MainPage : Page
             }
         }
 
-        const string folderNameConst = "ConvertedImages";
-        IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
-        IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
-
-        int foldersCount = foldersSameName.Count();
-        StringBuilder stringBuilder = new(folderNameConst);
-        StorageFolder jxlFolder;
-
-        if (foldersCount != 0)
-        {
-            while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
-            {
-                foldersCount++;
-            }
-
-            jxlFolder = await folder.CreateFolderAsync($"{stringBuilder.Append($"{foldersCount}")}");
-        }
-        else
-        {
-            jxlFolder = await folder.CreateFolderAsync($"{folderNameConst}");
-        }
-
-
         IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
-        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
-        StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
-
-        ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+        if (files.Count != 0)
         {
-            CreateNoWindow = true,
-            UseShellExecute = false
-        };
+            const string folderNameConst = "ConvertedImages";
+            IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
+            IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
 
-        string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
-            ? $"{ArgumentsTextBox.Text} "
-            : "";
+            int foldersCount = foldersSameName.Count();
+            StringBuilder stringBuilder = new(folderNameConst);
+            StorageFolder jxlFolder;
 
-        bool success = true;
-
-        StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions");
-
-        foreach (StorageFile file in files)
-        {
-            switch (file.FileType)
+            if (foldersCount != 0)
             {
-                case ".exr":
-                case ".gif":
-                case ".jpg" or ".jpeg":
-                case ".pam" or ".pgm" or ".ppm":
-                case ".pfm":
-                case ".pgx":
-                case ".png" or "apng":
-                    {
-                        StorageFile newFile = await file.CopyAsync(localFolder);
+                while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
+                {
+                    foldersCount++;
+                }
 
-                        if (newFile.Name.Contains(' '))
-                        {
-                            string newName = newFile.Name.Replace(' ', '_');
-                            await newFile.RenameAsync(newName);
-                        }
-
-                        string path = localFolder.Path;
-                        string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
-                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {newFilePath}";
-
-                        processStart.Arguments = arguments;
-
-                        using Process? process = Process.Start(processStart);
-                        if (process is not null)
-                        {
-                            process.WaitForExit();
-
-                            if (process.ExitCode == 0)
-                            {
-                                StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newFile.DisplayName}.jxl");
-                                await jxlFile.MoveAsync(jxlFolder);
-                            }
-                            else if (process.ExitCode != 0)
-                            {
-                                SetInfoBarTexts(false);
-                                success = false;
-                                break;
-                            }
-
-                            process.Close();
-                        }
-
-                        break;
-                    }
+                jxlFolder = await folder.CreateFolderAsync($"{stringBuilder.Append($"{foldersCount}")}");
             }
-        }
+            else
+            {
+                jxlFolder = await folder.CreateFolderAsync($"{folderNameConst}");
+            }
 
-        if (success)
-        {
-            SetInfoBarTexts(success);
-        }
+            StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
+            StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
 
-        foreach (StorageFile storageFile in await localFolder.GetFilesAsync())
-        {
-            await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
-        }
+            ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+            {
+                CreateNoWindow = true,
+                UseShellExecute = false
+            };
 
-        foreach (StorageFile storageFile in await conversionsFolder.GetFilesAsync())
-        {
-            await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            string finalParametersString = ExpertsExpander.IsExpanded && ArgumentsTextBox.Text[0..2] == "--"
+                ? $"{ArgumentsTextBox.Text} "
+                : "";
+
+            bool success = true;
+
+            StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions1");
+
+            foreach (StorageFile file in files)
+            {
+                switch (file.FileType)
+                {
+                    case ".exr":
+                    case ".gif":
+                    case ".jpg" or ".jpeg":
+                    case ".pam" or ".pgm" or ".ppm":
+                    case ".pfm":
+                    case ".pgx":
+                    case ".png" or "apng":
+                        {
+                            StorageFile newFile = await file.CopyAsync(localFolder);
+
+                            if (newFile.Name.Contains(' '))
+                            {
+                                string newName = newFile.Name.Replace(' ', '_');
+                                await newFile.RenameAsync(newName);
+                            }
+
+                            string path = localFolder.Path;
+                            string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
+                            string arguments = $@"{finalParametersString}{path}\{newFile.Name} {newFilePath}";
+
+                            processStart.Arguments = arguments;
+
+                            using Process? process = Process.Start(processStart);
+                            if (process is not null)
+                            {
+                                process.WaitForExit();
+
+                                if (process.ExitCode == 0)
+                                {
+                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newFile.DisplayName}.jxl");
+                                    await jxlFile.MoveAsync(jxlFolder);
+                                }
+                                else if (process.ExitCode != 0)
+                                {
+                                    SetInfoBarTexts(false);
+                                    success = false;
+                                    break;
+                                }
+
+                                process.Close();
+                            }
+
+                            break;
+                        }
+                }
+            }
+
+            if (success)
+            {
+                SetInfoBarTexts(success);
+            }
+
+            foreach (StorageFile storageFile in await localFolder.GetFilesAsync())
+            {
+                await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            }
+
+            foreach (StorageFile storageFile in await conversionsFolder.GetFilesAsync())
+            {
+                await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
+            }
         }
     }
 
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
     {
         LoadingRing2.IsActive = true;
-        EnableOrDisableControls(false);
+        EnableOrDisableControls(false, false);
         await ConvertListOfImages();
         LoadingRing2.IsActive = false;
-        EnableOrDisableControls(true);
+        EnableOrDisableControls(true, false);
 
-        void EnableOrDisableControls(bool enable)
+        void EnableOrDisableControls(bool enable, bool enableConvertButton)
         {
-            ConvertButton.IsEnabled = !enable;
+            ConvertButton.IsEnabled = enableConvertButton;
             SaveImagesButton.IsEnabled =
                 canDropImages = enable;
         }
@@ -236,7 +239,7 @@ public sealed partial class MainPage : Page
 
         StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
 
-        foreach (ImageInfo imageInfo in images!)
+        foreach (ImageInfo imageInfo in images)
         {
             switch (imageInfo.StorageFile.FileType)
             {
@@ -343,7 +346,7 @@ public sealed partial class MainPage : Page
         ConvertButton.IsEnabled =
             canDropImages = true;
         SaveImagesButton.IsEnabled = false;
-        images!.Clear();
+        images.Clear();
     }
 
     private void PicturesView_DragOver(object sender, DragEventArgs e)
@@ -362,16 +365,14 @@ public sealed partial class MainPage : Page
 
             if (items.Count != 0)
             {
-                images ??= [];
-
                 foreach (IStorageItem storageItem in items)
                 {
                     if (storageItem is StorageFile storageFile)
                     {
-                        BitmapImage bitmapImage = new();
-
-                        if (storageFile.FileType != ".exe")
+                        if (storageFile.ContentType.Contains("image"))
                         {
+                            BitmapImage bitmapImage = new();
+
                             StorageItemThumbnail? storageItemThumbnail = await storageFile.GetThumbnailAsync(Windows.Storage.FileProperties.ThumbnailMode.SingleItem, 200);
 
                             if (storageItemThumbnail is not null)
@@ -394,25 +395,25 @@ public sealed partial class MainPage : Page
                 }
             }
 
-            if (PicturesView.ItemsSource != images)
+            if (images.Count != 0)
             {
-                PicturesView.ItemsSource = images;
-            }
-
-            if (!ConvertButton.IsEnabled)
-            {
-                ConvertButton.IsEnabled = true;
+                if (!ConvertButton.IsEnabled)
+                {
+                    ConvertButton.IsEnabled = true;
+                }
             }
         }
     }
+
     private void AtachmentDataTemplateRemoveButton_Click(object sender, RoutedEventArgs e)
     {
         ImageInfo imageInfo = (ImageInfo)((Button)sender).DataContext;
 
-        images!.Remove(imageInfo);
+        images.Remove(imageInfo);
 
         ConvertButton.IsEnabled = images.Count != 0;
     }
+
     private void SetInfoBarTexts(bool success)
     {
         AppInfoBar.IsOpen = true;
