@@ -41,6 +41,13 @@ public sealed partial class MainPage : Page
 
     private async Task CreateFolders()
     {
+        IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
+
+        foreach(StorageFile file in files)
+        {
+            await file.DeleteAsync();
+        }
+
         await localFolder.CreateFolderAsync("Conversions1", CreationCollisionOption.ReplaceExisting);
         await localFolder.CreateFolderAsync("Conversions2", CreationCollisionOption.ReplaceExisting);
     }
@@ -137,7 +144,7 @@ public sealed partial class MainPage : Page
 
             foreach (StorageFile file in files)
             {
-                switch (file.FileType)
+                switch (file.FileType.ToLower())
                 {
                     case ".exr":
                     case ".gif":
@@ -241,7 +248,7 @@ public sealed partial class MainPage : Page
 
         foreach (ImageInfo imageInfo in images)
         {
-            switch (imageInfo.StorageFile.FileType)
+            switch (imageInfo.StorageFile.FileType.ToLower())
             {
                 case ".exr":
                 case ".gif":
@@ -256,7 +263,7 @@ public sealed partial class MainPage : Page
                         if (newFile.Name.Contains(' '))
                         {
                             string newName = newFile.Name.Replace(' ', '_');
-                            await newFile.RenameAsync($"_{newName}");
+                            await newFile.RenameAsync(newName);
                         }
 
                         string path = localFolder.Path;
@@ -315,12 +322,13 @@ public sealed partial class MainPage : Page
         folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
         StorageFolder chosenFolder = await folderPicker.PickSingleFolderAsync();
-        StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
-        IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder.GetFilesAsync();
-        List<StorageFile> storageFiles = [.. await chosenFolder.GetFilesAsync()];
-
+        
         if (chosenFolder is not null)
         {
+            StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
+            IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder.GetFilesAsync();
+            List<StorageFile> storageFiles = [.. await chosenFolder.GetFilesAsync()];
+
             foreach (StorageFile convertedFile in convertedFiles)
             {
                 if (convertedFile.FileType == ".jxl")
@@ -335,7 +343,7 @@ public sealed partial class MainPage : Page
                             count++;
                         }
 
-                        await convertedFile.RenameAsync($"{convertedFile.DisplayName}{count}.jxl");
+                        await convertedFile.RenameAsync($"{convertedFile.DisplayName}_{count}.jxl");
                     }
 
                     await convertedFile.MoveAsync(chosenFolder);
