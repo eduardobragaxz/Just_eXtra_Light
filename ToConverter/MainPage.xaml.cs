@@ -16,6 +16,8 @@ using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace JustExtraLight;
 
@@ -24,12 +26,14 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     readonly ObservableCollection<ImageInfo> images;
     readonly ResourceLoader resourceLoader;
+    readonly List<StorageFile> listOfErrors;
     bool canDropImages;
     public MainPage()
     {
         InitializeComponent();
         resourceLoader = new();
         canDropImages = true;
+        listOfErrors = [];
         images = [];
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
@@ -57,7 +61,6 @@ public sealed partial class MainPage : Page
 
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
-        LoadingRing.IsActive = true;
         EnableOrDisableControls(false);
         FolderPicker folderPicker = new();
 
@@ -72,6 +75,7 @@ public sealed partial class MainPage : Page
 
         if (storageFolder is not null)
         {
+            LoadingRing.IsActive = true;
             await ConvertFolderImages(storageFolder);
         }
 
@@ -157,13 +161,30 @@ public sealed partial class MainPage : Page
                     case ".pgx":
                     case ".png" or "apng":
                         {
-                            StorageFile newFile = await file.CopyAsync(localFolder);
+                            StringBuilder newName = new(file.DisplayName, file.DisplayName.Length);
 
-                            if (newFile.Name.Contains(' '))
+                            if (file.DisplayName.Contains(' '))
                             {
-                                string newName = newFile.Name.Replace(' ', '_');
-                                await newFile.RenameAsync(newName);
+                                newName.Replace(' ', '_').Replace('-', '_');
                             }
+
+                            if (newName.Length >= 150)
+                            {
+                                newName.Remove(newName.Length - 140, 10);
+                            }
+
+                            switch (newName[^1])
+                            {
+                                case '.':
+                                case '-':
+                                case '_':
+                                    {
+                                        newName.Remove(newName.Length - 1, 1);
+                                        break;
+                                    }
+                            }
+
+                            StorageFile newFile = await file.CopyAsync(localFolder, $"{newName}");
 
                             string path = localFolder.Path;
                             string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
@@ -265,7 +286,7 @@ public sealed partial class MainPage : Page
 
                         if (newFile.Name.Contains(' '))
                         {
-                            string newName = newFile.Name.Replace(' ', '_');
+                            string newName = newFile.Name.Replace(' ', '_').Replace('-', '_');
                             await newFile.RenameAsync(newName);
                         }
 
@@ -325,7 +346,7 @@ public sealed partial class MainPage : Page
         folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
         StorageFolder chosenFolder = await folderPicker.PickSingleFolderAsync();
-        
+
         if (chosenFolder is not null)
         {
             StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
