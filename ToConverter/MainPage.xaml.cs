@@ -133,7 +133,7 @@ public sealed partial class MainPage : Page
                     case ".png" or "apng":
                         {
 
-                            string newName = FixFileName(file);
+                            string newName = FixFileName(file.DisplayName);
 
                             StorageFile newFile = await file.CopyAsync(localFolder, newName);
 
@@ -217,34 +217,9 @@ public sealed partial class MainPage : Page
                 return await folder.CreateFolderAsync($"{folderNameConst}");
             }
         }
-        string FixFileName(StorageFile file)
-        {
-            StringBuilder newName = new(file.DisplayName, file.DisplayName.Length);
-
-            if (file.DisplayName.Contains(' '))
-            {
-                newName.Replace(' ', '_').Replace('-', '_');
-            }
-
-            if (newName.Length >= 150)
-            {
-                newName.Remove(newName.Length - 140, 10);
-            }
-
-            switch (newName[^1])
-            {
-                case '.':
-                case '-':
-                case '_':
-                    {
-                        newName.Remove(newName.Length - 1, 1);
-                        break;
-                    }
-            }
-
-            return $"{newName}";
-        }
     }
+
+    
 
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
     {
@@ -292,29 +267,7 @@ public sealed partial class MainPage : Page
                 case ".pgx":
                 case ".png" or "apng":
                     {
-                        string displayName = imageInfo.StorageFile.DisplayName;
-                        StringBuilder newName = new(displayName, displayName.Length);
-
-                        if (displayName.Contains(' '))
-                        {
-                            newName.Replace(' ', '_').Replace('-', '_');
-                        }
-
-                        if (newName.Length >= 150)
-                        {
-                            newName.Remove(newName.Length - 140, 10);
-                        }
-
-                        switch (newName[^1])
-                        {
-                            case '.':
-                            case '-':
-                            case '_':
-                                {
-                                    newName.Remove(newName.Length - 1, 1);
-                                    break;
-                                }
-                        }
+                        string newName = FixFileName(imageInfo.StorageFile.DisplayName);
 
                         StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, $"{newName}");
 
@@ -405,6 +358,34 @@ public sealed partial class MainPage : Page
         SaveImagesButton.IsEnabled = false;
         images.Clear();
         await DeleteFiles();
+    }
+
+    private static string FixFileName(string displayName)
+    {
+        StringBuilder newName = new(displayName, displayName.Length);
+
+        if (displayName.Contains(' '))
+        {
+            newName.Replace(' ', '_').Replace('-', '_');
+        }
+
+        if (newName.Length >= 150)
+        {
+            newName.Remove(newName.Length - 140, 10);
+        }
+
+        switch (newName[^1])
+        {
+            case '.':
+            case '-':
+            case '_':
+                {
+                    newName.Remove(newName.Length - 1, 1);
+                    break;
+                }
+        }
+
+        return $"{newName}";
     }
 
     private void PicturesView_DragOver(object sender, DragEventArgs e)
