@@ -16,8 +16,9 @@ using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
-using System.Runtime.InteropServices;
-using System.IO;
+using Windows.Security.Cryptography.Core;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI;
 
 namespace JustExtraLight;
 
@@ -26,14 +27,12 @@ public sealed partial class MainPage : Page
     readonly StorageFolder localFolder;
     readonly ObservableCollection<ImageInfo> images;
     readonly ResourceLoader resourceLoader;
-    readonly List<StorageFile> listOfErrors;
     bool canDropImages;
     public MainPage()
     {
         InitializeComponent();
         resourceLoader = new();
         canDropImages = true;
-        listOfErrors = [];
         images = [];
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
@@ -94,42 +93,14 @@ public sealed partial class MainPage : Page
     {
         if (IncludeSubFoldersCheckBox.IsChecked is not null and true)
         {
-            IReadOnlyList<StorageFolder> folders = await folder.GetFoldersAsync();
-
-            if (folders.Count != 0)
-            {
-                foreach (StorageFolder storageFolder in folders)
-                {
-                    await ConvertFolderImages(storageFolder);
-                }
-            }
+            await CheckInnerFolders();
         }
 
         IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
         if (files.Count != 0)
         {
-            const string folderNameConst = "ConvertedImages";
-            IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
-            IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
-
-            int foldersCount = foldersSameName.Count();
-            StringBuilder stringBuilder = new(folderNameConst);
-            StorageFolder jxlFolder;
-
-            if (foldersCount != 0)
-            {
-                while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
-                {
-                    foldersCount++;
-                }
-
-                jxlFolder = await folder.CreateFolderAsync($"{stringBuilder.Append($"{foldersCount}")}");
-            }
-            else
-            {
-                jxlFolder = await folder.CreateFolderAsync($"{folderNameConst}");
-            }
+            StorageFolder jxlFolder = await CreateJXLFolder();
 
             StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
@@ -161,34 +132,14 @@ public sealed partial class MainPage : Page
                     case ".pgx":
                     case ".png" or "apng":
                         {
-                            StringBuilder newName = new(file.DisplayName, file.DisplayName.Length);
 
-                            if (file.DisplayName.Contains(' '))
-                            {
-                                newName.Replace(' ', '_').Replace('-', '_');
-                            }
+                            string newName = FixFileName(file);
 
-                            if (newName.Length >= 150)
-                            {
-                                newName.Remove(newName.Length - 140, 10);
-                            }
+                            StorageFile newFile = await file.CopyAsync(localFolder, newName);
 
-                            switch (newName[^1])
-                            {
-                                case '.':
-                                case '-':
-                                case '_':
-                                    {
-                                        newName.Remove(newName.Length - 1, 1);
-                                        break;
-                                    }
-                            }
-
-                            StorageFile newFile = await file.CopyAsync(localFolder, $"{newName}");
-
-                            string path = localFolder.Path;
-                            string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
-                            string arguments = $@"{finalParametersString}{path}\{newFile.Name} {newFilePath}";
+                            //string path = localFolder.Path;
+                            //string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
+                            string arguments = $@"{finalParametersString}{localFolder.Path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
 
                             processStart.Arguments = arguments;
 
@@ -199,12 +150,11 @@ public sealed partial class MainPage : Page
 
                                 if (process.ExitCode == 0)
                                 {
-                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newFile.DisplayName}.jxl");
+                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
                                     await jxlFile.MoveAsync(jxlFolder);
                                 }
                                 else if (process.ExitCode != 0)
                                 {
-                                    SetInfoBarTexts(false);
                                     success = false;
                                     break;
                                 }
@@ -231,6 +181,68 @@ public sealed partial class MainPage : Page
             {
                 await storageFile.DeleteAsync(StorageDeleteOption.PermanentDelete);
             }
+        }
+
+        async Task CheckInnerFolders()
+        {
+            IReadOnlyList<StorageFolder> folders = await folder.GetFoldersAsync();
+
+            if (folders.Count != 0)
+            {
+                foreach (StorageFolder storageFolder in folders)
+                {
+                    await ConvertFolderImages(storageFolder);
+                }
+            }
+        }
+        async Task<StorageFolder> CreateJXLFolder()
+        {
+            const string folderNameConst = "ConvertedImages";
+            IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
+            IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
+
+            int foldersCount = foldersSameName.Count();
+
+            if (foldersCount != 0)
+            {
+                while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
+                {
+                    foldersCount++;
+                }
+
+                return await folder.CreateFolderAsync($"{folderNameConst}{foldersCount}");
+            }
+            else
+            {
+                return await folder.CreateFolderAsync($"{folderNameConst}");
+            }
+        }
+        string FixFileName(StorageFile file)
+        {
+            StringBuilder newName = new(file.DisplayName, file.DisplayName.Length);
+
+            if (file.DisplayName.Contains(' '))
+            {
+                newName.Replace(' ', '_').Replace('-', '_');
+            }
+
+            if (newName.Length >= 150)
+            {
+                newName.Remove(newName.Length - 140, 10);
+            }
+
+            switch (newName[^1])
+            {
+                case '.':
+                case '-':
+                case '_':
+                    {
+                        newName.Remove(newName.Length - 1, 1);
+                        break;
+                    }
+            }
+
+            return $"{newName}";
         }
     }
 
@@ -266,8 +278,6 @@ public sealed partial class MainPage : Page
             ? $"{ArgumentsTextBox.Text} "
             : "";
 
-        bool success = true;
-
         StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
 
         foreach (ImageInfo imageInfo in images)
@@ -282,13 +292,31 @@ public sealed partial class MainPage : Page
                 case ".pgx":
                 case ".png" or "apng":
                     {
-                        StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder);
+                        string displayName = imageInfo.StorageFile.DisplayName;
+                        StringBuilder newName = new(displayName, displayName.Length);
 
-                        if (newFile.Name.Contains(' '))
+                        if (displayName.Contains(' '))
                         {
-                            string newName = newFile.Name.Replace(' ', '_').Replace('-', '_');
-                            await newFile.RenameAsync(newName);
+                            newName.Replace(' ', '_').Replace('-', '_');
                         }
+
+                        if (newName.Length >= 150)
+                        {
+                            newName.Remove(newName.Length - 140, 10);
+                        }
+
+                        switch (newName[^1])
+                        {
+                            case '.':
+                            case '-':
+                            case '_':
+                                {
+                                    newName.Remove(newName.Length - 1, 1);
+                                    break;
+                                }
+                        }
+
+                        StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, $"{newName}");
 
                         string path = localFolder.Path;
                         string arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newFile.DisplayName}.jxl";
@@ -300,19 +328,21 @@ public sealed partial class MainPage : Page
                         {
                             process.WaitForExit();
 
-                            if (process.ExitCode != 0)
+                            if (process.ExitCode == 0)
                             {
-                                SetInfoBarTexts(false);
-                                success = false;
-                                ConvertButton.IsEnabled = true;
-                                break;
+                                imageInfo.FontIcon = "\uE8FB";
+                                imageInfo.ConversionFinished = true;
+                                imageInfo.SolidColorBrush = new(Colors.LightGreen);
                             }
                             else
                             {
-                                imageInfo.ShowSuccess = true;
-                                imageInfo.ShowDeleteButton = false;
-                                imageInfo.Thickness = new(2);
+                                imageInfo.FontIcon = "\uEA39";
+                                imageInfo.ConversionFinished = true;
+                                imageInfo.SolidColorBrush = new(Colors.IndianRed);
                             }
+
+                            imageInfo.ShowDeleteButton = false;
+                            imageInfo.Thickness = new(2);
 
                             process.Close();
                         }
@@ -320,11 +350,6 @@ public sealed partial class MainPage : Page
                         break;
                     }
             }
-        }
-
-        if (success)
-        {
-            SetInfoBarTexts(success);
         }
     }
 
@@ -478,14 +503,14 @@ public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : IN
 {
     public BitmapImage Source => source;
     public StorageFile StorageFile => storageFile;
-    public bool ShowSuccess
+    public bool ConversionFinished
     {
-        get => successful;
+        get => conversionFinished;
         set
         {
-            if (successful != value)
+            if (conversionFinished != value)
             {
-                successful = value;
+                conversionFinished = value;
                 OnPropertyChanged();
             }
         }
@@ -503,7 +528,7 @@ public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : IN
         }
     }
     private bool showDeleteButton = true;
-    private bool successful;
+    private bool conversionFinished;
     public Thickness Thickness
     {
         get => thickness;
@@ -517,6 +542,32 @@ public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : IN
         }
     }
     private Thickness thickness;
+    public SolidColorBrush? SolidColorBrush
+    {
+        get => solidColorBrush;
+        set
+        {
+            if (solidColorBrush != value)
+            {
+                solidColorBrush = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private SolidColorBrush? solidColorBrush;
+    public string? FontIcon
+    {
+        get => fontIcon;
+        set
+        {
+            if (fontIcon != value)
+            {
+                fontIcon = value;
+                OnPropertyChanged();
+            }
+        }
+    }
+    private string? fontIcon;
 
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {

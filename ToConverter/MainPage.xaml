@@ -456,7 +456,7 @@
 
                                 <ItemContainer>
 
-                                    <Grid BorderBrush="LightGreen"
+                                    <Grid BorderBrush="{x:Bind SolidColorBrush, Mode=OneWay}"
                                           BorderThickness="{x:Bind Thickness, Mode=OneWay}"
                                           CornerRadius="5"
                                           DataContext="{x:Bind}"
@@ -518,12 +518,12 @@
 
                                             </Button>
 
-                                            <Border Background="LightGreen"
+                                            <Border Background="{x:Bind SolidColorBrush, Mode=OneWay}"
                                                     CornerRadius="{StaticResource ControlCornerRadius}"
                                                     HorizontalAlignment="Right"
                                                     Padding="5"
                                                     VerticalAlignment="Top"
-                                                    Visibility="{x:Bind ShowSuccess, Mode=OneWay}">
+                                                    Visibility="{x:Bind ConversionFinished, Mode=OneWay}">
 
                                                 <Border.Child>
 
