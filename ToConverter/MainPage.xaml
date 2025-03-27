@@ -440,7 +440,7 @@
                     <ProgressRing Canvas.ZIndex="1"
                                   Grid.Row="3"
                                   HorizontalAlignment="Right"
-                                  IsActive="True"
+                                  IsActive="False"
                                   Margin="10"
                                   x:Name="LoadingRing2"
                                   VerticalAlignment="Bottom"/>
