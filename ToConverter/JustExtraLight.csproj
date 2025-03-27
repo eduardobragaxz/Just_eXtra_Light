@@ -12,13 +12,9 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-
-		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-		<PublishTrimmed>True</PublishTrimmed>
-		
+		<WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained>
+		<PublishAot>True</PublishAot>
+		<IncludePublishItemsOutputGroup>True</IncludePublishItemsOutputGroup>
 	</PropertyGroup>
 
 	<ItemGroup>

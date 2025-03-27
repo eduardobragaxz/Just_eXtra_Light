@@ -125,7 +125,7 @@
     <value>Conversão completa!</value>
     <comment>Text for when the conversion is complete.</comment>
   </data>
-  <data name="ConvertButton.Text" xml:space="preserve">
+  <data name="ConvertButton.Content" xml:space="preserve">
     <value>Converter</value>
     <comment>Content text for the button to convert images</comment>
   </data>
@@ -174,7 +174,7 @@
     <comment>Title text for conversion failed info bar</comment>
   </data>
   <data name="ConversionFailedMessage" xml:space="preserve">
-    <value>Se estiver adicionando argumentos, certifique-se de que estão corretos e que não há espaço no começo e no final.</value>
+    <value>Algumas imagens podem não ter sido convertidas. Se estiver adicionando argumentos, certifique-se de que estão corretos e que não há espaço no começo e no final.</value>
     <comment>Message text for conversion failed info bar</comment>
   </data>
   <data name="ExpertsSection1.Text" xml:space="preserve">
@@ -216,5 +216,13 @@
   <data name="AppMadeWith.Text" xml:space="preserve">
     <value>Este aplicativo foi feito com</value>
     <comment>Text for the info flyout</comment>
+  </data>
+  <data name="ClearListButton.Content" xml:space="preserve">
+    <value>Limpar lista</value>
+    <comment>Content text for the clear list button</comment>
+  </data>
+  <data name="ClearListButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Limpar a lista de imagens convertidas e não convertidas</value>
+    <comment>Tooltip text for the clear list button</comment>
   </data>
 </root>

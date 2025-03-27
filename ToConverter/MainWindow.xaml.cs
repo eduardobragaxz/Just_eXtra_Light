@@ -3,6 +3,7 @@ using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Windows.Graphics;
+using WinRT;
 
 namespace JustExtraLight;
 
@@ -29,7 +30,7 @@ public sealed partial class MainWindow : Window
         AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(900 * scale)));
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-        OverlappedPresenter overlappedPresenter = (OverlappedPresenter)AppWindow.Presenter;
+        OverlappedPresenter overlappedPresenter = AppWindow.Presenter.As<OverlappedPresenter>();
         overlappedPresenter.PreferredMinimumWidth = 1000;
         overlappedPresenter.PreferredMinimumHeight = 900;
 

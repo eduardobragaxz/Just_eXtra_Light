@@ -123,7 +123,7 @@
   <data name="ConversionCompleteTitle" xml:space="preserve">
     <value>Conversion complete!</value>
   </data>
-  <data name="ConvertButton.Text" xml:space="preserve">
+  <data name="ConvertButton.Content" xml:space="preserve">
     <value>Convert</value>
   </data>
   <data name="IncludeSubFolders.Content" xml:space="preserve">
@@ -160,7 +160,7 @@
     <value>Something went wrong!</value>
   </data>
   <data name="ConversionFailedMessage" xml:space="preserve">
-    <value>If you're adding arguments, make sure they're spelled correctly and that there are no spaces at the start and at the end</value>
+    <value>Some images may not have been converted. If you're adding arguments, make sure they're spelled correctly and that there are no spaces at the start and at the end</value>
   </data>
   <data name="ExpertsSection1.Text" xml:space="preserve">
     <value>Experts settings</value>
@@ -191,5 +191,11 @@
   </data>
   <data name="AppMadeWith.Text" xml:space="preserve">
     <value>This app was made with</value>
+  </data>
+  <data name="ClearListButton.Content" xml:space="preserve">
+    <value>Clear list</value>
+  </data>
+  <data name="ClearListButton.ToolTipService.ToolTip" xml:space="preserve">
+    <value>Clear the list of converted and non converted images</value>
   </data>
 </root>
