@@ -26,7 +26,8 @@
 	</Dependencies>
 
 	<Resources>
-		<Resource Language="x-generate"/>
+		<Resource Language="en-US"/>
+		<Resource Language="pt-BR"/>
 	</Resources>
 
 	<Applications>
@@ -35,7 +36,7 @@
 		  EntryPoint="$targetentrypoint$">
 			<uap:VisualElements
 			  DisplayName="Just eXtra Light"
-			  Description="Just eXtra Light is a GUI application for cjxl, to convert images into the JPEG XL format, with a focus on converting images in bulk."
+			  Description="Just eXtra Light is an application to convert images to the JPEG XL (.jxl) with a focus on converting in bulk"
 			  BackgroundColor="transparent"
 			  Square150x150Logo="Assets\Package icons\Square150x150Logo.png"
 			  Square44x44Logo="Assets\Package icons\Square44x44Logo.png">
