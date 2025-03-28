@@ -358,9 +358,32 @@ public sealed partial class MainPage : Page
             }
         }
 
-        ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = false;
         canDropImages = true;
+        List<ImageInfo> imageInfos = [];
+
+        foreach (ImageInfo imageInfo in images)
+        {
+            if (imageInfo.ConversionFinished == false || imageInfo.ConversionSuccessful == false)
+            {
+                imageInfos.Add(imageInfo);
+            }
+        }
+
         images.Clear();
+
+        if (imageInfos.Count != 0)
+        {
+            foreach (ImageInfo imageInfo in imageInfos)
+            {
+                images.Add(imageInfo);
+            }
+        }
+        else
+        {
+            ConvertButton.IsEnabled = false;
+        }
+
+        SaveImagesButton.IsEnabled = false;
         await DeleteFiles();
     }
 
