@@ -8,15 +8,15 @@
   IgnorableNamespaces="uap rescap">
 
 	<Identity
-	  Name="JustExtraLight"
-	  Publisher="CN=braga"
+	  Name="EduardoBraga.JusteXtraLight"
+	  Publisher="CN=7C650FF2-F08B-40D9-8C5B-3C0C7B8817AB"
 	  Version="0.1.0.0" />
 
-	<mp:PhoneIdentity PhoneProductId="322d6ae8-dddb-475c-8e88-259500d9620c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+	<mp:PhoneIdentity PhoneProductId="71d29c72-037e-48bb-8e70-51bf115f1c8c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
 	<Properties>
 		<DisplayName>Just eXtra Light</DisplayName>
-		<PublisherDisplayName>braga</PublisherDisplayName>
+		<PublisherDisplayName>Eduardo Braga</PublisherDisplayName>
 		<Logo>Assets\Package icons\StoreLogo.png</Logo>
 	</Properties>
 
