@@ -160,24 +160,26 @@ public sealed partial class MainPage : Page
 
                             processStart.Arguments = arguments;
 
-                            using Process? process = Process.Start(processStart);
-                            if (process is not null)
+                            await Task.Run(async () =>
                             {
-                                process.WaitForExit();
-
-                                if (process.ExitCode == 0)
+                                using Process? process = Process.Start(processStart);
+                                if (process is not null)
                                 {
-                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
-                                    await jxlFile.MoveAsync(jxlFolder);
-                                }
-                                else if (process.ExitCode != 0)
-                                {
-                                    success = false;
-                                    break;
-                                }
+                                    process.WaitForExit();
 
-                                process.Close();
-                            }
+                                    if (process.ExitCode == 0)
+                                    {
+                                        StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
+                                        await jxlFile.MoveAsync(jxlFolder);
+                                    }
+                                    else if (process.ExitCode != 0)
+                                    {
+                                        success = false;
+                                    }
+
+                                    process.Close();
+                                }
+                            });
 
                             break;
                         }
@@ -278,31 +280,34 @@ public sealed partial class MainPage : Page
 
                             processStart.Arguments = arguments;
 
-                            using Process? process = Process.Start(processStart);
-                            if (process is not null)
+                            await Task.Run(() =>
                             {
-                                process.WaitForExit();
-
-                                if (process.ExitCode == 0)
+                                using Process? process = Process.Start(processStart);
+                                if (process is not null)
                                 {
-                                    imageInfo.ConversionSuccessful = true;
-                                    imageInfo.StatusFontIcon = "\uE8FB";
-                                    imageInfo.ConversionFinished = true;
-                                    imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
-                                }
-                                else
-                                {
-                                    ConvertButton.IsEnabled = true;
-                                    imageInfo.StatusFontIcon = "\uEA39";
-                                    imageInfo.ConversionFinished = true;
-                                    imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
-                                }
+                                    process.WaitForExit();
 
-                                imageInfo.ShowDeleteButton = false;
-                                imageInfo.ImageBorderThickness = new(2);
+                                    if (process.ExitCode == 0)
+                                    {
+                                        imageInfo.ConversionSuccessful = true;
+                                        imageInfo.StatusFontIcon = "\uE8FB";
+                                        imageInfo.ConversionFinished = true;
+                                        imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
+                                    }
+                                    else
+                                    {
+                                        ConvertButton.IsEnabled = true;
+                                        imageInfo.StatusFontIcon = "\uEA39";
+                                        imageInfo.ConversionFinished = true;
+                                        imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
+                                    }
 
-                                process.Close();
-                            }
+                                    imageInfo.ShowDeleteButton = false;
+                                    imageInfo.ImageBorderThickness = new(2);
+
+                                    process.Close();
+                                }
+                            });
 
                             break;
                         }
@@ -524,84 +529,78 @@ public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : IN
 {
     public bool ConversionSuccessful
     {
-        get => conversionSuccessful;
+        get => field;
         set
         {
-            if (conversionSuccessful != value)
+            if (field != value)
             {
-                conversionSuccessful = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-    private bool conversionSuccessful;
     public BitmapImage Source => source;
     public StorageFile StorageFile => storageFile;
     public bool ConversionFinished
     {
-        get => conversionFinished;
+        get => field;
         set
         {
-            if (conversionFinished != value)
+            if (field != value)
             {
-                conversionFinished = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
     public bool ShowDeleteButton
     {
-        get => showDeleteButton;
+        get => field;
         set
         {
-            if (showDeleteButton != value)
+            if (field != value)
             {
-                showDeleteButton = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
-    }
-    private bool showDeleteButton = true;
-    private bool conversionFinished;
+    } = true;
     public Thickness ImageBorderThickness
     {
-        get => imageBorderThickness;
+        get => field;
         set
         {
-            if (imageBorderThickness != value)
+            if (field != value)
             {
-                imageBorderThickness = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-    private Thickness imageBorderThickness;
     public SolidColorBrush? StatusSolidColorBrush
     {
-        get => statusSolidColorBrush;
+        get => field;
         set
         {
-            if (statusSolidColorBrush != value)
+            if (field != value)
             {
-                statusSolidColorBrush = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-    private SolidColorBrush? statusSolidColorBrush;
     public string? StatusFontIcon
     {
-        get => statusFontIcon;
+        get => field;
         set
         {
-            if (statusFontIcon != value)
+            if (field != value)
             {
-                statusFontIcon = value;
+                field = value;
                 OnPropertyChanged();
             }
         }
     }
-    private string? statusFontIcon;
 
     protected void OnPropertyChanged([CallerMemberName] string? name = null)
     {
