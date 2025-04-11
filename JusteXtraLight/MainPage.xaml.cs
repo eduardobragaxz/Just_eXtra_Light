@@ -18,12 +18,16 @@ using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
+using System.Globalization;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace JustExtraLight;
 
 public sealed partial class MainPage : Page
 {
     readonly StorageFolder localFolder;
+    StorageFolder? programFolder;
     readonly ObservableCollection<ImageInfo> images;
     readonly ResourceLoader resourceLoader;
     bool canDropImages;
@@ -37,6 +41,10 @@ public sealed partial class MainPage : Page
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
+        programFolder = await assetsFolder.GetFolderAsync("Program");
+
         await DeleteFiles();
         await CreateFolders();
     }
@@ -122,11 +130,7 @@ public sealed partial class MainPage : Page
         {
             StorageFolder jxlFolder = await CreateJXLFolder();
 
-            StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
-            StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
-
-            ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+            ProcessStartInfo processStart = new($@"{programFolder!.Path}\cjxl.exe")
             {
                 CreateNoWindow = true
             };
@@ -149,10 +153,8 @@ public sealed partial class MainPage : Page
                     case ".pgx":
                     case ".png" or "apng":
                         {
-
                             string newName = FixFileName(file.DisplayName);
-
-                            StorageFile newFile = await file.CopyAsync(localFolder, newName);
+                            StorageFile newFile = await file.CopyAsync(localFolder, newName, NameCollisionOption.ReplaceExisting);
 
                             //string path = localFolder.Path;
                             //string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
@@ -160,31 +162,30 @@ public sealed partial class MainPage : Page
 
                             processStart.Arguments = arguments;
 
-                            await Task.Run(async () =>
+                            using Process? process = Process.Start(processStart);
+                            if (process is not null)
                             {
-                                using Process? process = Process.Start(processStart);
-                                if (process is not null)
+                                process.WaitForExit();
+
+                                if (process.ExitCode == 0)
                                 {
-                                    process.WaitForExit();
-
-                                    if (process.ExitCode == 0)
-                                    {
-                                        StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
-                                        await jxlFile.MoveAsync(jxlFolder);
-                                    }
-                                    else if (process.ExitCode != 0)
-                                    {
-                                        success = false;
-                                    }
-
-                                    process.Close();
+                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
+                                    await jxlFile.MoveAsync(jxlFolder, $"{newName}.jxl", NameCollisionOption.GenerateUniqueName);
                                 }
-                            });
+                                else if (process.ExitCode != 0)
+                                {
+                                    success = false;
+                                }
+
+                                process.Close();
+                            }
 
                             break;
                         }
                 }
             }
+
+            
 
             await DeleteFiles();
 
@@ -210,24 +211,25 @@ public sealed partial class MainPage : Page
         async Task<StorageFolder> CreateJXLFolder()
         {
             const string folderNameConst = "ConvertedImages";
-            IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
-            IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
+            return await folder.CreateFolderAsync(folderNameConst, CreationCollisionOption.GenerateUniqueName);
+            //IReadOnlyList<StorageFolder> items = await folder.GetFoldersAsync();
+            //IEnumerable<StorageFolder> foldersSameName = items.Where(f => f.DisplayName == folderNameConst);
 
-            int foldersCount = foldersSameName.Count();
+            //int foldersCount = foldersSameName.Count();
 
-            if (foldersCount != 0)
-            {
-                while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
-                {
-                    foldersCount++;
-                }
+            //if (foldersCount != 0)
+            //{
+            //    while (items.Any(f => f.DisplayName == $"{folderNameConst}{foldersCount}"))
+            //    {
+            //        foldersCount++;
+            //    }
 
-                return await folder.CreateFolderAsync($"{folderNameConst}{foldersCount}");
-            }
-            else
-            {
-                return await folder.CreateFolderAsync($"{folderNameConst}");
-            }
+            //    return await folder.CreateFolderAsync($"{folderNameConst}{foldersCount}");
+            //}
+            //else
+            //{
+            //    return await folder.CreateFolderAsync($"{folderNameConst}");
+            //}
         }
     }
 
@@ -242,11 +244,7 @@ public sealed partial class MainPage : Page
 
     private async Task ConvertListOfImages()
     {
-        StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-        StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
-        StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
-
-        ProcessStartInfo processStart = new($@"{programFolder.Path}\cjxl.exe")
+        ProcessStartInfo processStart = new($@"{programFolder!.Path}\cjxl.exe")
         {
             CreateNoWindow = true
         };
@@ -398,23 +396,23 @@ public sealed partial class MainPage : Page
 
         if (displayName.Contains(' '))
         {
-            newName.Replace(' ', '_').Replace('-', '_');
+            newName.Replace(' ', '_');
+        }
+
+        if (displayName.Contains('-'))
+        {
+            newName.Replace('-', '_');
         }
 
         if (newName.Length >= 150)
         {
-            newName.Remove(newName.Length - 140, 10);
+            int difference = newName.Length - 150;
+            newName.Remove(149, difference);
         }
 
-        switch (newName[^1])
+        while (newName[^1] == '.' || newName[^1] == '-' || newName[^1] == '_')
         {
-            case '.':
-            case '-':
-            case '_':
-                {
-                    newName.Remove(newName.Length - 1, 1);
-                    break;
-                }
+            newName.Remove(newName.Length - 1, 1);
         }
 
         return $"{newName}";
