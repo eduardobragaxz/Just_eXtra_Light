@@ -153,39 +153,42 @@ public sealed partial class MainPage : Page
                     case ".pgx":
                     case ".png" or "apng":
                         {
-                            string newName = FixFileName(file.DisplayName);
-                            StorageFile newFile = await file.CopyAsync(localFolder, newName, NameCollisionOption.ReplaceExisting);
-
-                            //string path = localFolder.Path;
-                            //string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
-                            string arguments = $@"{finalParametersString}{localFolder.Path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
-
-                            processStart.Arguments = arguments;
-
-                            using Process? process = Process.Start(processStart);
-                            if (process is not null)
+                            await Task.Run(async () =>
                             {
-                                process.WaitForExit();
+                                string newName = FixFileName(file.DisplayName);
+                                StorageFile newFile = await file.CopyAsync(localFolder, newName, NameCollisionOption.ReplaceExisting);
 
-                                if (process.ExitCode == 0)
-                                {
-                                    StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
-                                    await jxlFile.MoveAsync(jxlFolder, $"{newName}.jxl", NameCollisionOption.GenerateUniqueName);
-                                }
-                                else if (process.ExitCode != 0)
-                                {
-                                    success = false;
-                                }
+                                //string path = localFolder.Path;
+                                //string newFilePath = $@"{conversionsFolder.Path}\{newFile.DisplayName}.jxl";
+                                string arguments = $@"{finalParametersString}{localFolder.Path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
 
-                                process.Close();
-                            }
+                                processStart.Arguments = arguments;
+
+                                using Process? process = Process.Start(processStart);
+                                if (process is not null)
+                                {
+                                    process.WaitForExit();
+
+                                    if (process.ExitCode == 0)
+                                    {
+                                        StorageFile jxlFile = await conversionsFolder.GetFileAsync($"{newName}.jxl");
+                                        await jxlFile.MoveAsync(jxlFolder, $"{newName}.jxl", NameCollisionOption.GenerateUniqueName);
+                                    }
+                                    else
+                                    {
+                                        success = false;
+                                    }
+
+                                    process.Close();
+                                }
+                            });
 
                             break;
                         }
                 }
             }
 
-            
+
 
             await DeleteFiles();
 
@@ -271,41 +274,48 @@ public sealed partial class MainPage : Page
                         {
                             string newName = FixFileName(imageInfo.StorageFile.DisplayName);
 
-                            StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, $"{newName}");
+                            IReadOnlyList<StorageFile> localFolderImages = await localFolder.GetFilesAsync();
 
+                            int count = 0;
+
+                            while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                count++;
+                                newName += $"{count}";
+                            }
+
+                            StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, newName);
                             string path = localFolder.Path;
+
                             string arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newFile.DisplayName}.jxl";
 
                             processStart.Arguments = arguments;
 
-                            await Task.Run(() =>
+                            using Process? process = Process.Start(processStart);
+                            if (process is not null)
                             {
-                                using Process? process = Process.Start(processStart);
-                                if (process is not null)
+                                process.WaitForExit();
+
+                                if (process.ExitCode == 0)
                                 {
-                                    process.WaitForExit();
-
-                                    if (process.ExitCode == 0)
-                                    {
-                                        imageInfo.ConversionSuccessful = true;
-                                        imageInfo.StatusFontIcon = "\uE8FB";
-                                        imageInfo.ConversionFinished = true;
-                                        imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
-                                    }
-                                    else
-                                    {
-                                        ConvertButton.IsEnabled = true;
-                                        imageInfo.StatusFontIcon = "\uEA39";
-                                        imageInfo.ConversionFinished = true;
-                                        imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
-                                    }
-
-                                    imageInfo.ShowDeleteButton = false;
-                                    imageInfo.ImageBorderThickness = new(2);
-
-                                    process.Close();
+                                    imageInfo.ConversionSuccessful = true;
+                                    imageInfo.StatusFontIcon = "\uE8FB";
+                                    imageInfo.ConversionFinished = true;
+                                    imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
                                 }
-                            });
+                                else
+                                {
+                                    ConvertButton.IsEnabled = true;
+                                    imageInfo.StatusFontIcon = "\uEA39";
+                                    imageInfo.ConversionFinished = true;
+                                    imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
+                                }
+
+                                imageInfo.ShowDeleteButton = false;
+                                imageInfo.ImageBorderThickness = new(2);
+
+                                process.Close();
+                            }
 
                             break;
                         }
@@ -337,57 +347,26 @@ public sealed partial class MainPage : Page
         {
             StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions2");
             IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder.GetFilesAsync();
-            List<StorageFile> storageFiles = [.. await chosenFolder.GetFilesAsync()];
 
             foreach (StorageFile convertedFile in convertedFiles)
             {
                 if (convertedFile.FileType == ".jxl")
                 {
-                    List<StorageFile> sameNameFiles = [.. storageFiles.Where(f => f.DisplayName == convertedFile.DisplayName)];
-                    int count = sameNameFiles.Count;
-
-                    if (count != 0)
-                    {
-                        while (storageFiles.Any(f => f.DisplayName == $"{convertedFile.DisplayName}_{count}"))
-                        {
-                            count++;
-                        }
-
-                        await convertedFile.RenameAsync($"{convertedFile.DisplayName}_{count}.jxl");
-                    }
-
-                    await convertedFile.MoveAsync(chosenFolder);
+                    await convertedFile.MoveAsync(chosenFolder, convertedFile.Name, NameCollisionOption.GenerateUniqueName);
                 }
             }
-        }
 
-        canDropImages = true;
-        List<ImageInfo> imageInfos = [];
-
-        foreach (ImageInfo imageInfo in images)
-        {
-            if (imageInfo.ConversionFinished == false || imageInfo.ConversionSuccessful == false)
-            {
-                imageInfos.Add(imageInfo);
-            }
-        }
-
-        images.Clear();
-
-        if (imageInfos.Count != 0)
-        {
-            foreach (ImageInfo imageInfo in imageInfos)
-            {
-                images.Add(imageInfo);
-            }
+            images.Clear();
+            SaveImagesButton.IsEnabled = false;
+            await DeleteFiles(conversionsFolder);
         }
         else
         {
-            ConvertButton.IsEnabled = false;
+            SaveImagesButton.IsEnabled = true;
         }
 
-        SaveImagesButton.IsEnabled = false;
         await DeleteFiles();
+        canDropImages = true;
     }
 
     private static string FixFileName(string displayName)
@@ -513,7 +492,7 @@ public sealed partial class MainPage : Page
     {
         if (images.Count != 0)
         {
-            SaveImagesButton.IsEnabled = false;
+            ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = false;
 
             images.Clear();
             StorageFolder conversionFolder2 = await localFolder.GetFolderAsync("Conversions2");
@@ -525,76 +504,82 @@ public sealed partial class MainPage : Page
 
 public partial class ImageInfo(StorageFile storageFile, BitmapImage source) : INotifyPropertyChanged
 {
+    private bool conversionSuccessful;
     public bool ConversionSuccessful
     {
-        get => field;
+        get => conversionSuccessful;
         set
         {
-            if (field != value)
+            if (conversionSuccessful != value)
             {
-                field = value;
+                conversionSuccessful = value;
                 OnPropertyChanged();
             }
         }
     }
     public BitmapImage Source => source;
     public StorageFile StorageFile => storageFile;
+    private bool conversionFinished;
     public bool ConversionFinished
     {
-        get => field;
+        get => conversionFinished;
         set
         {
-            if (field != value)
+            if (conversionFinished != value)
             {
-                field = value;
+                conversionFinished = value;
                 OnPropertyChanged();
             }
         }
     }
+    private bool showDeleteButton = true;
     public bool ShowDeleteButton
     {
-        get => field;
+        get => showDeleteButton;
         set
         {
-            if (field != value)
+            if (showDeleteButton != value)
             {
-                field = value;
+                showDeleteButton = value;
                 OnPropertyChanged();
             }
         }
-    } = true;
+    }
+    private Thickness imageBorderThickness;
     public Thickness ImageBorderThickness
     {
-        get => field;
+        get => imageBorderThickness;
         set
         {
-            if (field != value)
+            if (imageBorderThickness != value)
             {
-                field = value;
+                imageBorderThickness = value;
                 OnPropertyChanged();
             }
         }
     }
+    private SolidColorBrush? statusSolidColorBrush;
     public SolidColorBrush? StatusSolidColorBrush
     {
-        get => field;
+        get => statusSolidColorBrush;
         set
         {
-            if (field != value)
+            if (statusSolidColorBrush != value)
             {
-                field = value;
+                statusSolidColorBrush = value;
                 OnPropertyChanged();
             }
         }
     }
+    private string? statusFontIcon;
     public string? StatusFontIcon
     {
-        get => field;
+        get => statusFontIcon;
         set
         {
-            if (field != value)
+            if (statusFontIcon != value)
             {
-                field = value;
+                statusFontIcon = value;
                 OnPropertyChanged();
             }
         }
