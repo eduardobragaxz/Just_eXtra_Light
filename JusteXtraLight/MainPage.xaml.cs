@@ -119,6 +119,7 @@ public sealed partial class MainPage : Page
             await CheckInnerFolders();
         }
 
+
         IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
         bool success = true;
@@ -140,17 +141,17 @@ public sealed partial class MainPage : Page
 
             foreach (StorageFile file in files)
             {
-                switch (file.FileType.ToLower())
+                await Task.Run(async () =>
                 {
-                    case ".exr":
-                    case ".gif":
-                    case ".jpg" or ".jpeg":
-                    case ".pam" or ".pgm" or ".ppm":
-                    case ".pfm":
-                    case ".pgx":
-                    case ".png" or "apng":
-                        {
-                            await Task.Run(async () =>
+                    switch (file.FileType.ToLower())
+                    {
+                        case ".exr":
+                        case ".gif":
+                        case ".jpg" or ".jpeg":
+                        case ".pam" or ".pgm" or ".ppm":
+                        case ".pfm":
+                        case ".pgx":
+                        case ".png" or "apng":
                             {
                                 string newName = FixFileName(file.DisplayName);
                                 StorageFile newFile = await file.CopyAsync(localFolder, newName, NameCollisionOption.ReplaceExisting);
@@ -178,14 +179,12 @@ public sealed partial class MainPage : Page
 
                                     process.Close();
                                 }
-                            });
 
-                            break;
-                        }
-                }
+                                break;
+                            }
+                    }
+                });
             }
-
-
 
             await DeleteFiles();
 
@@ -196,6 +195,7 @@ public sealed partial class MainPage : Page
         }
 
         return success;
+
         async Task CheckInnerFolders()
         {
             IReadOnlyList<StorageFolder> folders = await folder.GetFoldersAsync();
