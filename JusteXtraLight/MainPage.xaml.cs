@@ -18,9 +18,6 @@ using System.Runtime.CompilerServices;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.IO;
 
 namespace JustExtraLight;
 
