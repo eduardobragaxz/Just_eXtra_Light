@@ -209,10 +209,6 @@
     <value>Pasta já existe!</value>
     <comment>Title text for the folder error dialog</comment>
   </data>
-  <data name="CloseDialogButton" xml:space="preserve">
-    <value>Fechar</value>
-    <comment>Text for close button in dialogs</comment>
-  </data>
   <data name="AppMadeWith.Text" xml:space="preserve">
     <value>Este aplicativo foi feito com</value>
     <comment>Text for the info flyout</comment>
@@ -224,5 +220,41 @@
   <data name="ClearListButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Limpar a lista de imagens convertidas e não convertidas</value>
     <comment>Tooltip text for the clear list button</comment>
+  </data>
+  <data name="ContentDialogCloseButton" xml:space="preserve">
+    <value>Fechar</value>
+    <comment>Text for close button in content dialogs</comment>
+  </data>
+  <data name="SuccessDialogContent" xml:space="preserve">
+    <value>Todas as imagens das pastas foram convertidas.</value>
+    <comment>Text for the success dialog content</comment>
+  </data>
+  <data name="SuccessDialogTitle" xml:space="preserve">
+    <value>Sucesso!</value>
+    <comment>Text for success dialog title</comment>
+  </data>
+  <data name="MildErrorDialogContent" xml:space="preserve">
+    <value>Algumas imagens não foram convertidas. É possível que os comandos estejam incorretos. Clique no botão abaixo para ver as imagens não convertidas.</value>
+    <comment>Text for the mild error dialog content</comment>
+  </data>
+  <data name="MildErrorDialogTitle" xml:space="preserve">
+    <value>Atenção!</value>
+    <comment>Text for the mild error dialog title</comment>
+  </data>
+  <data name="ViewErrorImages.Content" xml:space="preserve">
+    <value>Ver imagens não convertidas</value>
+    <comment>Text for the show error images button content</comment>
+  </data>
+  <data name="AppNotificationSuccessContent" xml:space="preserve">
+    <value>Processo completo</value>
+    <comment>Text for successful conversion notification</comment>
+  </data>
+  <data name="MalformedStringDialogContent" xml:space="preserve">
+    <value>Verifique a caixa de texto acima e verifique se há algum erro.</value>
+    <comment>Text for malformed string dialog content</comment>
+  </data>
+  <data name="MalformedStringDialogTitle" xml:space="preserve">
+    <value>Comandos inválidos</value>
+    <comment>Text for the malformed string dialog title</comment>
   </data>
 </root>

@@ -6,7 +6,7 @@
     xmlns:local="using:JustExtraLight"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:applicationModel="using:Windows.ApplicationModel"
+    xmlns:applicationModel="using:Windows.ApplicationModel" xmlns:storage="using:Windows.Storage"
     mc:Ignorable="d"
     Loaded="Page_Loaded">
 
@@ -16,6 +16,7 @@
 
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
 
         </Grid.RowDefinitions>
 
@@ -219,7 +220,8 @@
                   Grid.Column="0"
                   Grid.ColumnSpan="3"
                   Grid.Row="2"
-                  Grid.RowSpan="2">
+                  Grid.RowSpan="2"
+                  MaxWidth="1500">
 
                 <Grid x:Name="SelectFolderStackPanel"
                       Padding="36"
@@ -241,15 +243,16 @@
 
                     <TextBlock Grid.Row="1"
                                Margin="0,0,0,10"
-                               Style="{StaticResource BodyStrongTextBlockStyle}"
                                TextWrapping="Wrap"
                                VerticalAlignment="Center">
 
                         <TextBlock.Inlines>
 
-                            <Run x:Uid="Instructions1"/>
+                            <Run FontWeight="SemiBold"
+                                 x:Uid="Instructions1"/>
                             <LineBreak/>
-                            <Run x:Uid="Instructions2"/>
+                            <Run FontWeight="SemiBold"
+                                 x:Uid="Instructions2"/>
 
                         </TextBlock.Inlines>
 
@@ -562,15 +565,101 @@
 
             </Grid>
 
-            <InfoBar Grid.Column="0"
-                     Grid.ColumnSpan="3"
-                     Grid.Row="3"
-                     IsOpen="False"
-                     Margin="5"
-                     x:Name="AppInfoBar"
-                     Severity="Success"/>
-
         </Grid>
+
+        <Button CornerRadius="0,0,4,4"
+                Grid.Row="3"
+                HorizontalAlignment="Stretch"
+                x:Name="ViewErrorImagesButton"
+                x:Uid="ViewErrorImages"
+                Padding="10"
+                Visibility="Collapsed">
+
+            <Button.Flyout>
+
+                <Flyout Placement="Top">
+
+                    <ItemsView ItemsSource="{x:Bind imagesNotConverted}"
+                               SelectionMode="None">
+
+                        <ItemsView.ItemTemplate>
+
+                            <DataTemplate x:DataType="storage:StorageFile">
+
+                                <ItemContainer ToolTipService.ToolTip="{x:Bind Name}">
+
+                                    <Border Height="200"
+                                            Width="200">
+
+                                        <Border.Background>
+
+                                            <ImageBrush>
+
+                                                <ImageBrush.ImageSource>
+
+                                                    <BitmapImage DecodePixelHeight="200"
+                                                                 UriSource="{x:Bind Path}"
+                                                                 DecodePixelWidth="200"/>
+
+                                                </ImageBrush.ImageSource>
+
+                                            </ImageBrush>
+
+                                        </Border.Background>
+
+                                    </Border>
+
+                                </ItemContainer>
+
+                            </DataTemplate>
+
+                        </ItemsView.ItemTemplate>
+
+                        <ItemsView.Layout>
+
+                            <UniformGridLayout />
+
+                        </ItemsView.Layout>
+
+                    </ItemsView>
+
+                </Flyout>
+
+            </Button.Flyout>
+
+            <Button.Resources>
+
+                <ResourceDictionary>
+
+                    <ResourceDictionary.ThemeDictionaries>
+
+                        <ResourceDictionary x:Key="Light">
+
+                            <SolidColorBrush x:Key="ButtonBackground" Color="DarkRed"/>
+
+                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Red"/>
+
+                            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="IndianRed" />
+
+                        </ResourceDictionary>
+
+                        <ResourceDictionary x:Key="Default">
+
+                            <SolidColorBrush x:Key="ButtonBackground" Color="DarkRed"/>
+
+                            <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="Red"/>
+
+                            <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="IndianRed" />
+
+                        </ResourceDictionary>
+
+                    </ResourceDictionary.ThemeDictionaries>
+
+                </ResourceDictionary>
+
+            </Button.Resources>
+
+        </Button>
 
     </Grid>
 
