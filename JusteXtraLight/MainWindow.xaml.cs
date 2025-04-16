@@ -34,13 +34,16 @@ public sealed partial class MainWindow : Window
         overlappedPresenter.PreferredMinimumWidth = 1000;
         overlappedPresenter.PreferredMinimumHeight = 900;
 
-        DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);
-        if (displayArea is not null)
-        {
-            PointInt32 CenteredPosition = AppWindow.Position;
-            CenteredPosition.X = ((displayArea.WorkArea.Width - AppWindow.Size.Width) / 2);
-            CenteredPosition.Y = ((displayArea.WorkArea.Height - AppWindow.Size.Height) / 2);
-            AppWindow.Move(CenteredPosition);
-        }
+        AppWindow.PersistedStateId = new("6EA8147B-7665-4DA7-B466-21A848B0248B");
+        AppWindow.PlacementRestorationBehavior = PlacementRestorationBehavior.All;
+
+        //DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);
+        //if (displayArea is not null)
+        //{
+        //    PointInt32 CenteredPosition = AppWindow.Position;
+        //    CenteredPosition.X = ((displayArea.WorkArea.Width - AppWindow.Size.Width) / 2);
+        //    CenteredPosition.Y = ((displayArea.WorkArea.Height - AppWindow.Size.Height) / 2);
+        //    AppWindow.Move(CenteredPosition);
+        //}
     }
 }
