@@ -8,13 +8,13 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Media;
-using Windows.Storage.Pickers;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Windows.Storage.FileProperties;
 using Microsoft.UI.Xaml.Media.Imaging;
 using System.Runtime.CompilerServices;
+using Microsoft.Windows.Storage.Pickers;
 using Microsoft.Windows.AppNotifications;
 using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.AppNotifications.Builder;
@@ -90,19 +90,27 @@ public sealed partial class MainPage : Page
     private async void ConvertFolderButton_Click(object sender, RoutedEventArgs e)
     {
         EnableOrDisableControls(false);
-        FolderPicker folderPicker = new();
 
         MainWindow? mainWindow = (MainWindow?)((App)Microsoft.UI.Xaml.Application.Current).MWindow;
 
         if (mainWindow is not null)
         {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
-
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
+            FolderPicker folderPicker = new(mainWindow.AppWindow.Id);
 
             folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
 
-            StorageFolder storageFolder = await folderPicker.PickSingleFolderAsync();
+            PickFolderResult? result = await folderPicker.PickSingleFolderAsync();
+
+            StorageFolder? storageFolder = null;
+
+            if (result is not null)
+            {
+                storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
+            }
+            else
+            {
+                //TODO show message asking to allow access to files
+            }
 
             if (storageFolder is not null)
             {
@@ -406,8 +414,8 @@ public sealed partial class MainPage : Page
                                         }
                                     });
 
-                                        break;
-                                    }
+                                    break;
+                                }
                         }
                     }
                 }
@@ -422,19 +430,26 @@ public sealed partial class MainPage : Page
 
     private async Task SaveImages()
     {
-        FolderPicker folderPicker = new();
-
         MainWindow? mainWindow = (MainWindow?)((App)Microsoft.UI.Xaml.Application.Current).MWindow;
 
         if (mainWindow is not null)
         {
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
+            FolderPicker folderPicker = new(mainWindow.AppWindow.Id)
+            {
+                SuggestedStartLocation = PickerLocationId.Downloads
+            };
 
-            WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
+            PickFolderResult? result = await folderPicker.PickSingleFolderAsync();
+            StorageFolder? chosenFolder = null;
 
-            folderPicker.SuggestedStartLocation = PickerLocationId.Downloads;
-
-            StorageFolder chosenFolder = await folderPicker.PickSingleFolderAsync();
+            if (result is not null)
+            {
+                chosenFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
+            }
+            else
+            {
+                //TODO show message asking to allow access to files
+            }
 
             if (chosenFolder is not null)
             {
