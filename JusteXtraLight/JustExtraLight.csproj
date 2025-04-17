@@ -24,7 +24,7 @@
 		<GenerateTestArtifacts>False</GenerateTestArtifacts>
 		<AppxBundle>Never</AppxBundle>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-		<!--<IncludePublishItemsOutputGroup>True</IncludePublishItemsOutputGroup>-->
+		<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>
 	</PropertyGroup>
 
 	<ItemGroup>

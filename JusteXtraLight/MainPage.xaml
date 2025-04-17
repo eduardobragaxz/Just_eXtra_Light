@@ -12,6 +12,101 @@
 
     <Grid>
 
+        <Grid.Resources>
+
+            <DataTemplate x:DataType="local:ImageInfo"
+                          x:Key="ImagesTemplate">
+
+                <ItemContainer>
+
+                    <Grid BorderBrush="{x:Bind StatusSolidColorBrush, Mode=OneWay}"
+                          BorderThickness="{x:Bind ImageBorderThickness, Mode=OneWay}"
+                          CornerRadius="5"
+                          DataContext="{x:Bind}"
+                          Height="200"
+                          x:Name="AttachmentTemplateGrid"
+                          Padding="5"
+                          Width="200">
+
+                        <Grid.Background>
+
+                            <ImageBrush ImageSource="{x:Bind Source}"
+                                        Stretch="UniformToFill"/>
+
+                        </Grid.Background>
+
+                        <Grid.Children>
+
+                            <Button Background="Red"
+                                    Click="AtachmentDataTemplateRemoveButton_Click"
+                                    Content="&#xE738;"
+                                    FontFamily="Segoe Fluent Icons"
+                                    HorizontalAlignment="Right"
+                                    x:Name="AtachmentDataTemplateRemoveButton"
+                                    x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
+                                    VerticalAlignment="Top"
+                                    Visibility="{x:Bind ShowDeleteButton, Mode=OneWay}">
+
+                                <Button.Resources>
+
+                                    <ResourceDictionary>
+
+                                        <ResourceDictionary.ThemeDictionaries>
+
+                                            <ResourceDictionary x:Key="Light">
+
+                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                 Color="DarkRed"/>
+
+                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                 Color="IndianRed"/>
+
+                                            </ResourceDictionary>
+
+                                            <ResourceDictionary x:Key="Default">
+
+                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
+                                                                 Color="DarkRed"/>
+
+                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
+                                                                 Color="IndianRed"/>
+
+                                            </ResourceDictionary>
+
+                                        </ResourceDictionary.ThemeDictionaries>
+
+                                    </ResourceDictionary>
+
+                                </Button.Resources>
+
+                            </Button>
+
+                            <Border Background="{x:Bind StatusSolidColorBrush, Mode=OneWay}"
+                                    CornerRadius="{StaticResource ControlCornerRadius}"
+                                    HorizontalAlignment="Right"
+                                    Padding="5"
+                                    VerticalAlignment="Top"
+                                    Visibility="{x:Bind ConversionFinished, Mode=OneWay}">
+
+                                <Border.Child>
+
+                                    <FontIcon Foreground="White"
+                                              Glyph="{x:Bind StatusFontIcon, Mode=OneWay}" />
+
+                                </Border.Child>
+
+                            </Border>
+
+                        </Grid.Children>
+
+                    </Grid>
+
+                </ItemContainer>
+
+            </DataTemplate>
+
+        </Grid.Resources>
+
         <Grid.RowDefinitions>
 
             <RowDefinition Height="Auto"/>
@@ -454,104 +549,11 @@
                                Drop="PicturesView_Drop"
                                Grid.Row="3"
                                ItemsSource="{x:Bind images}"
+                               ItemTemplate="{StaticResource ImagesTemplate}"
                                Margin="0,10,0,0"
                                x:Name="PicturesView"
                                SelectionMode="None"
                                VerticalAlignment="Stretch">
-
-                        <ItemsView.ItemTemplate>
-
-                            <DataTemplate x:DataType="local:ImageInfo">
-
-                                <ItemContainer>
-
-                                    <Grid BorderBrush="{x:Bind StatusSolidColorBrush, Mode=OneWay}"
-                                          BorderThickness="{x:Bind ImageBorderThickness, Mode=OneWay}"
-                                          CornerRadius="5"
-                                          DataContext="{x:Bind}"
-                                          Height="200"
-                                          x:Name="AttachmentTemplateGrid"
-                                          Padding="5"
-                                          Width="200">
-
-                                        <Grid.Background>
-
-                                            <ImageBrush ImageSource="{x:Bind Source}"
-                                                        Stretch="UniformToFill"/>
-
-                                        </Grid.Background>
-
-                                        <Grid.Children>
-
-                                            <Button Background="Red"
-                                                    Click="AtachmentDataTemplateRemoveButton_Click"
-                                                    Content="&#xE738;"
-                                                    FontFamily="Segoe Fluent Icons"
-                                                    HorizontalAlignment="Right"
-                                                    x:Name="AtachmentDataTemplateRemoveButton"
-                                                    x:Uid="/StatusStrings/AttachmentTemplateRemoveButtonToolTip"
-                                                    VerticalAlignment="Top"
-                                                    Visibility="{x:Bind ShowDeleteButton, Mode=OneWay}">
-
-                                                <Button.Resources>
-
-                                                    <ResourceDictionary>
-
-                                                        <ResourceDictionary.ThemeDictionaries>
-
-                                                            <ResourceDictionary x:Key="Light">
-
-                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                 Color="DarkRed"/>
-
-                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                 Color="IndianRed"/>
-
-                                                            </ResourceDictionary>
-
-                                                            <ResourceDictionary x:Key="Default">
-
-                                                                <SolidColorBrush x:Key="ButtonBackgroundPointerOver"
-                                                                                 Color="DarkRed"/>
-
-                                                                <SolidColorBrush x:Key="ButtonBackgroundPressed"
-                                                                                 Color="IndianRed"/>
-
-                                                            </ResourceDictionary>
-
-                                                        </ResourceDictionary.ThemeDictionaries>
-
-                                                    </ResourceDictionary>
-
-                                                </Button.Resources>
-
-                                            </Button>
-
-                                            <Border Background="{x:Bind StatusSolidColorBrush, Mode=OneWay}"
-                                                    CornerRadius="{StaticResource ControlCornerRadius}"
-                                                    HorizontalAlignment="Right"
-                                                    Padding="5"
-                                                    VerticalAlignment="Top"
-                                                    Visibility="{x:Bind ConversionFinished, Mode=OneWay}">
-
-                                                <Border.Child>
-
-                                                    <FontIcon Foreground="White"
-                                                              Glyph="&#xE8FB;" />
-
-                                                </Border.Child>
-
-                                            </Border>
-
-                                        </Grid.Children>
-
-                                    </Grid>
-
-                                </ItemContainer>
-
-                            </DataTemplate>
-
-                        </ItemsView.ItemTemplate>
 
                         <ItemsView.Layout>
 
@@ -580,40 +582,8 @@
                 <Flyout Placement="Top">
 
                     <ItemsView ItemsSource="{x:Bind imagesNotConverted}"
+                               ItemTemplate="{StaticResource ImagesTemplate}"
                                SelectionMode="None">
-
-                        <ItemsView.ItemTemplate>
-
-                            <DataTemplate x:DataType="storage:StorageFile">
-
-                                <ItemContainer ToolTipService.ToolTip="{x:Bind Name}">
-
-                                    <Border Height="200"
-                                            Width="200">
-
-                                        <Border.Background>
-
-                                            <ImageBrush>
-
-                                                <ImageBrush.ImageSource>
-
-                                                    <BitmapImage DecodePixelHeight="200"
-                                                                 UriSource="{x:Bind Path}"
-                                                                 DecodePixelWidth="200"/>
-
-                                                </ImageBrush.ImageSource>
-
-                                            </ImageBrush>
-
-                                        </Border.Background>
-
-                                    </Border>
-
-                                </ItemContainer>
-
-                            </DataTemplate>
-
-                        </ItemsView.ItemTemplate>
 
                         <ItemsView.Layout>
 
