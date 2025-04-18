@@ -49,8 +49,4 @@
 			</uap:VisualElements>
 		</Application>
 	</Applications>
-
-	<Capabilities>
-		<rescap:Capability Name="broadFileSystemAccess" />
-	</Capabilities>
 </Package>

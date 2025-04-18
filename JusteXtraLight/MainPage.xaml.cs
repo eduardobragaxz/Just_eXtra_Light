@@ -91,7 +91,7 @@ public sealed partial class MainPage : Page
     {
         EnableOrDisableControls(false);
 
-        MainWindow? mainWindow = (MainWindow?)((App)Microsoft.UI.Xaml.Application.Current).MWindow;
+        MainWindow? mainWindow = (MainWindow?)((App)Application.Current).MWindow;
 
         if (mainWindow is not null)
         {
