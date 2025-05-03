@@ -108,7 +108,7 @@ public sealed partial class MainPage : Page
             {
                 ViewErrorImagesButton.Visibility = Visibility.Collapsed;
                 imagesNotConverted.Clear();
-                LoadingRing.IsActive = true;
+                //LoadingRing.IsActive = true;
                 countOfAlreadyConvertedImages = 0;
                 countOfImagesToConvert = 0;
                 await ConvertFolderImages(storageFolder);
@@ -116,20 +116,18 @@ public sealed partial class MainPage : Page
                 {
                     ViewErrorImagesButton.Visibility = Visibility.Visible;
                 }
-                LoadingRing.IsActive = false;
+                //LoadingRing.IsActive = false;
                 SendPostConversionNotification();
                 await ShowPostConversionMessage();
             }
 
-            LoadingRing.IsActive = false;
+            //LoadingRing.IsActive = false;
             EnableOrDisableControls(true);
         }
 
         void EnableOrDisableControls(bool enable)
         {
-            ArgumentsTextBox.IsEnabled =
-                IncludeSubFoldersCheckBox.IsEnabled =
-                ConvertFolderButton.IsEnabled = enable;
+            ArgumentsTextBox.IsEnabled = enable;
         }
     }
 
@@ -141,10 +139,10 @@ public sealed partial class MainPage : Page
             {
                 IReadOnlyList<StorageFile> files = await folder.GetFilesAsync();
 
-                if (IncludeSubFoldersCheckBox.IsChecked is not null and true)
-                {
-                    await CheckInnerFolders();
-                }
+                //if (IncludeSubFoldersCheckBox.IsChecked is not null and true)
+                //{
+                //    await CheckInnerFolders();
+                //}
 
                 if (files.Count != 0)
                 {
@@ -265,7 +263,7 @@ public sealed partial class MainPage : Page
 
     private async Task ShowPostConversionMessage()
     {
-        if (imagesNotConverted.Count == 0 && (countOfImagesToConvert == countOfAlreadyConvertedImages))
+        if (imagesNotConverted.Count == 0 && countOfImagesToConvert == countOfAlreadyConvertedImages)
         {
             ContentDialog successContentDialog = new()
             {
@@ -316,11 +314,11 @@ public sealed partial class MainPage : Page
 
     private async void ConvertListOfImages_Click(object sender, RoutedEventArgs e)
     {
-        LoadingRing2.IsActive = true;
-        ConvertButton.IsEnabled = false;
+        //LoadingRing2.IsActive = true;
+        //ConvertButton.IsEnabled = false;
         await ConvertListOfImages();
-        SaveImagesButton.IsEnabled = true;
-        LoadingRing2.IsActive = false;
+        //SaveImagesButton.IsEnabled = true;
+        //LoadingRing2.IsActive = false;
     }
 
     private async Task ConvertListOfImages()
@@ -389,7 +387,7 @@ public sealed partial class MainPage : Page
                                             {
                                                 this.DispatcherQueue.TryEnqueue(() =>
                                                 {
-                                                    ConvertButton.IsEnabled = true;
+                                                    //ConvertButton.IsEnabled = true;
                                                     imageInfo.StatusFontIcon = "\uEA39";
                                                     imageInfo.ConversionFinished = true;
                                                     imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
@@ -450,12 +448,12 @@ public sealed partial class MainPage : Page
                 }
 
                 images.Clear();
-                SaveImagesButton.IsEnabled = false;
+                //SaveImagesButton.IsEnabled = false;
                 await DeleteFiles(conversionsFolder);
             }
             else
             {
-                SaveImagesButton.IsEnabled = true;
+                //SaveImagesButton.IsEnabled = true;
             }
 
             await DeleteFiles();
@@ -539,10 +537,10 @@ public sealed partial class MainPage : Page
 
             if (images.Count != 0)
             {
-                if (!ConvertButton.IsEnabled)
-                {
-                    ConvertButton.IsEnabled = true;
-                }
+                //if (!ConvertButton.IsEnabled)
+                //{
+                //    ConvertButton.IsEnabled = true;
+                //}
             }
         }
     }
@@ -553,14 +551,14 @@ public sealed partial class MainPage : Page
 
         images.Remove(imageInfo);
 
-        ConvertButton.IsEnabled = images.Any(i => i.ConversionSuccessful == false);
+        //ConvertButton.IsEnabled = images.Any(i => i.ConversionSuccessful == false);
     }
 
     private async void ClearListButton_Click(object sender, RoutedEventArgs e)
     {
         if (images.Count != 0)
         {
-            ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = false;
+            //ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = false;
 
             images.Clear();
             StorageFolder conversionFolder2 = await localFolder.GetFolderAsync("Conversions2");

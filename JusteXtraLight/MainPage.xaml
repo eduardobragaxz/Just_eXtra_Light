@@ -222,7 +222,8 @@
 
             <Grid.ColumnDefinitions>
 
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
 
             </Grid.ColumnDefinitions>
@@ -231,47 +232,18 @@
 
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
 
             </Grid.RowDefinitions>
 
-            <SelectorBar Background="{ThemeResource ControlFillColorDefault}"
-                         CornerRadius="{StaticResource ControlCornerRadius}"
-                         Grid.Column="0"
-                         Grid.ColumnSpan="2"
-                         Grid.Row="0"
-                         HorizontalAlignment="Center"
-                         x:Name="AppSelectorBar">
-
-                <SelectorBar.Items>
-
-                    <SelectorBarItem Icon="Folder"
-                                     IsSelected="True"
-                                     x:Name="FolderItem"
-                                     x:Uid="FolderItem"/>
-
-                    <SelectorBarItem x:Name="ImagesItem"
-                                     x:Uid="ImagesItem">
-
-                        <SelectorBarItem.Icon>
-
-                            <FontIcon Glyph="&#xE8B9;" />
-
-                        </SelectorBarItem.Icon>
-
-                    </SelectorBarItem>
-
-                </SelectorBar.Items>
-
-            </SelectorBar>
-
             <Expander Grid.Column="0"
-                      Grid.ColumnSpan="2"
-                      Grid.Row="1"
+                      Grid.ColumnSpan="3"
+                      Grid.Row="0"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
-                      Margin="36"
+                      Margin="0,0,0,10"
                       x:Name="ExpertsExpander">
 
                 <Expander.Content>
@@ -310,267 +282,58 @@
 
             </Expander>
 
-            <Grid Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                  CornerRadius="{StaticResource ControlCornerRadius}"
-                  Grid.Column="0"
-                  Grid.ColumnSpan="3"
-                  Grid.Row="2"
-                  Grid.RowSpan="2"
-                  MaxWidth="1500">
-
-                <Grid x:Name="SelectFolderStackPanel"
-                      Padding="36"
-                      VerticalAlignment="Stretch"
-                      Visibility="{x:Bind FolderItem.IsSelected, Mode=OneWay}">
-
-                    <Grid.RowDefinitions>
-
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-
-                    </Grid.RowDefinitions>
-
-                    <CheckBox Grid.Row="0"
-                              x:Name="IncludeSubFoldersCheckBox"
-                              x:Uid="IncludeSubFolders"
-                              VerticalAlignment="Center"/>
-
-                    <TextBlock Grid.Row="1"
-                               Margin="0,0,0,10"
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Center">
-
-                        <TextBlock.Inlines>
-
-                            <Run FontWeight="SemiBold"
-                                 x:Uid="Instructions1"/>
-                            <LineBreak/>
-                            <Run FontWeight="SemiBold"
-                                 x:Uid="Instructions2"/>
-
-                        </TextBlock.Inlines>
-
-                    </TextBlock>
-
-                    <Button Click="ConvertFolderButton_Click"
-                            Grid.Row="2"
-                            HorizontalAlignment="Stretch"
-                            x:Name="ConvertFolderButton"
-                            VerticalAlignment="Stretch">
-
-                        <Button.Content>
-
-                            <Grid>
-
-                                <TextBlock Style="{StaticResource TitleLargeTextBlockStyle}"
-                                           x:Uid="ChooseFolderButton"
-                                           VerticalAlignment="Center"/>
-
-                                <ProgressRing Height="100"
-                                              IsActive="False"
-                                              x:Name="LoadingRing"
-                                              VerticalAlignment="Center"
-                                              Width="100"/>
-
-                            </Grid>
-
-                        </Button.Content>
-
-                        <Button.Resources>
-
-                            <ResourceDictionary>
-
-                                <ResourceDictionary.ThemeDictionaries>
-
-                                    <ResourceDictionary x:Key="Light">
-
-                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
-                                        </LinearGradientBrush>
-
-                                    </ResourceDictionary>
-
-                                    <ResourceDictionary x:Key="Default">
-
-                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
-                                        </LinearGradientBrush>
-
-                                    </ResourceDictionary>
-
-                                </ResourceDictionary.ThemeDictionaries>
-
-                            </ResourceDictionary>
-
-                        </Button.Resources>
-
-                    </Button>
-
-                </Grid>
-
-                <Grid Grid.Row="1"
-                      x:Name="DragAndDropGrid"
-                      Padding="36"
-                      Visibility="{x:Bind ImagesItem.IsSelected, Mode=OneWay}">
-
-                    <Grid.RowDefinitions>
-
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-
-                    </Grid.RowDefinitions>
-
-                    <Button Click="ConvertListOfImages_Click"
-                            Grid.Row="0"
-                            HorizontalAlignment="Stretch"
-                            IsEnabled="False"
-                            Margin="0,0,0,10"
-                            x:Name="ConvertButton"
-                            x:Uid="ConvertButton">
-
-                        <Button.Resources>
-
-                            <ResourceDictionary>
-
-                                <ResourceDictionary.ThemeDictionaries>
-
-                                    <ResourceDictionary x:Key="Light">
-
-                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.40"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.85"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.20"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.65"/>
-                                        </LinearGradientBrush>
-
-                                    </ResourceDictionary>
-
-                                    <ResourceDictionary x:Key="Default">
-
-                                        <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
-                                        </LinearGradientBrush>
-
-                                        <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
-                                            <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
-                                        </LinearGradientBrush>
-
-                                    </ResourceDictionary>
-
-                                </ResourceDictionary.ThemeDictionaries>
-
-                            </ResourceDictionary>
-
-                        </Button.Resources>
-
-                    </Button>
-
-                    <Button Click="SaveImagesButton_Click"
-                            Grid.Row="1"
-                            HorizontalAlignment="Stretch"
-                            IsEnabled="False"
-                            Margin="0,0,0,10"
-                            x:Name="SaveImagesButton"
-                            x:Uid="SaveImagesButton"/>
-
-                    <TextBlock Grid.Row="2"
-                               Style="{StaticResource BaseTextBlockStyle}"
-                               x:Uid="DragAndDropInstructions"/>
-
-                    <Button Click="ClearListButton_Click"
-                            Grid.Row="2"
-                            HorizontalAlignment="Right"
-                            x:Name="ClearListButton"
-                            x:Uid="ClearListButton"/>
-
-                    <ProgressRing Canvas.ZIndex="1"
-                                  Grid.Row="3"
-                                  HorizontalAlignment="Right"
-                                  IsActive="False"
-                                  Margin="10"
-                                  x:Name="LoadingRing2"
-                                  VerticalAlignment="Bottom"/>
-
-                    <ItemsView AllowDrop="True"
-                               Background="{ThemeResource AcrylicInAppFillColorBaseBrush}"
-                               DragOver="PicturesView_DragOver"
-                               Drop="PicturesView_Drop"
-                               Grid.Row="3"
-                               ItemsSource="{x:Bind images}"
-                               ItemTemplate="{StaticResource ImagesTemplate}"
-                               Margin="0,10,0,0"
-                               x:Name="PicturesView"
-                               SelectionMode="None"
-                               VerticalAlignment="Stretch">
-
-                        <ItemsView.Layout>
-
-                            <UniformGridLayout />
-
-                        </ItemsView.Layout>
-
-                    </ItemsView>
-
-                </Grid>
-
-            </Grid>
+            <TextBlock Grid.Column="0"
+                       Grid.Row="1"
+                       Margin="0,0,0,10"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       Text="You can"/>
+
+            <Button Content="Add a whole folder"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                    Margin="0,0,10,0"/>
+
+            <TextBlock Grid.Column="1"
+                       Grid.Row="2"
+                       Margin="0,0,10,0"
+                       Style="{StaticResource SubtitleTextBlockStyle}"
+                       Text="or"/>
+
+            <Button Content="Choose specific images"
+                    Grid.Column="2"
+                    Grid.Row="2"/>
+
+            <Button Content="Convert"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Grid.Row="3"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,10,0,0"/>
+
+            <ItemsView AllowDrop="True"
+                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                       DragOver="PicturesView_DragOver"
+                       Drop="PicturesView_Drop"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="3"
+                       Grid.Row="4"
+                       ItemsSource="{x:Bind images}"
+                       ItemTemplate="{StaticResource ImagesTemplate}"
+                       Margin="0,10,0,0"
+                       SelectionMode="None">
+
+                <ItemsView.Layout>
+
+                    <UniformGridLayout/>
+
+                </ItemsView.Layout>
+                
+            </ItemsView>
 
         </Grid>
 
         <Button CornerRadius="0,0,4,4"
-                Grid.Row="3"
+                Grid.Row="2"
                 HorizontalAlignment="Stretch"
                 x:Name="ViewErrorImagesButton"
                 x:Uid="ViewErrorImages"

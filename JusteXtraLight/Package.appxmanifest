@@ -35,7 +35,7 @@
 		<Application Id="App"
 		  Executable="$targetnametoken$.exe"
 	      EntryPoint="windows.fullTrustApplication"
-		  uap18:TrustLevel="appContainer" uap18:RuntimeBehavior="appSilo">
+		  uap18:EntryPoint="Isolated.App" uap18:TrustLevel="appContainer" uap18:RuntimeBehavior="appSilo">
 			<uap:VisualElements
 			  DisplayName="Just eXtra Light"
 			  Description="Just eXtra Light is an application to convert images to the JPEG XL (.jxl) with a focus on converting in bulk"
