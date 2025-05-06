@@ -129,18 +129,6 @@
     <value>Converter</value>
     <comment>Content text for the button to convert images</comment>
   </data>
-  <data name="IncludeSubFolders.Content" xml:space="preserve">
-    <value>Incluir subpastas</value>
-    <comment>Content for the check box to include subfolders</comment>
-  </data>
-  <data name="Instructions1.Text" xml:space="preserve">
-    <value>Clique no botão abaixo para escolher uma pasta</value>
-    <comment>First part of the instructions text</comment>
-  </data>
-  <data name="Instructions2.Text" xml:space="preserve">
-    <value>O aplicativo vai, automaticamente, converter as imagens e salvá-las numa pasta chamada ConvertedImages. A pasta vai ser salvada na localização que você escolheu.</value>
-    <comment>Second part of instructions text</comment>
-  </data>
   <data name="ConversionCompleteContent" xml:space="preserve">
     <value>As imagens já foram salvadas</value>
     <comment>Additional text after converting from the list</comment>
@@ -149,17 +137,9 @@
     <value>As imagens já foram convertidas e agora podem ser salvadas</value>
     <comment>Additional text after converting from the list</comment>
   </data>
-  <data name="ImagesItem.Text" xml:space="preserve">
-    <value>Arrastar e soltar imagens</value>
-    <comment>Text for the selector bar item to drag and drop images</comment>
-  </data>
   <data name="ArgumentsTextBox.Header" xml:space="preserve">
     <value>Argumentos</value>
     <comment>Header text for the arguments text box</comment>
-  </data>
-  <data name="FolderItem.Text" xml:space="preserve">
-    <value>Pasta</value>
-    <comment>Text for the folder selector bar item</comment>
   </data>
   <data name="SaveImagesButton.Content" xml:space="preserve">
     <value>Salvar imagens</value>
@@ -200,14 +180,6 @@
   <data name="RenameTextBoxHeader" xml:space="preserve">
     <value>Novo nome</value>
     <comment>Header text for the rename text box</comment>
-  </data>
-  <data name="FolderErrorContent" xml:space="preserve">
-    <value>Uma pasta com nome ConvertedImages já exist na pasta que você escolheu.</value>
-    <comment>Content text for the folder error dialog</comment>
-  </data>
-  <data name="FolderErrorTitle" xml:space="preserve">
-    <value>Pasta já existe!</value>
-    <comment>Title text for the folder error dialog</comment>
   </data>
   <data name="AppMadeWith.Text" xml:space="preserve">
     <value>Este aplicativo foi feito com</value>
@@ -256,5 +228,13 @@
   <data name="MalformedStringDialogTitle" xml:space="preserve">
     <value>Comandos inválidos</value>
     <comment>Text for the malformed string dialog title</comment>
+  </data>
+  <data name="AddFolderButton.Content" xml:space="preserve">
+    <value>Adicionar pasta</value>
+    <comment>Content text for the add folder button</comment>
+  </data>
+  <data name="ChooseImages.Content" xml:space="preserve">
+    <value>Escolher imagens</value>
+    <comment>Context text for the choose images button</comment>
   </data>
 </root>

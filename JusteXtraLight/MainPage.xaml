@@ -222,8 +222,9 @@
 
             <Grid.ColumnDefinitions>
 
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
 
             </Grid.ColumnDefinitions>
@@ -239,12 +240,11 @@
             </Grid.RowDefinitions>
 
             <Expander Grid.Column="0"
-                      Grid.ColumnSpan="3"
+                      Grid.ColumnSpan="4"
                       Grid.Row="0"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
-                      Margin="0,0,0,10"
-                      x:Name="ExpertsExpander">
+                      Margin="0,0,0,10">
 
                 <Expander.Content>
 
@@ -282,45 +282,138 @@
 
             </Expander>
 
-            <TextBlock Grid.Column="0"
-                       Grid.Row="1"
-                       Margin="0,0,0,10"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       Text="You can"/>
-
-            <Button Content="Add a whole folder"
+            <Button Click="AddFolder_Click"
                     Grid.Column="0"
-                    Grid.Row="2"
-                    Margin="0,0,10,0"/>
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,10,0"
+                    x:Uid="AddFolderButton"/>
 
-            <TextBlock Grid.Column="1"
-                       Grid.Row="2"
-                       Margin="0,0,10,0"
-                       Style="{StaticResource SubtitleTextBlockStyle}"
-                       Text="or"/>
-
-            <Button Content="Choose specific images"
+            <Button Click="ChooseImages_Click"
                     Grid.Column="2"
-                    Grid.Row="2"/>
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
+                    HorizontalAlignment="Stretch"
+                    x:Uid="ChooseImages"/>
 
-            <Button Content="Convert"
+            <Button Click="ConvertListOfImages_Click"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="4"
+                    Grid.Row="2"
+                    HorizontalAlignment="Stretch"
+                    IsEnabled="False"
+                    Margin="0,10,0,40"
+                    x:Name="ConvertButton"
+                    x:Uid="ConvertButton">
+
+                <Button.Resources>
+
+                    <ResourceDictionary>
+
+                        <ResourceDictionary.ThemeDictionaries>
+
+                            <ResourceDictionary x:Key="Light">
+
+                                <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.95"/>
+                                </LinearGradientBrush>
+
+                                <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.10"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                </LinearGradientBrush>
+
+                                <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.10"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                </LinearGradientBrush>
+
+                            </ResourceDictionary>
+
+                            <ResourceDictionary x:Key="Default">
+
+                                <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                </LinearGradientBrush>
+
+                                <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                </LinearGradientBrush>
+
+                                <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                </LinearGradientBrush>
+
+                            </ResourceDictionary>
+
+                        </ResourceDictionary.ThemeDictionaries>
+
+                    </ResourceDictionary>
+
+                </Button.Resources>
+                
+            </Button>
+
+            <Button Click="SaveImagesButton_Click"
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Grid.Row="3"
                     HorizontalAlignment="Stretch"
-                    Margin="0,10,0,0"/>
+                    IsEnabled="False"
+                    Margin="0,0,10,0"
+                    x:Name="SaveImagesButton"
+                    x:Uid="SaveImagesButton"/>
+
+            <Button Click="ClearListButton_Click"
+                    Grid.Column="3"
+                    Grid.ColumnSpan="1"
+                    Grid.Row="3"
+                    HorizontalAlignment="Stretch"
+                    IsEnabled="False"
+                    x:Name="ClearListButton"
+                    x:Uid="ClearListButton"/>
+
+            <TextBlock Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       Grid.Row="4"
+                       HorizontalAlignment="Center"
+                       x:Name="DragAndDropText"
+                       Style="{StaticResource TitleTextBlockStyle}"
+                       TextAlignment="Center"
+                       VerticalAlignment="Center"
+                       x:Uid="DragAndDropInstructions"/>
+
+            <ProgressRing Grid.Column="4"
+                          Grid.ColumnSpan="1"
+                          Grid.Row="4"
+                          HorizontalAlignment="Right"
+                          IsActive="False"
+                          Margin="10"
+                          x:Name="LoadingRing"
+                          VerticalAlignment="Bottom"/>
 
             <ItemsView AllowDrop="True"
                        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                        DragOver="PicturesView_DragOver"
                        Drop="PicturesView_Drop"
                        Grid.Column="0"
-                       Grid.ColumnSpan="3"
+                       Grid.ColumnSpan="4"
                        Grid.Row="4"
                        ItemsSource="{x:Bind images}"
                        ItemTemplate="{StaticResource ImagesTemplate}"
                        Margin="0,10,0,0"
-                       SelectionMode="None">
+                       SelectionMode="Extended">
 
                 <ItemsView.Layout>
 
