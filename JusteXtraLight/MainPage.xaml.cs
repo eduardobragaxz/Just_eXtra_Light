@@ -44,6 +44,8 @@ public sealed partial class MainPage : Page
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        await AppNotificationManager.Default.RemoveAllAsync();
+
         StorageFolder locationFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
         StorageFolder assetsFolder = await locationFolder.GetFolderAsync("Assets");
         programFolder = await assetsFolder.GetFolderAsync("Program");
