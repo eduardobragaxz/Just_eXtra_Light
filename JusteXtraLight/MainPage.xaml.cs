@@ -141,7 +141,7 @@ public sealed partial class MainPage : Page
             {
                 if (storageItem is StorageFile storageFile)
                 {
-                    if (storageFile.FileType is ".exr" or ".gif" or ".jpg" or ".jpeg" or ".pam" or ".pgm" or ".ppm" or ".pfm" or ".pgx" or ".png" or ".apng" or ".jxl")
+                    if (storageFile.FileType.ToLower() is ".exr" or ".gif" or ".jpg" or ".jpeg" or ".pam" or ".pgm" or ".ppm" or ".pfm" or ".pgx" or ".png" or ".apng" or ".jxl")
                     {
                         BitmapImage bitmapImage = new();
 
@@ -214,64 +214,62 @@ public sealed partial class MainPage : Page
                             case ".pgx":
                             case ".png" or "apng":
                                 {
-                                    await Task.Run(async () =>
+                                    string newName = FixFileName(imageInfo.StorageFile.DisplayName);
+
+                                    IReadOnlyList<StorageFile> localFolderImages = await localFolder.GetFilesAsync();
+
+                                    int count = 0;
+
+                                    //can't rely on automatic name collision handling because it adds spaces in the file name
+                                    while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
                                     {
-                                        string newName = FixFileName(imageInfo.StorageFile.DisplayName);
+                                        count++;
+                                    }
 
-                                        IReadOnlyList<StorageFile> localFolderImages = await localFolder.GetFilesAsync();
-
-                                        int count = 0;
-
-                                        //can't rely on automatic name collision handling because it adds spaces in the file name
-                                        while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-                                        {
-                                            count++;
-                                        }
-
+                                    if (count != 0)
+                                    {
                                         newName += $"{count}";
+                                    }
 
-                                        StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, newName);
-                                        string path = localFolder.Path;
+                                    StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, newName);
+                                    string path = localFolder.Path;
 
-                                        string arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newFile.DisplayName}.jxl";
+                                    string arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
 
-                                        processStart!.Arguments = arguments;
+                                    processStart!.Arguments = arguments;
 
-                                        using Process? process = Process.Start(processStart);
-                                        if (process is not null)
-                                        {
-                                            process.WaitForExit();
+                                    Process? process = null;
 
-                                            if (process.ExitCode == 0)
-                                            {
-                                                this.DispatcherQueue.TryEnqueue(() =>
-                                                {
-                                                    imageInfo.ConversionSuccessful = true;
-                                                    imageInfo.StatusFontIcon = "\uE8FB";
-                                                    imageInfo.ConversionFinished = true;
-                                                    imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
-                                                });
-                                            }
-                                            else
-                                            {
-                                                this.DispatcherQueue.TryEnqueue(() =>
-                                                {
-                                                    imageInfo.StatusFontIcon = "\uEA39";
-                                                    imageInfo.ConversionFinished = true;
-                                                    imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
-                                                });
-                                                conversionSuccessful = false;
-                                            }
-
-                                            this.DispatcherQueue.TryEnqueue(() =>
-                                            {
-                                                imageInfo.ShowDeleteButton = false;
-                                                imageInfo.ImageBorderThickness = new(2);
-                                            });
-
-                                            process.Close();
-                                        }
+                                    await Task.Run(() =>
+                                    {
+                                        process = Process.Start(processStart);
                                     });
+
+                                    if (process is not null)
+                                    {
+                                        process.WaitForExit();
+
+                                        if (process.ExitCode == 0)
+                                        {
+                                            imageInfo.ConversionSuccessful = true;
+                                            imageInfo.StatusFontIcon = "\uE8FB";
+                                            imageInfo.ConversionFinished = true;
+                                            imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
+                                        }
+                                        else
+                                        {
+                                            imageInfo.StatusFontIcon = "\uEA39";
+                                            imageInfo.ConversionFinished = true;
+                                            imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
+                                            conversionSuccessful = false;
+                                        }
+
+                                        imageInfo.ShowDeleteButton = false;
+                                        imageInfo.ImageBorderThickness = new(2);
+
+                                        process.Close();
+                                        process.Dispose();
+                                    }
 
                                     break;
                                 }
@@ -440,13 +438,24 @@ public sealed partial class MainPage : Page
 
     private async Task PostConversion()
     {
-        for (int index = 0; images.Count > index; index++)
+        if (conversionSuccessful)
         {
-            ImageInfo imageInfo = images[index];
-
-            if (imageInfo.ConversionSuccessful)
+            images.Clear();
+        }
+        else
+        {
+            for (int index = 0; images.Count > index; index++)
             {
-                images.RemoveAt(index);
+                ImageInfo imageInfo = images[index];
+
+                if (imageInfo.ConversionSuccessful && imageInfo.ConversionFinished)
+                {
+                    images.RemoveAt(index);
+                }
+                else
+                {
+
+                }
             }
         }
 
