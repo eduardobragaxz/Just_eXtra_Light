@@ -452,10 +452,6 @@ public sealed partial class MainPage : Page
                 {
                     images.RemoveAt(index);
                 }
-                else
-                {
-
-                }
             }
         }
 
