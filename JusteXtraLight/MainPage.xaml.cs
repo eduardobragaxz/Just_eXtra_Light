@@ -26,12 +26,12 @@ namespace JustExtraLight;
 public sealed partial class MainPage : Page
 {
     bool canDropImages;
+    bool conversionSuccessful;
     StorageFolder? programFolder;
     ProcessStartInfo? processStart;
     readonly StorageFolder localFolder;
     readonly ResourceLoader resourceLoader;
     readonly ObservableCollection<ImageInfo> images;
-    readonly ObservableCollection<ImageInfo> imagesNotConverted;
     public MainPage()
     {
         InitializeComponent();
@@ -39,7 +39,7 @@ public sealed partial class MainPage : Page
         images = [];
         canDropImages = true;
         resourceLoader = new();
-        imagesNotConverted = [];
+        conversionSuccessful = true;
         localFolder = MApplicationData.GetDefault().LocalFolder;
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -181,6 +181,9 @@ public sealed partial class MainPage : Page
         await ConvertListOfImages();
         SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = true;
         LoadingRing.IsActive = false;
+
+        SendPostConversionNotification();
+        await ShowPostConversionMessage();
     }
 
     private async Task ConvertListOfImages()
@@ -253,6 +256,7 @@ public sealed partial class MainPage : Page
                                                     imageInfo.ConversionFinished = true;
                                                     imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
                                                 });
+                                                conversionSuccessful = false;
                                             }
 
                                             this.DispatcherQueue.TryEnqueue(() =>
@@ -349,7 +353,7 @@ public sealed partial class MainPage : Page
 
     private async Task ShowPostConversionMessage()
     {
-        if (imagesNotConverted.Count == 0)
+        if (conversionSuccessful)
         {
             ContentDialog successContentDialog = new()
             {
@@ -383,7 +387,7 @@ public sealed partial class MainPage : Page
         {
             AppNotificationBuilder appNotification;
 
-            if (imagesNotConverted.Count != 0)
+            if (conversionSuccessful)
             {
                 appNotification = new AppNotificationBuilder()
                     .AddText(resourceLoader.GetString("AppNotificationSuccessContent"));
@@ -422,7 +426,7 @@ public sealed partial class MainPage : Page
 
         images.Remove(imageInfo);
 
-        ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = images.Any(i => i.ConversionSuccessful == false);
+        ConvertButton.IsEnabled = ClearListButton.IsEnabled = images.Any(i => i.ConversionSuccessful == false);
     }
 
     private async void ClearListButton_Click(object sender, RoutedEventArgs e)
@@ -432,22 +436,21 @@ public sealed partial class MainPage : Page
 
     private async Task PostConversion()
     {
-        if (images.Count != 0)
+        for (int index = 0; images.Count > index; index++)
         {
-            ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = false;
-            DragAndDropText.Visibility = Visibility.Collapsed;
+            ImageInfo imageInfo = images[index];
 
-            images.Clear();
-            StorageFolder conversionFolder = await localFolder.GetFolderAsync("Conversions");
-            await DeleteFiles();
-            await DeleteFiles(conversionFolder);
+            if (imageInfo.ConversionSuccessful)
+            {
+                images.RemoveAt(index);
+            }
         }
-        else
-        {
-            ConvertButton.IsEnabled = true;
-            StorageFolder conversionFolder = await localFolder.GetFolderAsync("Conversions");
-            await DeleteFiles(conversionFolder);
-        }
+
+        ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = false;
+        DragAndDropText.Visibility = Visibility.Visible;
+        StorageFolder conversionFolder = await localFolder.GetFolderAsync("Conversions");
+        await DeleteFiles();
+        await DeleteFiles(conversionFolder);
     }
 }
 
