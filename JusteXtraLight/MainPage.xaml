@@ -287,15 +287,41 @@
                     Grid.ColumnSpan="2"
                     Grid.Row="1"
                     HorizontalAlignment="Stretch"
-                    Margin="0,0,10,0"
-                    x:Uid="AddFolderButton"/>
+                    Margin="0,0,10,0">
+
+                <Button.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <FontIcon Glyph="&#xE8B7;"
+                                  Margin="0,0,8,0"/>
+                        <TextBlock x:Uid="AddFolderButton"/>
+
+                    </StackPanel>
+                    
+                </Button.Content>
+                
+            </Button>
 
             <Button Click="ChooseImages_Click"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
                     Grid.Row="1"
-                    HorizontalAlignment="Stretch"
-                    x:Uid="ChooseImages"/>
+                    HorizontalAlignment="Stretch">
+
+                <Button.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <FontIcon Glyph="&#xE8B9;"
+                                  Margin="0,0,8,0"/>
+                        <TextBlock x:Uid="ChooseImages"/>
+
+                    </StackPanel>
+
+                </Button.Content>
+
+            </Button>
 
             <Button Click="ConvertListOfImages_Click"
                     Grid.Column="0"
@@ -304,8 +330,19 @@
                     HorizontalAlignment="Stretch"
                     IsEnabled="False"
                     Margin="0,10,0,40"
-                    x:Name="ConvertButton"
-                    x:Uid="ConvertButton">
+                    x:Name="ConvertButton">
+
+                <Button.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <FontIcon Glyph="&#xE895;"
+                                  Margin="0,0,8,0"/>
+                        <TextBlock x:Uid="ConvertButton"/>
+
+                    </StackPanel>
+
+                </Button.Content>
 
                 <Button.Resources>
 
@@ -372,8 +409,21 @@
                     HorizontalAlignment="Stretch"
                     IsEnabled="False"
                     Margin="0,0,10,0"
-                    x:Name="SaveImagesButton"
-                    x:Uid="SaveImagesButton"/>
+                    x:Name="SaveImagesButton">
+
+                <Button.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <FontIcon Glyph="&#xE78C;"
+                                  Margin="0,0,8,0"/>
+                        <TextBlock x:Uid="SaveImagesButton"/>
+
+                    </StackPanel>
+
+                </Button.Content>
+
+            </Button>
 
             <Button Click="ClearListButton_Click"
                     Grid.Column="3"
@@ -381,8 +431,21 @@
                     Grid.Row="3"
                     HorizontalAlignment="Stretch"
                     IsEnabled="False"
-                    x:Name="ClearListButton"
-                    x:Uid="ClearListButton"/>
+                    x:Name="ClearListButton">
+
+                <Button.Content>
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <FontIcon Glyph="&#xE894;"
+                                  Margin="0,0,8,0"/>
+                        <TextBlock x:Uid="ClearListButton"/>
+
+                    </StackPanel>
+
+                </Button.Content>
+
+            </Button>
 
             <TextBlock Grid.Column="0"
                        Grid.ColumnSpan="4"

@@ -125,7 +125,7 @@
     <value>Conversão completa!</value>
     <comment>Text for when the conversion is complete.</comment>
   </data>
-  <data name="ConvertButton.Content" xml:space="preserve">
+  <data name="ConvertButton.Text" xml:space="preserve">
     <value>Converter</value>
     <comment>Content text for the button to convert images</comment>
   </data>
@@ -141,7 +141,7 @@
     <value>Argumentos</value>
     <comment>Header text for the arguments text box</comment>
   </data>
-  <data name="SaveImagesButton.Content" xml:space="preserve">
+  <data name="SaveImagesButton.Text" xml:space="preserve">
     <value>Salvar imagens</value>
     <comment>Content text for the save images button</comment>
   </data>
@@ -185,7 +185,7 @@
     <value>Este aplicativo foi feito com</value>
     <comment>Text for the info flyout</comment>
   </data>
-  <data name="ClearListButton.Content" xml:space="preserve">
+  <data name="ClearListButton.Text" xml:space="preserve">
     <value>Limpar lista</value>
     <comment>Content text for the clear list button</comment>
   </data>
@@ -229,11 +229,11 @@
     <value>Comandos inválidos</value>
     <comment>Text for the malformed string dialog title</comment>
   </data>
-  <data name="AddFolderButton.Content" xml:space="preserve">
+  <data name="AddFolderButton.Text" xml:space="preserve">
     <value>Adicionar pasta</value>
     <comment>Content text for the add folder button</comment>
   </data>
-  <data name="ChooseImages.Content" xml:space="preserve">
+  <data name="ChooseImages.Text" xml:space="preserve">
     <value>Escolher imagens</value>
     <comment>Context text for the choose images button</comment>
   </data>

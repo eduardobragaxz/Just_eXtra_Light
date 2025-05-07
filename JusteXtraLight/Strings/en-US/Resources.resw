@@ -123,7 +123,7 @@
   <data name="ConversionCompleteTitle" xml:space="preserve">
     <value>Conversion complete!</value>
   </data>
-  <data name="ConvertButton.Content" xml:space="preserve">
+  <data name="ConvertButton.Text" xml:space="preserve">
     <value>Convert</value>
   </data>
   <data name="ConversionCompleteContent" xml:space="preserve">
@@ -135,7 +135,7 @@
   <data name="ArgumentsTextBox.Header" xml:space="preserve">
     <value>Arguments</value>
   </data>
-  <data name="SaveImagesButton.Content" xml:space="preserve">
+  <data name="SaveImagesButton.Text" xml:space="preserve">
     <value>Save images</value>
   </data>
   <data name="DragAndDropInstructions.Text" xml:space="preserve">
@@ -168,7 +168,7 @@
   <data name="AppMadeWith.Text" xml:space="preserve">
     <value>This app was made with</value>
   </data>
-  <data name="ClearListButton.Content" xml:space="preserve">
+  <data name="ClearListButton.Text" xml:space="preserve">
     <value>Clear list</value>
   </data>
   <data name="ClearListButton.ToolTipService.ToolTip" xml:space="preserve">
@@ -201,10 +201,10 @@
   <data name="MalformedStringDialogTitle" xml:space="preserve">
     <value>Invalid commands</value>
   </data>
-  <data name="AddFolderButton.Content" xml:space="preserve">
+  <data name="AddFolderButton.Text" xml:space="preserve">
     <value>Add folder</value>
   </data>
-  <data name="ChooseImages.Content" xml:space="preserve">
+  <data name="ChooseImages.Text" xml:space="preserve">
     <value>Choose images</value>
   </data>
 </root>
