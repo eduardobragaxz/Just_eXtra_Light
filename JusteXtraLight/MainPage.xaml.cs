@@ -89,6 +89,7 @@ public sealed partial class MainPage : Page
     {
         await localFolder.CreateFolderAsync("Conversions", CreationCollisionOption.ReplaceExisting);
     }
+
     private async void AddFolder_Click(object sender, RoutedEventArgs e)
     {
         FolderPicker folderPicker = new();
@@ -104,6 +105,7 @@ public sealed partial class MainPage : Page
             await AddImages(items);
         }
     }
+
     private async void ChooseImages_Click(object sender, RoutedEventArgs e)
     {
         FileOpenPicker fileOpenPicker = new();

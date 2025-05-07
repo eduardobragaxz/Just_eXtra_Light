@@ -485,7 +485,7 @@
                        ItemsSource="{x:Bind images}"
                        ItemTemplate="{StaticResource ImagesTemplate}"
                        Margin="0,10,0,0"
-                       SelectionMode="Extended">
+                       SelectionMode="None">
 
                 <ItemsView.Layout>
 
