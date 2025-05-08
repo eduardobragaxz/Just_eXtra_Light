@@ -261,6 +261,7 @@ public sealed partial class MainPage : Page
                                             imageInfo.StatusFontIcon = "\uEA39";
                                             imageInfo.ConversionFinished = true;
                                             imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
+                                            conversionSuccessful = false;
                                         }
 
                                         imageInfo.ShowDeleteButton = false;
@@ -449,15 +450,17 @@ public sealed partial class MainPage : Page
             }
             else
             {
-                for (int index = 0; images.Count - 1 > index; index++)
+                for (int index = 0; images.Count > index; index++)
                 {
                     ImageInfo imageInfo = images[index];
 
-                    if (imageInfo.ConversionSuccessful)
+                    if (imageInfo.ConversionSuccessful && imageInfo.ConversionFinished)
                     {
                         images.RemoveAt(index);
                     }
                 }
+
+                conversionSuccessful = true;
             }
         }
 
