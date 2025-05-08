@@ -342,7 +342,7 @@ public sealed partial class MainPage : Page
                     }
                 }
 
-                await PostConversion();
+                await PostConversion(false);
             }
             else
             {
@@ -433,24 +433,31 @@ public sealed partial class MainPage : Page
 
     private async void ClearListButton_Click(object sender, RoutedEventArgs e)
     {
-        await PostConversion();
+        await PostConversion(true);
     }
 
-    private async Task PostConversion()
+    private async Task PostConversion(bool cleanFromButton)
     {
-        if (conversionSuccessful)
+        if (cleanFromButton)
         {
             images.Clear();
         }
         else
         {
-            for (int index = 0; images.Count > index; index++)
+            if (conversionSuccessful)
             {
-                ImageInfo imageInfo = images[index];
-
-                if (imageInfo.ConversionSuccessful && imageInfo.ConversionFinished)
+                images.Clear();
+            }
+            else
+            {
+                for (int index = 0; images.Count > index; index++)
                 {
-                    images.RemoveAt(index);
+                    ImageInfo imageInfo = images[index];
+
+                    if (imageInfo.ConversionSuccessful && imageInfo.ConversionFinished)
+                    {
+                        images.RemoveAt(index);
+                    }
                 }
             }
         }
