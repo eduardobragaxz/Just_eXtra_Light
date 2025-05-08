@@ -241,9 +241,9 @@ public sealed partial class MainPage : Page
                                     Process? process = null;
 
                                     await Task.Run(() =>
-                                    {
-                                        process = Process.Start(processStart);
-                                    });
+                                        {
+                                            process = Process.Start(processStart);
+                                        });
 
                                     if (process is not null)
                                     {
@@ -261,7 +261,6 @@ public sealed partial class MainPage : Page
                                             imageInfo.StatusFontIcon = "\uEA39";
                                             imageInfo.ConversionFinished = true;
                                             imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
-                                            conversionSuccessful = false;
                                         }
 
                                         imageInfo.ShowDeleteButton = false;
@@ -450,11 +449,11 @@ public sealed partial class MainPage : Page
             }
             else
             {
-                for (int index = 0; images.Count > index; index++)
+                for (int index = 0; images.Count - 1 > index; index++)
                 {
                     ImageInfo imageInfo = images[index];
 
-                    if (imageInfo.ConversionSuccessful && imageInfo.ConversionFinished)
+                    if (imageInfo.ConversionSuccessful)
                     {
                         images.RemoveAt(index);
                     }
