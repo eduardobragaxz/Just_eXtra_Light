@@ -237,4 +237,16 @@
     <value>Escolher imagens</value>
     <comment>Context text for the choose images button</comment>
   </data>
+  <data name="ConversionOptions" xml:space="preserve">
+    <value>Opções de conversão</value>
+    <comment>Header text for the conversion options radio buttons</comment>
+  </data>
+  <data name="ToJpegXl.Text" xml:space="preserve">
+    <value>Para JPEG XL</value>
+    <comment>Content text for the option to convert to jxl</comment>
+  </data>
+  <data name="FromJpegXL.Text" xml:space="preserve">
+    <value>De JPEG XL</value>
+    <comment>Content text for the option to convert from jxl</comment>
+  </data>
 </root>

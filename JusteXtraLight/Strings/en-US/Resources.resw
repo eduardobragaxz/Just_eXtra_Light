@@ -207,4 +207,13 @@
   <data name="ChooseImages.Text" xml:space="preserve">
     <value>Choose images</value>
   </data>
+  <data name="ConversionOptions" xml:space="preserve">
+    <value>Conversion options</value>
+  </data>
+  <data name="ToJpegXl.Text" xml:space="preserve">
+    <value>To JPEG XL</value>
+  </data>
+  <data name="FromJpegXL.Text" xml:space="preserve">
+    <value>From JPEG XL</value>
+  </data>
 </root>
