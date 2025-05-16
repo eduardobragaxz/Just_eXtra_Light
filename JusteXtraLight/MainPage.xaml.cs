@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Media;
 using Windows.Storage.Pickers;
 using Microsoft.UI.Xaml.Controls;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using Windows.Storage.FileProperties;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -20,14 +21,17 @@ using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.AppNotifications.Builder;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
+using Windows.UI;
 
 namespace JustExtraLight;
 
 public sealed partial class MainPage : Page
 {
     bool canDropImages;
+    MainWindow? mainWindow;
     bool conversionSuccessful;
     readonly StorageFolder localFolder;
+    readonly ImmutableArray<string> types;
     readonly ResourceLoader resourceLoader;
     readonly ObservableCollection<ImageInfo> images;
     public MainPage()
@@ -39,9 +43,12 @@ public sealed partial class MainPage : Page
         resourceLoader = new();
         conversionSuccessful = true;
         localFolder = MApplicationData.GetDefault().LocalFolder;
+        types = ImmutableArray.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
     }
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
+        mainWindow.SetTitleBar(AppTitleBar);
         await AppNotificationManager.Default.RemoveAllAsync();
 
         await DeleteFiles();
@@ -84,7 +91,7 @@ public sealed partial class MainPage : Page
     private async void AddFolder_Click(object sender, RoutedEventArgs e)
     {
         FolderPicker folderPicker = new();
-        MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
+
         nint hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(folderPicker, hWnd);
 
@@ -101,7 +108,6 @@ public sealed partial class MainPage : Page
     {
         FileOpenPicker fileOpenPicker = new();
 
-        MainWindow mainWindow = (MainWindow)((App)Microsoft.UI.Xaml.Application.Current).MWindow!;
         nint hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
         WinRT.Interop.InitializeWithWindow.Initialize(fileOpenPicker, hWnd);
 
@@ -130,9 +136,9 @@ public sealed partial class MainPage : Page
             {
                 if (storageItem is StorageFile storageFile)
                 {
-                    if ((bool)ToJpegXlOption.IsChecked!)
+                    if ((bool)ToJpegXLOption.IsChecked!)
                     {
-                        if (storageFile.FileType.ToLower() is ".exr" or ".gif" or ".jpg" or ".jpeg" or ".pam" or ".pgm" or ".ppm" or ".pfm" or ".pgx" or ".png" or ".apng")
+                        if (types.Any(fileType => fileType.Equals(storageFile.FileType, StringComparison.OrdinalIgnoreCase)))
                         {
                             BitmapImage bitmapImage = new();
 
@@ -157,7 +163,7 @@ public sealed partial class MainPage : Page
                     }
                     else
                     {
-                        if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
+                        if (storageFile.FileType.Equals(".jxl", StringComparison.OrdinalIgnoreCase))
                         {
                             BitmapImage bitmapImage = new();
 
@@ -215,7 +221,7 @@ public sealed partial class MainPage : Page
         StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
 
         //convert from or to jxl
-        string conversionOption = (bool)ToJpegXlOption.IsChecked! ? "cjxl.exe" : "djxl.exe";
+        string conversionOption = (bool)ToJpegXLOption.IsChecked! ? "cjxl.exe" : "djxl.exe";
 
         ProcessStartInfo processStart = new($@"{programFolder.Path}\{conversionOption}")
         {
@@ -224,6 +230,7 @@ public sealed partial class MainPage : Page
 
         if (ArgumentsTextBox.Text == "" || (ArgumentsTextBox.Text != "" && ArgumentsTextBox.Text[0..2] == "--"))
         {
+            canDropImages = false;
             string finalParametersString = $"{ArgumentsTextBox.Text} ";
 
             StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions");
@@ -265,7 +272,7 @@ public sealed partial class MainPage : Page
 
                                 string arguments;
 
-                                if ((bool)ToJpegXlOption.IsChecked!)
+                                if ((bool)ToJpegXLOption.IsChecked!)
                                 {
                                     arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
                                 }
@@ -316,6 +323,8 @@ public sealed partial class MainPage : Page
             }
         }
 
+        DisableControlsPostConversion();
+
         static string FixFileName(string displayName)
         {
             StringBuilder newName = new(displayName, displayName.Length);
@@ -354,8 +363,6 @@ public sealed partial class MainPage : Page
     {
         FolderPicker folderPicker = new();
 
-        MainWindow? mainWindow = (MainWindow?)((App)Microsoft.UI.Xaml.Application.Current).MWindow;
-
         if (mainWindow is not null)
         {
             var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(mainWindow);
@@ -376,7 +383,7 @@ public sealed partial class MainPage : Page
                     await convertedFile.MoveAsync(chosenFolder, convertedFile.Name, NameCollisionOption.GenerateUniqueName);
                 }
 
-                await PostConversion(false);
+                await PostSave(false);
             }
             else
             {
@@ -462,15 +469,21 @@ public sealed partial class MainPage : Page
 
         images.Remove(imageInfo);
 
+        ConversionOptions.IsEnabled = images.Count == 0;
         ConvertButton.IsEnabled = ClearListButton.IsEnabled = images.Any(i => i.ConversionSuccessful == false);
     }
 
     private async void ClearListButton_Click(object sender, RoutedEventArgs e)
     {
-        await PostConversion(true);
+        await PostSave(true);
     }
 
-    private async Task PostConversion(bool cleanFromButton)
+    private void DisableControlsPostConversion()
+    {
+        ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = AddFolderButton.IsEnabled = ChooseImagesButton.IsEnabled = false;
+    }
+
+    private async Task PostSave(bool cleanFromButton)
     {
         if (cleanFromButton)
         {
@@ -508,16 +521,11 @@ public sealed partial class MainPage : Page
         }
 
         ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = false;
-        ConversionOptions.IsEnabled = true;
+        ConversionOptions.IsEnabled = AddFolderButton.IsEnabled = ChooseImagesButton.IsEnabled = canDropImages = true;
         DragAndDropText.Visibility = Visibility.Visible;
         StorageFolder conversionFolder = await localFolder.GetFolderAsync("Conversions");
         await DeleteFiles();
         await DeleteFiles(conversionFolder);
-    }
-
-    private void ConversionOptions_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-
     }
 }
 

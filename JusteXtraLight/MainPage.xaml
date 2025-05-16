@@ -127,6 +127,7 @@
         <TitleBar Background="{ThemeResource ControlFillColorDefaultBrush}"
                   Grid.Row="0"
                   Height="48"
+                  x:Name="AppTitleBar"
                   Subtitle="BETA"
                   Title="Just eXtra Light">
 
@@ -261,7 +262,7 @@
                 <RadioButtons.Items>
 
                     <RadioButton IsChecked="True"
-                                 x:Name="ToJpegXlOption">
+                                 x:Name="ToJpegXLOption">
 
                         <RadioButton.Content>
 
@@ -348,6 +349,7 @@
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
                     Margin="0,0,10,0"
+                    x:Name="AddFolderButton"
                     Style="{StaticResource LocalButtonStyle}">
 
                 <Button.Content>
@@ -368,6 +370,7 @@
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
+                    x:Name="ChooseImagesButton"
                     Style="{StaticResource LocalButtonStyle}">
 
                 <Button.Content>
@@ -415,21 +418,21 @@
                             <ResourceDictionary x:Key="Light">
 
                                 <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.8"/>
                                     <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.30"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.95"/>
                                 </LinearGradientBrush>
 
                                 <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.10"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.8"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.2"/>
                                 </LinearGradientBrush>
 
                                 <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
                                     <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="0.0"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight2}" Offset="0.10"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="0.75"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight1}" Offset="1.0"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorLight3}" Offset="1.0"/>
                                 </LinearGradientBrush>
 
                             </ResourceDictionary>
@@ -438,20 +441,20 @@
 
                                 <LinearGradientBrush x:Key="ButtonBackground" StartPoint="1,1" EndPoint="1,0">
                                     <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.40"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.85"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="1.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
                                 </LinearGradientBrush>
 
                                 <LinearGradientBrush x:Key="ButtonBackgroundPointerOver" StartPoint="1,1" EndPoint="1,0">
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.30"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.75"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.8"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
                                 </LinearGradientBrush>
 
                                 <LinearGradientBrush x:Key="ButtonBackgroundPressed" StartPoint="1,1" EndPoint="1,0">
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.0"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark2}" Offset="0.20"/>
-                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.65"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark1}" Offset="0.7"/>
+                                    <GradientStop Color="{ThemeResource SystemAccentColorDark3}" Offset="0.1"/>
                                 </LinearGradientBrush>
 
                             </ResourceDictionary>
