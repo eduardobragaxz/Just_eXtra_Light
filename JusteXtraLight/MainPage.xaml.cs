@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.UI;
@@ -21,7 +22,6 @@ using Windows.ApplicationModel.DataTransfer;
 using Microsoft.Windows.AppNotifications.Builder;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
-using Windows.UI;
 
 namespace JustExtraLight;
 
@@ -30,6 +30,7 @@ public sealed partial class MainPage : Page
     bool canDropImages;
     MainWindow? mainWindow;
     bool conversionSuccessful;
+    StorageFolder? conversionsFolder;
     readonly StorageFolder localFolder;
     readonly ImmutableArray<string> types;
     readonly ResourceLoader resourceLoader;
@@ -57,6 +58,18 @@ public sealed partial class MainPage : Page
 
     private async Task DeleteFiles(StorageFolder? storageFolder = null)
     {
+        if (storageFolder is null && conversionsFolder is not null)
+        {
+            try
+            {
+                await conversionsFolder.DeleteAsync();
+            }
+            catch (FileNotFoundException)
+            {
+
+            }
+        }
+
         if (storageFolder is null)
         {
             IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
@@ -85,7 +98,19 @@ public sealed partial class MainPage : Page
 
     private async Task CreateFolders()
     {
-        await localFolder.CreateFolderAsync("Conversions", CreationCollisionOption.ReplaceExisting);
+        IReadOnlyList<StorageFolder> localFolderImages = await localFolder.GetFoldersAsync();
+        int count = 0;
+
+        string newName = "Conversions";
+        //can't rely on automatic name collision handling because it adds spaces in the file name
+
+        while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+        {
+            count++;
+            newName += $"{count}";
+        }
+
+        conversionsFolder = await localFolder.CreateFolderAsync(newName);
     }
 
     private async void AddFolder_Click(object sender, RoutedEventArgs e)
@@ -233,8 +258,6 @@ public sealed partial class MainPage : Page
             canDropImages = false;
             string finalParametersString = $"{ArgumentsTextBox.Text} ";
 
-            StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions");
-
             foreach (ImageInfo imageInfo in images)
             {
                 if (imageInfo.ConversionFinished == false)
@@ -274,11 +297,11 @@ public sealed partial class MainPage : Page
 
                                 if ((bool)ToJpegXLOption.IsChecked!)
                                 {
-                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jxl";
+                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jxl";
                                 }
                                 else
                                 {
-                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder.Path}\{newName}.jpg";
+                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jpg";
                                 }
 
                                 processStart.Arguments = arguments;
@@ -324,34 +347,33 @@ public sealed partial class MainPage : Page
         }
 
         DisableControlsPostConversion();
+    }
+    static string FixFileName(string displayName)
+    {
+        StringBuilder newName = new(displayName, displayName.Length);
 
-        static string FixFileName(string displayName)
+        if (displayName.Contains(' '))
         {
-            StringBuilder newName = new(displayName, displayName.Length);
-
-            if (displayName.Contains(' '))
-            {
-                newName.Replace(' ', '_');
-            }
-
-            if (displayName.Contains('-'))
-            {
-                newName.Replace('-', '_');
-            }
-
-            if (newName.Length >= 150)
-            {
-                int difference = newName.Length - 150;
-                newName.Remove(149, difference);
-            }
-
-            while (newName[^1] == '.' || newName[^1] == '-' || newName[^1] == '_')
-            {
-                newName.Remove(newName.Length - 1, 1);
-            }
-
-            return $"{newName}";
+            newName.Replace(' ', '_');
         }
+
+        if (displayName.Contains('-'))
+        {
+            newName.Replace('-', '_');
+        }
+
+        if (newName.Length >= 150)
+        {
+            int difference = newName.Length - 150;
+            newName.Remove(149, difference);
+        }
+
+        while (newName[^1] == '.' || newName[^1] == '-' || newName[^1] == '_')
+        {
+            newName.Remove(newName.Length - 1, 1);
+        }
+
+        return $"{newName}";
     }
 
     private async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
@@ -375,8 +397,7 @@ public sealed partial class MainPage : Page
 
             if (chosenFolder is not null)
             {
-                StorageFolder conversionsFolder = await localFolder.GetFolderAsync("Conversions");
-                IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder.GetFilesAsync();
+                IReadOnlyList<StorageFile> convertedFiles = await conversionsFolder!.GetFilesAsync();
 
                 foreach (StorageFile convertedFile in convertedFiles)
                 {
@@ -526,6 +547,7 @@ public sealed partial class MainPage : Page
         StorageFolder conversionFolder = await localFolder.GetFolderAsync("Conversions");
         await DeleteFiles();
         await DeleteFiles(conversionFolder);
+        await CreateFolders();
     }
 }
 
