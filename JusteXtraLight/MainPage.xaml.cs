@@ -58,18 +58,6 @@ public sealed partial class MainPage : Page
 
     private async Task DeleteFiles(StorageFolder? storageFolder = null)
     {
-        if (storageFolder is null && conversionsFolder is not null)
-        {
-            try
-            {
-                await conversionsFolder.DeleteAsync();
-            }
-            catch (FileNotFoundException)
-            {
-
-            }
-        }
-
         if (storageFolder is null)
         {
             IReadOnlyList<StorageFile> files = await localFolder.GetFilesAsync();
