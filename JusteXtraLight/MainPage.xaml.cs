@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.UI;
@@ -19,7 +18,6 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using System.Runtime.CompilerServices;
 using Microsoft.Windows.AppNotifications;
 using Windows.ApplicationModel.DataTransfer;
-using Microsoft.Windows.AppNotifications.Builder;
 using Microsoft.Windows.ApplicationModel.Resources;
 using MApplicationData = Microsoft.Windows.Storage.ApplicationData;
 
@@ -219,12 +217,11 @@ public sealed partial class MainPage : Page
     {
         LoadingRing.IsActive = true;
         ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = false;
+
         await ConvertListOfImages();
+
         SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = true;
         LoadingRing.IsActive = false;
-
-        SendPostConversionNotification();
-        await ShowPostConversionMessage();
     }
 
     private async Task ConvertListOfImages()
@@ -234,7 +231,8 @@ public sealed partial class MainPage : Page
         StorageFolder programFolder = await assetsFolder.GetFolderAsync("Program");
 
         //convert from or to jxl
-        string conversionOption = (bool)ToJpegXLOption.IsChecked! ? "cjxl.exe" : "djxl.exe";
+        bool toOrFromJXL = (bool)ToJpegXLOption.IsChecked!;
+        string conversionOption = toOrFromJXL ? "cjxl.exe" : "djxl.exe";
 
         ProcessStartInfo processStart = new($@"{programFolder.Path}\{conversionOption}")
         {
@@ -246,92 +244,99 @@ public sealed partial class MainPage : Page
             canDropImages = false;
             string finalParametersString = $"{ArgumentsTextBox.Text} ";
 
-            foreach (ImageInfo imageInfo in images)
+            ParallelOptions parallelOptions = new()
             {
-                if (imageInfo.ConversionFinished == false)
-                {
-                    switch (imageInfo.StorageFile.FileType.ToLower())
-                    {
-                        case ".exr":
-                        case ".gif":
-                        case ".jpg" or ".jpeg":
-                        case ".pam" or ".pgm" or ".ppm":
-                        case ".pfm":
-                        case ".pgx":
-                        case ".png" or ".apng":
-                        case ".jxl":
-                            {
-                                string newName = FixFileName(imageInfo.StorageFile.DisplayName);
+                MaxDegreeOfParallelism = 3
+            };
 
-                                IReadOnlyList<StorageFile> localFolderImages = await localFolder.GetFilesAsync();
+            await Parallel.ForEachAsync(images, parallelOptions, async (imageInfo, token) =>
+             {
+                 if (imageInfo.ConversionFinished == false)
+                 {
+                     switch (imageInfo.StorageFile.FileType.ToLower())
+                     {
+                         case ".exr":
+                         case ".gif":
+                         case ".jpg" or ".jpeg":
+                         case ".pam" or ".pgm" or ".ppm":
+                         case ".pfm":
+                         case ".pgx":
+                         case ".png" or ".apng":
+                         case ".jxl":
+                             {
+                                 string newName = FixFileName(imageInfo.StorageFile.DisplayName);
 
-                                int count = 0;
+                                 IReadOnlyList<StorageFile> localFolderImages = await localFolder.GetFilesAsync();
 
-                                //can't rely on automatic name collision handling because it adds spaces in the file name
-                                while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-                                {
-                                    count++;
-                                }
+                                 int count = 0;
 
-                                if (count != 0)
-                                {
-                                    newName += $"{count}";
-                                }
+                                 //can't rely on automatic name collision handling because it adds spaces in the file name
+                                 while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
+                                 {
+                                     count++;
+                                 }
 
-                                StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, newName);
-                                string path = localFolder.Path;
+                                 if (count != 0)
+                                 {
+                                     newName += $"{count}";
+                                 }
 
-                                string arguments;
+                                 StorageFile newFile = await imageInfo.StorageFile.CopyAsync(localFolder, newName);
+                                 string path = localFolder.Path;
 
-                                if ((bool)ToJpegXLOption.IsChecked!)
-                                {
-                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jxl";
-                                }
-                                else
-                                {
-                                    arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jpg";
-                                }
+                                 string arguments;
 
-                                processStart.Arguments = arguments;
+                                 if (toOrFromJXL)
+                                 {
+                                     arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jxl";
+                                 }
+                                 else
+                                 {
+                                     arguments = $@"{finalParametersString}{path}\{newFile.Name} {conversionsFolder!.Path}\{newName}.jpg";
+                                 }
 
-                                Process? process = null;
+                                 processStart.Arguments = arguments;
 
-                                await Task.Run(() =>
-                                    {
-                                        process = Process.Start(processStart);
-                                    });
+                                 Process? process = Process.Start(processStart);
 
-                                if (process is not null)
-                                {
-                                    process.WaitForExit();
+                                 if (process is not null)
+                                 {
+                                     process.WaitForExit();
+                                     if (process.ExitCode == 0)
+                                     {
+                                         this.DispatcherQueue.TryEnqueue(() =>
+                                         {
+                                             imageInfo.ConversionSuccessful = true;
+                                             imageInfo.StatusFontIcon = "\uE8FB";
+                                             imageInfo.ConversionFinished = true;
+                                             imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
+                                         });
+                                     }
+                                     else
+                                     {
+                                         this.DispatcherQueue.TryEnqueue(() =>
+                                         {
+                                             imageInfo.StatusFontIcon = "\uEA39";
+                                             imageInfo.ConversionFinished = true;
+                                             imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
+                                             conversionSuccessful = false;
+                                         });
+                                     }
+                                     this.DispatcherQueue.TryEnqueue(() =>
+                                     {
+                                         imageInfo.ShowDeleteButton = false;
+                                         imageInfo.ImageBorderThickness = new(2);
+                                     });
 
-                                    if (process.ExitCode == 0)
-                                    {
-                                        imageInfo.ConversionSuccessful = true;
-                                        imageInfo.StatusFontIcon = "\uE8FB";
-                                        imageInfo.ConversionFinished = true;
-                                        imageInfo.StatusSolidColorBrush = new(Colors.LightGreen);
-                                    }
-                                    else
-                                    {
-                                        imageInfo.StatusFontIcon = "\uEA39";
-                                        imageInfo.ConversionFinished = true;
-                                        imageInfo.StatusSolidColorBrush = new(Colors.IndianRed);
-                                        conversionSuccessful = false;
-                                    }
+                                     process.Close();
+                                     process.Dispose();
+                                 }
 
-                                    imageInfo.ShowDeleteButton = false;
-                                    imageInfo.ImageBorderThickness = new(2);
-
-                                    process.Close();
-                                    process.Dispose();
-                                }
-
-                                break;
-                            }
-                    }
-                }
-            }
+                                 break;
+                             }
+                     }
+                 }
+             });
         }
 
         DisableControlsPostConversion();
@@ -400,57 +405,6 @@ public sealed partial class MainPage : Page
             }
 
             canDropImages = true;
-        }
-    }
-
-    private async Task ShowPostConversionMessage()
-    {
-        if (conversionSuccessful)
-        {
-            ContentDialog successContentDialog = new()
-            {
-                CloseButtonText = resourceLoader.GetString("ContentDialogCloseButton"),
-                Content = resourceLoader.GetString("SuccessDialogContent"),
-                DefaultButton = ContentDialogButton.Close,
-                Title = resourceLoader.GetString("SuccessDialogTitle"),
-                XamlRoot = XamlRoot
-            };
-
-            await successContentDialog.ShowAsync();
-        }
-        else
-        {
-            ContentDialog mildErrorContentDialog = new()
-            {
-                CloseButtonText = resourceLoader.GetString("ContentDialogCloseButton"),
-                Content = resourceLoader.GetString("MildErrorDialogContent"),
-                DefaultButton = ContentDialogButton.Close,
-                Title = resourceLoader.GetString("MildErrorDialogTitle"),
-                XamlRoot = XamlRoot
-            };
-
-            await mildErrorContentDialog.ShowAsync();
-        }
-    }
-
-    private void SendPostConversionNotification()
-    {
-        if (AppNotificationManager.IsSupported())
-        {
-            AppNotificationBuilder appNotification;
-
-            if (conversionSuccessful)
-            {
-                appNotification = new AppNotificationBuilder()
-                    .AddText(resourceLoader.GetString("AppNotificationSuccessContent"));
-            }
-            else
-            {
-                appNotification = new AppNotificationBuilder()
-                    .AddText(resourceLoader.GetString("AppNotificationSuccessContent"));
-            }
-
-            AppNotificationManager.Default.Show(appNotification.BuildNotification());
         }
     }
 
@@ -524,11 +478,10 @@ public sealed partial class MainPage : Page
 
                     images.Remove(imageInfo);
                 }
-
-                conversionSuccessful = true;
             }
         }
 
+        conversionSuccessful = false;
         ConvertButton.IsEnabled = SaveImagesButton.IsEnabled = ClearListButton.IsEnabled = false;
         ConversionOptions.IsEnabled = AddFolderButton.IsEnabled = ChooseImagesButton.IsEnabled = canDropImages = true;
         DragAndDropText.Visibility = Visibility.Visible;
