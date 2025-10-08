@@ -163,7 +163,7 @@
         </TitleBar>
 
         <Grid Grid.Row="1"
-              Padding="36,10,36,36">
+              Padding="36">
 
             <Grid.ColumnDefinitions>
 
@@ -196,6 +196,7 @@
 
                     <TextBox Margin="16"
                              x:Name="ArgumentsTextBox"
+                             Text="{x:Bind viewModel.Arguments, Mode=OneWay}"
                              x:Uid="ArgumentsTextBox" />
 
                 </Expander.Content>
@@ -229,10 +230,11 @@
 
             </Expander>
 
-            <Button Click="AddFolderButton_Click"
+            <Button Click="{x:Bind viewModel.AddFolderButton_Click}"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
+                    IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
                     Margin="0,0,8,0"
                     x:Name="AddFolderButton"
                     Style="{StaticResource LocalButtonStyle}">
@@ -251,10 +253,11 @@
 
             </Button>
 
-            <Button Click="AddImagesButton_Click"
+            <Button Click="{x:Bind viewModel.AddImagesButton_Click}"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
+                    IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
                     x:Name="AddImagesButton"
                     Style="{StaticResource LocalButtonStyle}">
 
@@ -272,13 +275,13 @@
 
             </Button>
 
-            <Button Click="ConvertButton_Click"
+            <Button Click="{x:Bind viewModel.ConvertButton_Click}"
                     Grid.Column="0"
                     Grid.ColumnSpan="4"
                     Grid.Row="3"
                     Height="60"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="False"
+                    IsEnabled="{x:Bind viewModel.EnableConvertButton, Mode=OneWay}"
                     Margin="0,8"
                     x:Name="ConvertButton">
 
@@ -296,11 +299,12 @@
 
             </Button>
 
-            <Button Grid.Column="0"
+            <Button Click="{x:Bind viewModel.SaveImagesButton_Click}"
+                    Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Grid.Row="4"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="False"
+                    IsEnabled="{x:Bind viewModel.EnableSaveButton, Mode=OneWay}"
                     Margin="0,0,8,0"
                     x:Name="SaveImagesButton">
 
@@ -318,12 +322,12 @@
 
             </Button>
 
-            <Button Click="ClearListButton_Click"
+            <Button Click="{x:Bind viewModel.ClearListButton_Click}"
                     Grid.Column="3"
                     Grid.ColumnSpan="1"
                     Grid.Row="4"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="False"
+                    IsEnabled="{x:Bind viewModel.EnableClearButton, Mode=OneWay}"
                     x:Name="ClearListButton">
 
                 <Button.Content>
@@ -354,7 +358,7 @@
                           Grid.ColumnSpan="1"
                           Grid.Row="5"
                           HorizontalAlignment="Right"
-                          IsActive="False"
+                          IsActive="{x:Bind viewModel.IsConversionInProgress, Mode=OneWay}"
                           Margin="8"
                           x:Name="LoadingRing"
                           VerticalAlignment="Bottom" />
@@ -364,14 +368,14 @@
                       Grid.Column="0"
                       Grid.ColumnSpan="4"
                       Grid.Row="5"
-                      ItemsSource="{x:Bind images}"
+                      ItemsSource="{x:Bind viewModel.ImagesList}"
                       Margin="0,8,0,0"
                       x:Name="ImageItemsView"
                       SelectionMode="None">
 
                 <GridView.ItemTemplate>
 
-                    <DataTemplate x:DataType="x:String">
+                    <DataTemplate x:DataType="storage:StorageFile">
 
                         <Image Height="88"
                                Width="88">
@@ -381,7 +385,7 @@
                                 <BitmapImage DecodePixelHeight="88"
                                              DecodePixelType="Logical"
                                              DecodePixelWidth="88"
-                                             UriSource="{x:Bind }" />
+                                             UriSource="{x:Bind Path}" />
 
                             </Image.Source>
 
