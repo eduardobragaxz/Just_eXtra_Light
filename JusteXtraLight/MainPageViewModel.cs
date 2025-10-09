@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
 
 namespace JustExtraLight;
@@ -30,18 +31,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
     }
     public bool IsConversionInProgress
-    {
-        get;
-        set
-        {
-            if (value != field)
-            {
-                field = value;
-                NotifyPropertyChanged();
-            }
-        }
-    }
-    public bool ConversionCompleted
     {
         get;
         set
@@ -105,7 +94,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     readonly ImmutableArray<string> types;
     readonly ResourceLoader resourceLoader;
     public ObservableCollection<StorageFile> ImagesList { get; set; }
-    
+
     public MainPageViewModel()
     {
         Arguments = "";
@@ -164,8 +153,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         if (results is not null && results.Count != 0)
         {
-            StorageFolder storageFolder = Microsoft.Windows.Storage.ApplicationData.GetDefault().TemporaryFolder;
-
             foreach (PickFileResult result in results)
             {
                 StorageFile file = await StorageFile.GetFileFromPathAsync(result.Path);
@@ -173,6 +160,41 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 if (await TryToCopyImageToTempFolder(file))
                 {
                     TryAddImageToList(file);
+                }
+            }
+        }
+    }
+    public void ImageItemsView_DragOver(object sender, DragEventArgs e)
+    {
+        e.AcceptedOperation = DataPackageOperation.Copy;
+    }
+
+    [WinRT.DynamicWindowsRuntimeCast(typeof(StorageFile))]
+    public async void ImageItemsView_Drop(object sender, DragEventArgs e)
+    {
+        await DropImages(e);
+    }
+
+    [WinRT.DynamicWindowsRuntimeCast(typeof(StorageFile))]
+    private async Task DropImages(DragEventArgs e)
+    {
+        if (EnableAddButtons == true)
+        {
+            if (e.DataView.Contains(StandardDataFormats.StorageItems))
+            {
+                IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
+
+                foreach (IStorageItem item in items)
+                {
+                    StorageFile storageFile = (StorageFile)item;
+
+                    if (types.Contains(storageFile.FileType))
+                    {
+                        if (await TryToCopyImageToTempFolder(storageFile))
+                        {
+                            ImagesList.Add(storageFile);
+                        }
+                    }
                 }
             }
         }
@@ -201,6 +223,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         if (Arguments == "" || Arguments != "" && Arguments[0..2] == "--")
         {
+            IsConversionInProgress = true;
+
             EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false;
 
             string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
@@ -213,11 +237,12 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             await Task.Run(async () =>
             {
-                IReadOnlyList<StorageFile> files = await TempFolder.GetFilesAsync();
+                ImmutableArray<StorageFile> files = [.. await TempFolder.GetFilesAsync()];
 
                 foreach (StorageFile file in files)
                 {
                     string newName = FixFileName(file.DisplayName);
+
                     await file.RenameAsync(newName);
                     string finalArguments = $@"{Arguments} {TempFolder.Path}\{newName}{file.FileType} {convertedImagesFolder.Path}\{newName}.jxl";
                     processStart.Arguments = finalArguments;
@@ -249,6 +274,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
             });
 
+            IsConversionInProgress = false;
             EnableSaveButton = EnableClearButton = true;
         }
 
@@ -305,17 +331,30 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         if (result is not null)
         {
+            EnableAddButtons = true;
+            EnableConvertButton = EnableSaveButton = EnableClearButton = false;
+
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
             IReadOnlyList<StorageFile> files = await convertedImagesFolder.GetFilesAsync();
+            IReadOnlyList<StorageFile> filesInNewFolder = await storageFolder.GetFilesAsync();
 
             foreach (StorageFile file in files)
             {
-                await file.MoveAsync(storageFolder, file.DisplayName, NameCollisionOption.GenerateUniqueName);
+                int count = 0;
+                string displayName = file.DisplayName;
+
+                foreach (StorageFile storageFile in filesInNewFolder)
+                {
+                    if (storageFile.DisplayName == displayName)
+                    {
+                        count++;
+                    }
+                }
+
+                await file.MoveAsync(storageFolder, count != 0 ? $"{displayName}_{count}.jxl" : file.Name);
             }
 
-            ImagesList.Clear();
-            EnableAddButtons = true;
-            EnableConvertButton = EnableSaveButton = EnableClearButton = false;
+            await DeleteFilesAfterConversion();
         }
     }
 

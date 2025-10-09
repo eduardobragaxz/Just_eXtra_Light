@@ -365,6 +365,8 @@
 
             <GridView AllowDrop="True"
                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                      DragOver="{x:Bind viewModel.ImageItemsView_DragOver}"
+                      Drop="{x:Bind viewModel.ImageItemsView_Drop}"
                       Grid.Column="0"
                       Grid.ColumnSpan="4"
                       Grid.Row="5"

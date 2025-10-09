@@ -1,7 +1,8 @@
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
+using System.Runtime.InteropServices;
 using Windows.Graphics;
 using WinRT;
 
@@ -26,13 +27,15 @@ public sealed partial class MainWindow : Window
         AppWindow.SetIcon("Assets/Icons/TitleBarIco.ico");
         ExtendsContentIntoTitleBar = true;
 
-        double scale = ((MainPage)Content).RasterizationScale;
-        AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(900 * scale)));
+        uint dpi = GetDpiForWindow((nint)AppWindow.Id.Value);
+        int calculatedWidth = DipToPhysical(1000, dpi);
+        int calculatedHeight = DipToPhysical(900, dpi);
+        AppWindow.Resize(new SizeInt32(calculatedWidth, calculatedHeight));
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
         OverlappedPresenter overlappedPresenter = AppWindow.Presenter.As<OverlappedPresenter>();
-        overlappedPresenter.PreferredMinimumWidth = 1000;
-        overlappedPresenter.PreferredMinimumHeight = 900;
+        overlappedPresenter.PreferredMinimumWidth = calculatedWidth;
+        overlappedPresenter.PreferredMinimumHeight = calculatedHeight;
 
         DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);
         if (displayArea is not null)
@@ -43,4 +46,13 @@ public sealed partial class MainWindow : Window
             AppWindow.Move(CenteredPosition);
         }
     }
+
+    private static int DipToPhysical(double dip, uint dpi)
+    {
+        float scaleFactor = (float)dpi / 96;
+        return (int)(dip * scaleFactor);
+    }
+
+    [LibraryImport("user32.dll", SetLastError = true)]
+    private static partial uint GetDpiForWindow(nint hwnd);
 }
