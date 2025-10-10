@@ -28,8 +28,8 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
 
         uint dpi = GetDpiForWindow((nint)AppWindow.Id.Value);
-        int calculatedWidth = DipToPhysical(1000, dpi);
-        int calculatedHeight = DipToPhysical(900, dpi);
+        int calculatedWidth = DipToPhysical(900, dpi);
+        int calculatedHeight = DipToPhysical(760, dpi);
         AppWindow.Resize(new SizeInt32(calculatedWidth, calculatedHeight));
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
@@ -41,15 +41,15 @@ public sealed partial class MainWindow : Window
         if (displayArea is not null)
         {
             PointInt32 CenteredPosition = AppWindow.Position;
-            CenteredPosition.X = ((displayArea.WorkArea.Width - AppWindow.Size.Width) / 2);
-            CenteredPosition.Y = ((displayArea.WorkArea.Height - AppWindow.Size.Height) / 2);
+            CenteredPosition.X = ((displayArea.WorkArea.Width - calculatedWidth) / 2);
+            CenteredPosition.Y = ((displayArea.WorkArea.Height - calculatedHeight) / 2);
             AppWindow.Move(CenteredPosition);
         }
     }
 
     private static int DipToPhysical(double dip, uint dpi)
     {
-        float scaleFactor = (float)dpi / 96;
+        double scaleFactor = (double)dpi / 96;
         return (int)(dip * scaleFactor);
     }
 

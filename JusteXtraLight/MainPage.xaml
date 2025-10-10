@@ -163,6 +163,7 @@
         </TitleBar>
 
         <Grid Grid.Row="1"
+              MaxWidth="1500"
               Padding="36">
 
             <Grid.ColumnDefinitions>

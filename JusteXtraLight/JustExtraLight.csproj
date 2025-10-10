@@ -13,7 +13,7 @@
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
 		<WindowsAppSDKSelfContained Condition="'$(Configuration)' != 'Debug'">true</WindowsAppSDKSelfContained>
-		<PublishAot>true</PublishAot>
+		<PublishAot>false</PublishAot>
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
