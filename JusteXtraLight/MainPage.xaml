@@ -355,7 +355,8 @@
                        VerticalAlignment="Center"
                        x:Uid="DragAndDropInstructions" />
 
-            <ProgressRing Grid.Column="4"
+            <ProgressRing Canvas.ZIndex="1"
+                          Grid.Column="4"
                           Grid.ColumnSpan="1"
                           Grid.Row="5"
                           HorizontalAlignment="Right"
