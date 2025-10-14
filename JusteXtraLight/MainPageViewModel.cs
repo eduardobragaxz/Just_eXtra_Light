@@ -247,11 +247,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     string finalArguments = $@"{Arguments} {file.Path}{file.FileType} {convertedImagesFolder.Path}\{newName}.jxl";
                     processStart.Arguments = finalArguments;
 
-                    Process? process = Process.Start(processStart);
+                    using Process? process = Process.Start(processStart);
                     if (process is not null)
                     {
                         process.WaitForExit();
-                        process.Close();
                         process.Dispose();
                     }
                     else
@@ -290,6 +289,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             if (displayName.Contains('-'))
             {
                 newName.Replace('-', '_');
+            }
+
+            if (displayName.Contains('.'))
+            {
+                newName.Replace('.', '_');
             }
 
             if (newName.Length >= 150)
