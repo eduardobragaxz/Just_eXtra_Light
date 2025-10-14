@@ -244,7 +244,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     string newName = FixFileName(file.DisplayName);
 
                     await file.RenameAsync(newName);
-                    string finalArguments = $@"{Arguments} {TempFolder.Path}\{newName}{file.FileType} {convertedImagesFolder.Path}\{newName}.jxl";
+                    string finalArguments = $@"{Arguments} {file.Path}{file.FileType} {convertedImagesFolder.Path}\{newName}.jxl";
                     processStart.Arguments = finalArguments;
 
                     Process? process = Process.Start(processStart);
