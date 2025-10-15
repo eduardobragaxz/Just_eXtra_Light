@@ -335,9 +335,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         if (result is not null)
         {
-            EnableAddButtons = true;
-            EnableConvertButton = EnableSaveButton = EnableClearButton = false;
-
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
             IReadOnlyList<StorageFile> files = await convertedImagesFolder.GetFilesAsync();
             IReadOnlyList<StorageFile> filesInNewFolder = await storageFolder.GetFilesAsync();
@@ -358,6 +355,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 await file.MoveAsync(storageFolder, count != 0 ? $"{displayName}_{count}.jxl" : file.Name);
             }
 
+            EnableAddButtons = true;
+            EnableConvertButton = EnableSaveButton = EnableClearButton = false;
             await DeleteFilesAfterConversion();
         }
     }
