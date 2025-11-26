@@ -1,0 +1,16 @@
+﻿global using Microsoft.UI.Xaml;
+global using Microsoft.UI.Xaml.Controls;
+global using Microsoft.Windows.ApplicationModel.Resources;
+global using Microsoft.Windows.Storage.Pickers;
+global using System;
+global using System.Collections.Generic;
+global using System.Collections.Immutable;
+global using System.Collections.ObjectModel;
+global using System.ComponentModel;
+global using System.Diagnostics;
+global using System.Runtime.CompilerServices;
+global using System.Runtime.InteropServices;
+global using System.Text;
+global using System.Threading.Tasks;
+global using Windows.ApplicationModel.DataTransfer;
+global using Windows.Storage;

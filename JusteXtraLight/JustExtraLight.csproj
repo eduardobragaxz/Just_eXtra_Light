@@ -12,7 +12,6 @@
 		<UseWinUI>true</UseWinUI>
 		<EnableMsixTooling>true</EnableMsixTooling>
 		<Nullable>enable</Nullable>
-		<PublishAot>true</PublishAot>
 		<GenerateTemporaryStoreCertificate>True</GenerateTemporaryStoreCertificate>
 		<GenerateAppInstallerFile>False</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
@@ -23,12 +22,13 @@
 		<GenerateTestArtifacts>False</GenerateTestArtifacts>
 		<AppxBundle>Never</AppxBundle>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-		<CsWinRTAotWarningLevel>3</CsWinRTAotWarningLevel>
+		<CsWinRTAotWarningLevel>2</CsWinRTAotWarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
 
-		<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>
+		<PublishTrimmed>true</PublishTrimmed>
+		<PublishReadyToRun>true</PublishReadyToRun>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 
 	</PropertyGroup>

@@ -1,6 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-
-namespace JustExtraLight;
+﻿namespace JustExtraLight;
 
 public partial class App : Application
 {

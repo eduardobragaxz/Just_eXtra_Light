@@ -1,20 +1,4 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.Windows.ApplicationModel.Resources;
-using Microsoft.Windows.Storage.Pickers;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.DataTransfer;
-using Windows.Storage;
-
-namespace JustExtraLight;
+﻿namespace JustExtraLight;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -90,13 +74,14 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-    public StorageFolder? TempFolder { get; set; }
+    readonly StorageFolder tempFolder;
     readonly ImmutableArray<string> types;
     readonly ResourceLoader resourceLoader;
     public ObservableCollection<StorageFile> ImagesList { get; set; }
 
-    public MainPageViewModel()
+    public MainPageViewModel(StorageFolder folder)
     {
+        tempFolder = folder;
         Arguments = "";
         ImagesList = [];
         ImagesList.CollectionChanged += Images_CollectionChanged;
@@ -113,7 +98,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private async Task AddFolderImages()
     {
-        Microsoft.Windows.Storage.Pickers.FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
+        FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
 
         if (result is not null)
@@ -168,14 +153,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         e.AcceptedOperation = DataPackageOperation.Copy;
     }
-
-    [WinRT.DynamicWindowsRuntimeCast(typeof(StorageFile))]
     public async void ImageItemsView_Drop(object sender, DragEventArgs e)
     {
         await DropImages(e);
     }
-
-    [WinRT.DynamicWindowsRuntimeCast(typeof(StorageFile))]
     private async Task DropImages(DragEventArgs e)
     {
         if (EnableAddButtons == true)
@@ -203,12 +184,32 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         try
         {
-            await file.CopyAsync(TempFolder);
+            string fileType = file.FileType;
+            string newName = FixFileName(file.DisplayName);
+            string newNewName = $"{newName}{fileType}";
+
+            await file.CopyAsync(tempFolder, newNewName);
             return true;
         }
         catch (COMException)
         {
             return false;
+        }
+
+        static string FixFileName(string displayName)
+        {
+            StringBuilder newName = new(displayName, displayName.Length);
+            newName.Replace(' ', '_')
+                .Replace('-', '_')
+                .Replace('.', '_');
+
+            if (newName.Length >= 150)
+            {
+                int difference = newName.Length - 150;
+                newName.Remove(149, difference);
+            }
+
+            return $"{newName}";
         }
     }
     private void TryAddImageToList(StorageFile file)
@@ -233,18 +234,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 CreateNoWindow = true
             };
 
-            StorageFolder convertedImagesFolder = await TempFolder!.CreateFolderAsync("ConvertedImages", CreationCollisionOption.ReplaceExisting);
-
             await Task.Run(async () =>
             {
-                ImmutableArray<StorageFile> files = [.. await TempFolder.GetFilesAsync()];
+                IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
 
                 foreach (StorageFile file in files)
                 {
-                    string newName = FixFileName(file.DisplayName);
-
-                    await file.RenameAsync(newName);
-                    string finalArguments = $@"{Arguments} {file.Path}{file.FileType} {convertedImagesFolder.Path}\{newName}.jxl";
+                    string finalArguments = $@"{Arguments} {file.Path} {tempFolder.Path}\{file.DisplayName}.jxl";
                     processStart.Arguments = finalArguments;
 
                     using Process? process = Process.Start(processStart);
@@ -257,57 +253,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     {
 
                     }
-
-                    //int count = 0;
-
-                    ////can't rely on automatic name collision handling because it adds spaces in the file name
-                    ////while (localFolderImages.Any(file => file.DisplayName.Equals(newName, StringComparison.OrdinalIgnoreCase)))
-                    ////{
-                    ////    count++;
-                    ////}
-
-                    //if (count != 0)
-                    //{
-                    //    newName += $"{count}";
-                    //}
                 }
             });
 
             IsConversionInProgress = false;
             EnableSaveButton = EnableClearButton = true;
-        }
-
-        static string FixFileName(string displayName)
-        {
-            StringBuilder newName = new(displayName, displayName.Length);
-
-            if (displayName.Contains(' '))
-            {
-                newName.Replace(' ', '_');
-            }
-
-            if (displayName.Contains('-'))
-            {
-                newName.Replace('-', '_');
-            }
-
-            if (displayName.Contains('.'))
-            {
-                newName.Replace('.', '_');
-            }
-
-            if (newName.Length >= 150)
-            {
-                int difference = newName.Length - 150;
-                newName.Remove(149, difference);
-            }
-
-            while (newName[^1] == '.' || newName[^1] == '-' || newName[^1] == '_')
-            {
-                newName.Remove(newName.Length - 1, 1);
-            }
-
-            return $"{newName}";
         }
     }
     public async void ClearListButton_Click(object sender, RoutedEventArgs e)
@@ -316,7 +266,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private async Task DeleteFilesAfterConversion()
     {
-        IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
+        IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
         foreach (StorageFile file in files)
         {
             await file.DeleteAsync();
@@ -328,36 +278,25 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
     {
-        StorageFolder convertedImagesFolder = await TempFolder!.GetFolderAsync("ConvertedImages");
-
         Microsoft.Windows.Storage.Pickers.FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
 
         if (result is not null)
         {
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
-            IReadOnlyList<StorageFile> files = await convertedImagesFolder.GetFilesAsync();
-            IReadOnlyList<StorageFile> filesInNewFolder = await storageFolder.GetFilesAsync();
+            IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
 
             foreach (StorageFile file in files)
             {
-                int count = 0;
-                string displayName = file.DisplayName;
-
-                foreach (StorageFile storageFile in filesInNewFolder)
+                if (file.FileType == ".jxl")
                 {
-                    if (storageFile.DisplayName == displayName)
-                    {
-                        count++;
-                    }
+                    await file.MoveAsync(storageFolder);
                 }
-
-                await file.MoveAsync(storageFolder, count != 0 ? $"{displayName}_{count}.jxl" : file.Name);
             }
 
+            await DeleteFilesAfterConversion();
             EnableAddButtons = true;
             EnableConvertButton = EnableSaveButton = EnableClearButton = false;
-            await DeleteFilesAfterConversion();
         }
     }
 
