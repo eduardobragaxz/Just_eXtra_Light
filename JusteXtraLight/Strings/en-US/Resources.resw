@@ -120,17 +120,8 @@
   <data name="ChooseFolderButton.Text" xml:space="preserve">
     <value>Choose folder</value>
   </data>
-  <data name="ConversionCompleteTitle" xml:space="preserve">
-    <value>Conversion complete!</value>
-  </data>
   <data name="ConvertButton.Text" xml:space="preserve">
     <value>Convert</value>
-  </data>
-  <data name="ConversionCompleteContent" xml:space="preserve">
-    <value>The images have been saved</value>
-  </data>
-  <data name="ConversionCompleteContent2" xml:space="preserve">
-    <value>The images have been converted and can be saved now</value>
   </data>
   <data name="ArgumentsTextBox.Header" xml:space="preserve">
     <value>Arguments</value>
@@ -174,16 +165,13 @@
   <data name="ClearListButton.ToolTipService.ToolTip" xml:space="preserve">
     <value>Clear the list of converted and non converted images</value>
   </data>
-  <data name="ContentDialogCloseButton" xml:space="preserve">
-    <value>Close</value>
-  </data>
-  <data name="SuccessDialogContent" xml:space="preserve">
-    <value>All the images from the folders were converted.</value>
+  <data name="SuccessDialogMessage" xml:space="preserve">
+    <value>All the images were converted.</value>
   </data>
   <data name="SuccessDialogTitle" xml:space="preserve">
     <value>Success!</value>
   </data>
-  <data name="MildErrorDialogContent" xml:space="preserve">
+  <data name="MildErrorDialogMessage" xml:space="preserve">
     <value>Some images have not been converted. It's possible the commands are incorrect. Click on the button below to see the images.</value>
   </data>
   <data name="MildErrorDialogTitle" xml:space="preserve">

@@ -74,18 +74,55 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-    readonly StorageFolder tempFolder;
-    readonly ImmutableArray<string> types;
-    readonly ResourceLoader resourceLoader;
-    public ObservableCollection<StorageFile> ImagesList { get; set; }
-
-    public MainPageViewModel(StorageFolder folder)
+    public InfoBarSeverity Severity
     {
-        tempFolder = folder;
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+
+    public string? InfoBarTitle
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+    public string? InfobarMessage
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
+    public StorageFolder? TempFolder { get; set; }
+    readonly ImmutableArray<string> types;
+    public ObservableCollection<StorageFile> ImagesList { get; set; }
+    int failCount;
+    int successCount;
+    readonly ResourceLoader resourceLoader;
+    public MainPageViewModel()
+    {
+        resourceLoader = new();
         Arguments = "";
         ImagesList = [];
         ImagesList.CollectionChanged += Images_CollectionChanged;
-        resourceLoader = new();
         types = ImmutableArray.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -188,7 +225,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             string newName = FixFileName(file.DisplayName);
             string newNewName = $"{newName}{fileType}";
 
-            await file.CopyAsync(tempFolder, newNewName);
+            await file.CopyAsync(TempFolder, newNewName);
             return true;
         }
         catch (COMException)
@@ -236,28 +273,60 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             await Task.Run(async () =>
             {
-                IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
+                IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
 
                 foreach (StorageFile file in files)
                 {
-                    string finalArguments = $@"{Arguments} {file.Path} {tempFolder.Path}\{file.DisplayName}.jxl";
+                    string finalArguments = $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl";
                     processStart.Arguments = finalArguments;
 
                     using Process? process = Process.Start(processStart);
+
                     if (process is not null)
                     {
                         process.WaitForExit();
-                        process.Dispose();
+
+                        if (process.ExitCode == 0)
+                        {
+                            successCount++;
+                        }
+                        else
+                        {
+                            failCount++;
+                        }
                     }
                     else
                     {
-
+                        failCount++;
                     }
                 }
             });
 
             IsConversionInProgress = false;
             EnableSaveButton = EnableClearButton = true;
+            SetInfoBarProperties();
+        }
+
+        void SetInfoBarProperties()
+        {
+            if (successCount == ImagesList.Count)
+            {
+                InfoBarTitle = resourceLoader.GetString("SuccessDialogTitle");
+                InfobarMessage = resourceLoader.GetString("SuccessDialogMessage");
+                Severity = InfoBarSeverity.Success;
+            }
+            else if (failCount == ImagesList.Count)
+            {
+                InfoBarTitle = resourceLoader.GetString("ConversionFailedTitle");
+                InfobarMessage = resourceLoader.GetString("ConversionFailedMessage");
+                Severity = InfoBarSeverity.Error;
+            }
+            else
+            {
+                InfoBarTitle = resourceLoader.GetString("MildErrorDialogTitle");
+                InfobarMessage = resourceLoader.GetString("MildErrorDialogMessage");
+                Severity = InfoBarSeverity.Warning;
+            }
         }
     }
     public async void ClearListButton_Click(object sender, RoutedEventArgs e)
@@ -266,7 +335,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private async Task DeleteFilesAfterConversion()
     {
-        IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
+        IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
+
         foreach (StorageFile file in files)
         {
             await file.DeleteAsync();
@@ -284,7 +354,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         if (result is not null)
         {
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
-            IReadOnlyList<StorageFile> files = await tempFolder.GetFilesAsync();
+            IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
 
             foreach (StorageFile file in files)
             {

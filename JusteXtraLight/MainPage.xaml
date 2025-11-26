@@ -403,6 +403,13 @@
 
         </Grid>
 
+        <InfoBar Grid.Row="1"
+                 IsOpen="{x:Bind viewModel.EnableSaveButton,Mode=OneWay}"
+                 Message="{x:Bind viewModel.InfobarMessage, Mode=OneWay}"
+                 Title="{x:Bind viewModel.InfoBarTitle, Mode=OneWay}"
+                 Severity="{x:Bind viewModel.Severity, Mode=OneWay}"
+                 VerticalAlignment="Bottom"/>
+
     </Grid>
 
 </Page>

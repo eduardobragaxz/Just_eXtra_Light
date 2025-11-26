@@ -121,21 +121,9 @@
     <value>Escolher pasta</value>
     <comment>Content text for the button to open the folder picker</comment>
   </data>
-  <data name="ConversionCompleteTitle" xml:space="preserve">
-    <value>Conversão completa!</value>
-    <comment>Text for when the conversion is complete.</comment>
-  </data>
   <data name="ConvertButton.Text" xml:space="preserve">
     <value>Converter</value>
     <comment>Content text for the button to convert images</comment>
-  </data>
-  <data name="ConversionCompleteContent" xml:space="preserve">
-    <value>As imagens já foram salvadas</value>
-    <comment>Additional text after converting from the list</comment>
-  </data>
-  <data name="ConversionCompleteContent2" xml:space="preserve">
-    <value>As imagens já foram convertidas e agora podem ser salvadas</value>
-    <comment>Additional text after converting from the list</comment>
   </data>
   <data name="ArgumentsTextBox.Header" xml:space="preserve">
     <value>Argumentos</value>
@@ -193,20 +181,16 @@
     <value>Limpar a lista de imagens convertidas e não convertidas</value>
     <comment>Tooltip text for the clear list button</comment>
   </data>
-  <data name="ContentDialogCloseButton" xml:space="preserve">
-    <value>Fechar</value>
-    <comment>Text for close button in content dialogs</comment>
-  </data>
-  <data name="SuccessDialogContent" xml:space="preserve">
-    <value>Todas as imagens das pastas foram convertidas.</value>
+  <data name="SuccessDialogMessage" xml:space="preserve">
+    <value>Todas as imagens foram convertidas.</value>
     <comment>Text for the success dialog content</comment>
   </data>
   <data name="SuccessDialogTitle" xml:space="preserve">
     <value>Sucesso!</value>
     <comment>Text for success dialog title</comment>
   </data>
-  <data name="MildErrorDialogContent" xml:space="preserve">
-    <value>Algumas imagens não foram convertidas. É possível que os comandos estejam incorretos. Clique no botão abaixo para ver as imagens não convertidas.</value>
+  <data name="MildErrorDialogMessage" xml:space="preserve">
+    <value>Algumas imagens não foram convertidas. É possível que os comandos estejam incorretos.</value>
     <comment>Text for the mild error dialog content</comment>
   </data>
   <data name="MildErrorDialogTitle" xml:space="preserve">
