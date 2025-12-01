@@ -265,7 +265,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false;
 
-            string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
+            //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
+            StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
+            string fullPath = $@"{appFolder.Path}\Assets\Program\cjxl.exe";
+
             ProcessStartInfo processStart = new(fullPath)
             {
                 CreateNoWindow = true
