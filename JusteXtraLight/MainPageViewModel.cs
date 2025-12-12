@@ -1,4 +1,6 @@
-﻿namespace JustExtraLight;
+﻿using System.IO;
+
+namespace JustExtraLight;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -112,11 +114,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
     }
     public StorageFolder? TempFolder { get; set; }
-    readonly ImmutableArray<string> types;
+    private readonly ImmutableArray<string> types;
     public ObservableCollection<StorageFile> ImagesList { get; set; }
-    int failCount;
-    int successCount;
-    readonly ResourceLoader resourceLoader;
+    private int failCount;
+    private int successCount;
+    private readonly ResourceLoader resourceLoader;
     public MainPageViewModel()
     {
         resourceLoader = new();
@@ -223,9 +225,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         {
             string fileType = file.FileType;
             string newName = FixFileName(file.DisplayName);
-            string newNewName = $"{newName}{fileType}";
+            string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
 
-            await file.CopyAsync(TempFolder, newNewName);
+            File.Copy(file.Path, newPath);
+            //_ = await file.CopyAsync(TempFolder, newNewName);
             return true;
         }
         catch (COMException)
@@ -236,14 +239,14 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         static string FixFileName(string displayName)
         {
             StringBuilder newName = new(displayName, displayName.Length);
-            newName.Replace(' ', '_')
+            _ = newName.Replace(' ', '_')
                 .Replace('-', '_')
                 .Replace('.', '_');
 
             if (newName.Length >= 150)
             {
                 int difference = newName.Length - 150;
-                newName.Remove(149, difference);
+                _ = newName.Remove(149, difference);
             }
 
             return $"{newName}";
@@ -259,7 +262,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private async Task ConvertImages()
     {
-        if (Arguments == "" || Arguments != "" && Arguments[0..2] == "--")
+        if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
             IsConversionInProgress = true;
 
@@ -374,7 +377,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;
-    private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+    private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }

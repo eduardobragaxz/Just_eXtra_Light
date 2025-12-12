@@ -2,7 +2,7 @@ namespace JustExtraLight;
 
 public sealed partial class MainPage : Page
 {
-    readonly MainPageViewModel? viewModel;
+    private readonly MainPageViewModel? viewModel;
     public MainPage()
     {
         InitializeComponent();

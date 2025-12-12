@@ -39,8 +39,8 @@ public sealed partial class MainWindow : Window
         if (displayArea is not null)
         {
             PointInt32 CenteredPosition = AppWindow.Position;
-            CenteredPosition.X = ((displayArea.WorkArea.Width - calculatedWidth) / 2);
-            CenteredPosition.Y = ((displayArea.WorkArea.Height - calculatedHeight) / 2);
+            CenteredPosition.X = (displayArea.WorkArea.Width - calculatedWidth) / 2;
+            CenteredPosition.Y = (displayArea.WorkArea.Height - calculatedHeight) / 2;
             AppWindow.Move(CenteredPosition);
         }
     }
