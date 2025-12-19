@@ -208,7 +208,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 {
                     StorageFile storageFile = (StorageFile)item;
 
-                    if (types.Contains(storageFile.FileType))
+                    if (types.Contains(storageFile.FileType.ToLower()))
                     {
                         if (await TryToCopyImageToTempFolder(storageFile))
                         {
