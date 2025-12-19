@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace JustExtraLight;
+﻿namespace JustExtraLight;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {

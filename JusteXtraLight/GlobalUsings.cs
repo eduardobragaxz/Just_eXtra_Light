@@ -14,3 +14,4 @@ global using System.Text;
 global using System.Threading.Tasks;
 global using Windows.ApplicationModel.DataTransfer;
 global using Windows.Storage;
+global using System.IO;
