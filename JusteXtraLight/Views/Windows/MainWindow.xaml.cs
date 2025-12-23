@@ -4,7 +4,7 @@ using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
 using WinRT;
 
-namespace JustExtraLight;
+namespace JustExtraLight.Views.Windows;
 
 public sealed partial class MainWindow : Window
 {

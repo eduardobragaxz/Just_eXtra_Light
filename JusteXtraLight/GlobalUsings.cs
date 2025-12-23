@@ -15,3 +15,8 @@ global using System.Threading.Tasks;
 global using Windows.ApplicationModel.DataTransfer;
 global using Windows.Storage;
 global using System.IO;
+global using JustExtraLight.ViewModels;
+global using JustExtraLight.Views.Pages;
+global using JustExtraLight.Views.Windows;
+global using System.Windows.Input;
+global using JustExtraLight.Commands;

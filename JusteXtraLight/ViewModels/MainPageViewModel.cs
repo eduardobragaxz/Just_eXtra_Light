@@ -1,4 +1,4 @@
-﻿namespace JustExtraLight;
+﻿namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -117,23 +117,24 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     private int failCount;
     private int successCount;
     private readonly ResourceLoader resourceLoader;
+    public AddImagesCommand ImagesCommand { get; }
+    public AddFolderCommand FolderCommand { get; }
+    public ConvertImagesCommand ConvertImagesCommand { get; }
+    public SaveImagesCommand SaveImagesCommand { get; }
+    public ClearImagesCommand ClearImagesCommand { get; }
     public MainPageViewModel()
     {
+        ImagesCommand = new(this);
+        FolderCommand = new(this);
+        ConvertImagesCommand = new(this);
+        SaveImagesCommand = new(this);
+        ClearImagesCommand = new(this);
         resourceLoader = new();
         Arguments = "";
         ImagesList = [];
         ImagesList.CollectionChanged += Images_CollectionChanged;
-        types = ImmutableArray.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
     }
-    private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-    {
-        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
-    }
-    public async void AddFolderButton_Click(object sender, RoutedEventArgs e)
-    {
-        await AddFolderImages();
-    }
-    private async Task AddFolderImages()
+    public async Task AddFolderImages()
     {
         FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
@@ -147,7 +148,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 foreach (StorageFile file in files)
                 {
-                    if (types.Contains(file.FileType))
+                    if (App.FileTypes.Contains(file.FileType))
                     {
                         if (await TryToCopyImageToTempFolder(file))
                         {
@@ -158,15 +159,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-    public async void AddImagesButton_Click(object sender, RoutedEventArgs e)
-    {
-        await AddImages();
-    }
-    private async Task AddImages()
+    public async Task AddImages()
     {
         Microsoft.Windows.Storage.Pickers.FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
 
-        foreach (string type in types)
+        foreach (string type in App.FileTypes)
         {
             fileOpenPicker.FileTypeFilter.Add(type);
         }
@@ -185,6 +182,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
             }
         }
+    }
+    private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+    {
+        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -254,11 +255,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         ImagesList.Add(file);
     }
-    public async void ConvertButton_Click(object sender, RoutedEventArgs e)
-    {
-        await ConvertImages();
-    }
-    private async Task ConvertImages()
+    public async Task ConvertImages()
     {
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
@@ -333,11 +330,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-    public async void ClearListButton_Click(object sender, RoutedEventArgs e)
-    {
-        await DeleteFilesAfterConversion();
-    }
-    private async Task DeleteFilesAfterConversion()
+    public async Task DeleteFilesAfterConversion()
     {
         IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
 
@@ -350,7 +343,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         EnableConvertButton = EnableSaveButton = EnableClearButton = false;
         ImagesList.Clear();
     }
-    public async void SaveImagesButton_Click(object sender, RoutedEventArgs e)
+    public async Task SaveImages()
     {
         Microsoft.Windows.Storage.Pickers.FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
@@ -373,7 +366,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             EnableConvertButton = EnableSaveButton = EnableClearButton = false;
         }
     }
-
     public event PropertyChangedEventHandler? PropertyChanged;
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {

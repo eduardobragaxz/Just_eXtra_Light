@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Page x:Class="JustExtraLight.MainPage"
+<Page x:Class="JustExtraLight.Views.Pages.MainPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:local="using:JustExtraLight"
@@ -7,6 +7,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:applicationModel="using:Windows.ApplicationModel"
       xmlns:storage="using:Windows.Storage"
+      xmlns:viewmodels="using:JustExtraLight.ViewModels"
+      d:DataContext="{d:DesignInstance Type=viewmodels:MainPageViewModel}"
       mc:Ignorable="d"
       Loaded="Page_Loaded">
 
@@ -197,7 +199,7 @@
 
                     <TextBox Margin="16"
                              x:Name="ArgumentsTextBox"
-                             Text="{x:Bind viewModel.Arguments, Mode=OneWay}"
+                             Text="{Binding Arguments}"
                              x:Uid="ArgumentsTextBox" />
 
                 </Expander.Content>
@@ -231,11 +233,11 @@
 
             </Expander>
 
-            <Button Click="{x:Bind viewModel.AddFolderButton_Click}"
+            <Button Command="{Binding FolderCommand}"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
-                    IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
+                    IsEnabled="{Binding EnableAddButtons}"
                     Margin="0,0,8,0"
                     x:Name="AddFolderButton"
                     Style="{StaticResource LocalButtonStyle}">
@@ -254,11 +256,11 @@
 
             </Button>
 
-            <Button Click="{x:Bind viewModel.AddImagesButton_Click}"
+            <Button Command="{Binding ImagesCommand}"
                     Grid.Column="2"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
-                    IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
+                    IsEnabled="{Binding EnableAddButtons}"
                     x:Name="AddImagesButton"
                     Style="{StaticResource LocalButtonStyle}">
 
@@ -276,13 +278,13 @@
 
             </Button>
 
-            <Button Click="{x:Bind viewModel.ConvertButton_Click}"
+            <Button Command="{Binding ConvertImagesCommand}"
                     Grid.Column="0"
                     Grid.ColumnSpan="4"
                     Grid.Row="3"
                     Height="60"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind viewModel.EnableConvertButton, Mode=OneWay}"
+                    IsEnabled="{Binding EnableConvertButton}"
                     Margin="0,8"
                     x:Name="ConvertButton">
 
@@ -300,12 +302,12 @@
 
             </Button>
 
-            <Button Click="{x:Bind viewModel.SaveImagesButton_Click}"
+            <Button Command="{Binding SaveImagesCommand}"
                     Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Grid.Row="4"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind viewModel.EnableSaveButton, Mode=OneWay}"
+                    IsEnabled="{Binding EnableSaveButton}"
                     Margin="0,0,8,0"
                     x:Name="SaveImagesButton">
 
@@ -323,12 +325,12 @@
 
             </Button>
 
-            <Button Click="{x:Bind viewModel.ClearListButton_Click}"
+            <Button Command="{Binding ClearImagesCommand}"
                     Grid.Column="3"
                     Grid.ColumnSpan="1"
                     Grid.Row="4"
                     HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind viewModel.EnableClearButton, Mode=OneWay}"
+                    IsEnabled="{Binding EnableClearButton, Mode=OneWay}"
                     x:Name="ClearListButton">
 
                 <Button.Content>
@@ -360,19 +362,19 @@
                           Grid.ColumnSpan="1"
                           Grid.Row="5"
                           HorizontalAlignment="Right"
-                          IsActive="{x:Bind viewModel.IsConversionInProgress, Mode=OneWay}"
+                          IsActive="{Binding IsConversionInProgress}"
                           Margin="8"
                           x:Name="LoadingRing"
                           VerticalAlignment="Bottom" />
 
             <GridView AllowDrop="True"
                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                      DragOver="{x:Bind viewModel.ImageItemsView_DragOver}"
-                      Drop="{x:Bind viewModel.ImageItemsView_Drop}"
+                      DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
+                      Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
                       Grid.Column="0"
                       Grid.ColumnSpan="4"
                       Grid.Row="5"
-                      ItemsSource="{x:Bind viewModel.ImagesList}"
+                      ItemsSource="{Binding ImagesList, Mode=OneTime}"
                       Margin="0,8,0,0"
                       x:Name="ImageItemsView"
                       SelectionMode="None">
@@ -404,11 +406,11 @@
         </Grid>
 
         <InfoBar Grid.Row="1"
-                 IsOpen="{x:Bind viewModel.EnableSaveButton,Mode=OneWay}"
-                 Message="{x:Bind viewModel.InfobarMessage, Mode=OneWay}"
-                 Title="{x:Bind viewModel.InfoBarTitle, Mode=OneWay}"
-                 Severity="{x:Bind viewModel.Severity, Mode=OneWay}"
-                 VerticalAlignment="Bottom"/>
+                 IsOpen="{Binding EnableSaveButton}"
+                 Message="{Binding InfobarMessage}"
+                 Title="{Binding InfoBarTitle}"
+                 Severity="{Binding Severity}"
+                 VerticalAlignment="Bottom" />
 
     </Grid>
 
