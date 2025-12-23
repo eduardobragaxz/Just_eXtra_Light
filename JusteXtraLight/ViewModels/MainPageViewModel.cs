@@ -86,7 +86,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-
     public string? InfoBarTitle
     {
         get;
@@ -112,7 +111,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
     }
     public StorageFolder? TempFolder { get; set; }
-    private readonly ImmutableArray<string> types;
     public ObservableCollection<StorageFile> ImagesList { get; set; }
     private int failCount;
     private int successCount;
@@ -207,7 +205,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 {
                     StorageFile storageFile = (StorageFile)item;
 
-                    if (types.Contains(storageFile.FileType.ToLower()))
+                    if (App.FileTypes.Contains(storageFile.FileType.ToLower()))
                     {
                         if (await TryToCopyImageToTempFolder(storageFile))
                         {
