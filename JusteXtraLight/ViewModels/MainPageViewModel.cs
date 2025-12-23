@@ -112,6 +112,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public StorageFolder? TempFolder { get; set; }
     public ObservableCollection<StorageFile> ImagesList { get; set; }
+    private readonly FrozenSet<string> fileTypes;
     private int failCount;
     private int successCount;
     private readonly ResourceLoader resourceLoader;
@@ -130,6 +131,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         resourceLoader = new();
         Arguments = "";
         ImagesList = [];
+        fileTypes = FrozenSet.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
         ImagesList.CollectionChanged += Images_CollectionChanged;
     }
     public async Task AddFolderImages()
@@ -146,7 +148,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 foreach (StorageFile file in files)
                 {
-                    if (App.FileTypes.Contains(file.FileType))
+                    if (fileTypes.Contains(file.FileType))
                     {
                         if (await TryToCopyImageToTempFolder(file))
                         {
@@ -161,7 +163,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         Microsoft.Windows.Storage.Pickers.FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
 
-        foreach (string type in App.FileTypes)
+        foreach (string type in fileTypes)
         {
             fileOpenPicker.FileTypeFilter.Add(type);
         }
@@ -205,7 +207,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 {
                     StorageFile storageFile = (StorageFile)item;
 
-                    if (App.FileTypes.Contains(storageFile.FileType.ToLower()))
+                    if (fileTypes.Contains(storageFile.FileType.ToLower()))
                     {
                         if (await TryToCopyImageToTempFolder(storageFile))
                         {

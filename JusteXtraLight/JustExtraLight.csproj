@@ -67,9 +67,9 @@
 		</Page>
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Models\" />
-	  <Folder Include="Views\Windows\" />
-	  <Folder Include="Views\Pages\" />
+		<Folder Include="Models\" />
+		<Folder Include="Views\Windows\" />
+		<Folder Include="Views\Pages\" />
 	</ItemGroup>
 
 	<!--

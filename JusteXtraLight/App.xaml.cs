@@ -14,5 +14,4 @@ public partial class App : Application
     }
 
     public static Window? MWindow { get; private set; }
-    public static FrozenSet<string> FileTypes { get; } = FrozenSet.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
 }
