@@ -359,7 +359,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 if (file.FileType == ".jxl")
                 {
-                    await file.MoveAsync(storageFolder);
+                    await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
                 }
             }
 
