@@ -328,6 +328,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 InfobarMessage = resourceLoader.GetString("MildErrorDialogMessage");
                 Severity = InfoBarSeverity.Warning;
             }
+
+            successCount = failCount = 0;
         }
     }
     public async Task DeleteFilesAfterConversion()
