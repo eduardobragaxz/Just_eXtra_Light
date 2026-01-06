@@ -148,7 +148,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 foreach (StorageFile file in files)
                 {
-                    if (fileTypes.Contains(file.FileType))
+                    if (fileTypes.Contains(file.FileType.ToLower()))
                     {
                         if (await TryToCopyImageToTempFolder(file))
                         {
