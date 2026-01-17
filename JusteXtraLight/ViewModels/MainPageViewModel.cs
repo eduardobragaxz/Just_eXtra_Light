@@ -257,6 +257,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async Task ConvertImages()
     {
+        string error = "";
+
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
             IsConversionInProgress = true;
@@ -269,7 +271,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             ProcessStartInfo processStart = new(fullPath)
             {
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                RedirectStandardError = true
             };
 
             await Task.Run(async () =>
@@ -283,22 +286,50 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     using Process? process = Process.Start(processStart);
 
-                    if (process is not null)
+                    if (process is null)
                     {
-                        process.WaitForExit();
+                        failCount++;
+                        break;
+                    }
 
-                        if (process.ExitCode == 0)
+                    error = await process.StandardError.ReadToEndAsync();
+                    await process.WaitForExitAsync();
+
+                    if (process.ExitCode == 0)
+                    {
+                        successCount++;
+                    }
+                    else
+                    {
+                        if (error.Contains("--allow_jpeg_reconstruction 0"))
                         {
-                            successCount++;
+                            string newArguments = $@"--allow_jpeg_reconstruction 0 {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl";
+                            processStart.Arguments = newArguments;
+
+                            using Process? newProcess = Process.Start(processStart);
+
+
+                            if (newProcess is null)
+                            {
+                                failCount++;
+                                break;
+                            }
+
+                            await newProcess.WaitForExitAsync();
+
+                            if (newProcess.ExitCode == 0)
+                            {
+                                successCount++;
+                            }
+                            else
+                            {
+                                failCount++;
+                            }
                         }
                         else
                         {
                             failCount++;
                         }
-                    }
-                    else
-                    {
-                        failCount++;
                     }
                 }
             });
