@@ -11,7 +11,7 @@
 	<Identity
 	  Name="EduardoBraga.JusteXtraLight"
 	  Publisher="CN=7C650FF2-F08B-40D9-8C5B-3C0C7B8817AB"
-	  Version="0.5.2.0" />
+	  Version="0.5.3.0" />
 
 	<mp:PhoneIdentity PhoneProductId="71d29c72-037e-48bb-8e70-51bf115f1c8c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
