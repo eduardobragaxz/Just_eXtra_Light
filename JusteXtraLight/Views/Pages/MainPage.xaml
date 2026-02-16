@@ -10,6 +10,12 @@
       mc:Ignorable="d"
       Loaded="Page_Loaded">
 
+    <Page.DataContext>
+
+        <viewmodels:MainPageViewModel x:Name="mainPageViewModel" />
+
+    </Page.DataContext>
+
     <Grid>
 
         <Grid.Resources>
@@ -197,7 +203,7 @@
 
                     <RadioButton IsChecked="{x:Bind mainPageViewModel.ConvertToJXL, Mode=TwoWay}"
                                  x:Uid="ToJpegXL" />
-                    
+
                     <RadioButton x:Uid="FromJpegXL" />
 
                 </RadioButtons.Items>
@@ -372,7 +378,7 @@
                        TextAlignment="Center"
                        VerticalAlignment="Center"
                        x:Uid="DragAndDropInstructions"
-                       Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}"/>
+                       Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}" />
 
             <ProgressRing Canvas.ZIndex="1"
                           Grid.Column="4"

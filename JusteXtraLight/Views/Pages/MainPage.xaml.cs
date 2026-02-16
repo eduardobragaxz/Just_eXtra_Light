@@ -2,12 +2,9 @@ namespace JustExtraLight.Views.Pages;
 
 public sealed partial class MainPage : Page
 {
-    private readonly MainPageViewModel mainPageViewModel;
     public MainPage()
     {
         InitializeComponent();
-        mainPageViewModel = new MainPageViewModel();
-        DataContext = mainPageViewModel;
     }
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)

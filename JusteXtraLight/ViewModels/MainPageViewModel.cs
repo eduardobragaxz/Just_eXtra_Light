@@ -1,4 +1,6 @@
-﻿namespace JustExtraLight.ViewModels;
+﻿using WinRT;
+
+namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -220,6 +222,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         await DropImages(e);
     }
+
+    [DynamicWindowsRuntimeCast(typeof(StorageFile))]
     private async Task DropImages(DragEventArgs e)
     {
         if (EnableAddButtons == true)
@@ -244,7 +248,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     }
                     else
                     {
-                        if(storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
+                        if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
                         {
                             if (await TryToCopyImageToTempFolder(storageFile))
                             {
