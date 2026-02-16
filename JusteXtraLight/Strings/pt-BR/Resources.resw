@@ -225,11 +225,11 @@
     <value>Opções de conversão</value>
     <comment>Header text for the conversion options radio buttons</comment>
   </data>
-  <data name="ToJpegXl.Text" xml:space="preserve">
+  <data name="ToJpegXl.Content" xml:space="preserve">
     <value>Para JPEG XL</value>
     <comment>Content text for the option to convert to jxl</comment>
   </data>
-  <data name="FromJpegXL.Text" xml:space="preserve">
+  <data name="FromJpegXL.Content" xml:space="preserve">
     <value>De JPEG XL</value>
     <comment>Content text for the option to convert from jxl</comment>
   </data>

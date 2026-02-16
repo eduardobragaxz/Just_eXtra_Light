@@ -198,10 +198,10 @@
   <data name="ConversionOptions" xml:space="preserve">
     <value>Conversion options</value>
   </data>
-  <data name="ToJpegXl.Text" xml:space="preserve">
+  <data name="ToJpegXl.Content" xml:space="preserve">
     <value>To JPEG XL</value>
   </data>
-  <data name="FromJpegXL.Text" xml:space="preserve">
+  <data name="FromJpegXL.Content" xml:space="preserve">
     <value>From JPEG XL</value>
   </data>
 </root>

@@ -14,6 +14,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
+    public bool ConvertToJXL
+    {
+        get => field;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    } = true;
     public bool IsConversionInProgress
     {
         get;
@@ -110,6 +122,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
+    public bool ShowListText
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
     public StorageFolder? TempFolder { get; set; }
     public ObservableCollection<StorageFile> ImagesList { get; set; }
     private readonly FrozenSet<string> fileTypes;
@@ -185,7 +209,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
+        EnableConvertButton = EnableClearButton = ShowListText = ImagesList.Count != 0;
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -207,11 +231,24 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 {
                     StorageFile storageFile = (StorageFile)item;
 
-                    if (fileTypes.Contains(storageFile.FileType.ToLower()))
+                    if (ConvertToJXL == true)
                     {
-                        if (await TryToCopyImageToTempFolder(storageFile))
+                        if (fileTypes.Contains(storageFile.FileType.ToLower()))
                         {
-                            ImagesList.Add(storageFile);
+                            if (await TryToCopyImageToTempFolder(storageFile))
+                            {
+                                ImagesList.Add(storageFile);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if(storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            if (await TryToCopyImageToTempFolder(storageFile))
+                            {
+                                ImagesList.Add(storageFile);
+                            }
                         }
                     }
                 }
@@ -227,7 +264,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
 
             File.Copy(file.Path, newPath);
-            //_ = await file.CopyAsync(TempFolder, newNewName);
             return true;
         }
         catch (COMException)
@@ -267,7 +303,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            string fullPath = $@"{appFolder.Path}\Assets\Program\cjxl.exe";
+            string fullPath = ConvertToJXL
+                ? $@"{appFolder.Path}\Assets\Program\cjxl.exe"
+                : $@"{appFolder.Path}\Assets\Program\djxl.exe";
 
             ProcessStartInfo processStart = new(fullPath)
             {
@@ -281,7 +319,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                 foreach (StorageFile file in files)
                 {
-                    string finalArguments = $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl";
+                    string finalArguments = ConvertToJXL
+                    ? $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl"
+                    : $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jpg";
                     processStart.Arguments = finalArguments;
 
                     using Process? process = Process.Start(processStart);
@@ -388,7 +428,14 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             foreach (StorageFile file in files)
             {
-                if (file.FileType == ".jxl")
+                if (ConvertToJXL == true)
+                {
+                    if (file.FileType == ".jxl")
+                    {
+                        await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
+                    }
+                }
+                else
                 {
                     await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
                 }
