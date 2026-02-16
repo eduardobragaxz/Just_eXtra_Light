@@ -133,7 +133,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 NotifyPropertyChanged();
             }
         }
-    }
+    } = true;
     public StorageFolder? TempFolder { get; set; }
     public ObservableCollection<StorageFile> ImagesList { get; set; }
     private readonly FrozenSet<string> fileTypes;
@@ -209,7 +209,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        EnableConvertButton = EnableClearButton = ShowListText = ImagesList.Count != 0;
+        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
+        ShowListText = ImagesList.Count == 0;
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
