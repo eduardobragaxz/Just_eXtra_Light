@@ -34,6 +34,13 @@
 
 	</PropertyGroup>
 
+	<PropertyGroup>
+
+		<EnablePreviewFeatures>true</EnablePreviewFeatures>
+		<Features>$(Features);runtime-async=on</Features>
+
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Content Remove="Assets\Icons\Just eXtra Light app icon.png" />
 		<Content Remove="Assets\Package icons\StoreLogo.scale-400.png" />
