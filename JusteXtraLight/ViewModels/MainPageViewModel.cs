@@ -24,6 +24,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             if (value != field)
             {
                 field = value;
+                DeleteFilesAfterConversion();
                 NotifyPropertyChanged();
             }
         }
@@ -408,7 +409,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             successCount = failCount = 0;
         }
     }
-    public async Task DeleteFilesAfterConversion()
+    public async void DeleteFilesAfterConversion()
     {
         IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
 
@@ -442,11 +443,14 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
                 else
                 {
-                    await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
+                    if (file.FileType != ".jxl")
+                    {
+                        await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
+                    }
                 }
             }
 
-            await DeleteFilesAfterConversion();
+            DeleteFilesAfterConversion();
             EnableAddButtons = true;
             EnableConvertButton = EnableSaveButton = EnableClearButton = false;
         }
