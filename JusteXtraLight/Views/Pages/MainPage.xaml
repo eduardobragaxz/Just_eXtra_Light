@@ -120,16 +120,19 @@
                                            TextWrapping="Wrap"
                                            VerticalAlignment="Center">
                                     
-                                    <Run FontWeight="SemiBold"
-                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Major}" />
-                                    <Run FontWeight="SemiBold"
-                                         Text="." />
-                                    <Run FontWeight="SemiBold"
-                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Minor}" />
-                                    <Run FontWeight="SemiBold"
-                                         Text="." />
-                                    <Run FontWeight="SemiBold"
-                                         Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Build}" />
+                                    <Bold>
+                                        
+                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Major}" />
+                                    
+                                        <Run Text="." />
+                                    
+                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Minor}" />
+                                    
+                                        <Run Text="." />
+                                    
+                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Build}" />
+                                    
+                                    </Bold>
                                     
                                     <LineBreak />
                                     
@@ -146,7 +149,7 @@
                                     </Hyperlink>
                                     
                                     <Run FontSize="12"
-                                         Text="(ver 0.11.1)" />
+                                         Text="(ver 0.11.2)" />
 
                                 </TextBlock>
 
@@ -197,7 +200,7 @@
 
                     <RadioButton IsChecked="{x:Bind mainPageViewModel.ConvertToJXL, Mode=TwoWay}"
                                  x:Uid="ToJpegXL" />
-                    
+
                     <RadioButton x:Uid="FromJpegXL" />
 
                 </RadioButtons.Items>
@@ -372,7 +375,7 @@
                        TextAlignment="Center"
                        VerticalAlignment="Center"
                        x:Uid="DragAndDropInstructions"
-                       Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}"/>
+                       Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}" />
 
             <ProgressRing Canvas.ZIndex="1"
                           Grid.Column="4"
