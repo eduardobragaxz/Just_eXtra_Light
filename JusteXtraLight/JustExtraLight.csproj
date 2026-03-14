@@ -35,10 +35,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-
+		<Features>runtime-async=on</Features>
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
-		<Features>$(Features);runtime-async=on</Features>
-
 	</PropertyGroup>
 
 	<ItemGroup>
