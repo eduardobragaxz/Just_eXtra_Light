@@ -5,7 +5,7 @@
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RootNamespace>JustExtraLight</RootNamespace>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<ApplicationIcon>Assets\Icons\TitleBarIco.ico</ApplicationIcon>
+		<ApplicationIcon>Assets\Icons\JXLIco.ico</ApplicationIcon>
 		<Platforms>x86;x64;ARM64</Platforms>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
@@ -34,13 +34,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Remove="Assets\Icons\Just eXtra Light app icon.png" />
 		<Content Remove="Assets\Package icons\StoreLogo.scale-400.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Assets\Icons\TitleBarIco.ico" />
-		<None Remove="Assets\Icons\TitleBarIcon128.png" />
+		<None Remove="Assets\Icons\JXLIcon.png" />
 		<None Remove="Assets\Program\cjxl.exe" />
 		<None Remove="Assets\Program\djxl.exe" />
 		<None Remove="MainPage.xaml" />
@@ -60,12 +58,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.251221100">
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1721" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260316102">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="1.8.260204000" />
+		<PackageReference Include="Microsoft.WindowsAppSDK.WinUI" Version="1.8.260224000" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="MainPage.xaml">

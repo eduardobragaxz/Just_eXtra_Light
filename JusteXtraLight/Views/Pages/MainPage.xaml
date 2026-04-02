@@ -65,7 +65,7 @@
 
             <TitleBar.IconSource>
 
-                <ImageIconSource ImageSource="/Assets/Icons/TitleBarIco.ico" />
+                <ImageIconSource ImageSource="/Assets/Icons/JXLIco.ico" />
 
             </TitleBar.IconSource>
 
@@ -107,7 +107,7 @@
                                         <BitmapImage DecodePixelHeight="60"
                                                      DecodePixelType="Logical"
                                                      DecodePixelWidth="60"
-                                                     UriSource="/Assets/Icons/TitleBarIco.ico" />
+                                                     UriSource="/Assets/Icons/JXLIco.ico" />
 
                                     </Image.Source>
 
