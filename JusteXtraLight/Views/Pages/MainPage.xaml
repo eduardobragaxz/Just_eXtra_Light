@@ -10,7 +10,13 @@
       mc:Ignorable="d"
       Loaded="Page_Loaded">
 
-    <Grid>
+    <Page.DataContext>
+
+        <viewmodels:MainPageViewModel x:Name="mainPageViewModel" />
+
+    </Page.DataContext>
+
+        <Grid>
 
         <Grid.Resources>
 
