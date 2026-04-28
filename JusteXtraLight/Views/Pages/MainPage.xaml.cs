@@ -17,7 +17,7 @@ public sealed partial class MainPage : Page
     {
         StorageFolder temporaryFolder = Microsoft.Windows.Storage.ApplicationData.GetDefault().TemporaryFolder;
         IReadOnlyList<StorageFolder> folders = await temporaryFolder.GetFoldersAsync();
-        StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}", CreationCollisionOption.ReplaceExisting);
+        StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}", CreationCollisionOption.GenerateUniqueName);
 
         mainPageViewModel.TempFolder = currentInstancetempFolder;
     }
