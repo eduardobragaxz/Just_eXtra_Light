@@ -407,7 +407,7 @@
 
                 <GridView.ItemTemplate>
 
-                    <DataTemplate x:DataType="storage:StorageFile">
+                    <DataTemplate x:DataType="viewmodels:ImageInfo">
 
                         <Image Height="88"
                                Width="88">
@@ -417,7 +417,7 @@
                                 <BitmapImage DecodePixelHeight="88"
                                              DecodePixelType="Logical"
                                              DecodePixelWidth="88"
-                                             UriSource="{x:Bind Path}" />
+                                             UriSource="{x:Bind TemporaryPath}" />
 
                             </Image.Source>
 
