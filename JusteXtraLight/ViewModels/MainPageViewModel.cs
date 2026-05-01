@@ -410,17 +410,17 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         if (result is not null)
         {
-            StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
+            string pickedPath = result.Path;
 
             foreach (ImageInfo imageInfo in ImagesList)
             {
                 if (ConvertToJXL == true)
                 {
-                    File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OriginalName}.jxl", false);
+                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jxl", false);
                 }
                 else
                 {
-                    File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OriginalName}.jpg", false);
+                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jpg", false);
                 }
             }
 
