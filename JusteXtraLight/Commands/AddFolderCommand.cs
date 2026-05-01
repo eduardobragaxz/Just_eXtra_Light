@@ -4,6 +4,6 @@ public sealed partial class AddFolderCommand(MainPageViewModel mainPageViewModel
 {
     public override async void Execute(object? parameter)
     {
-        await mainPageViewModel.AddFolderImages();
+        await mainPageViewModel.AddImagesFromFolder();
     }
 }

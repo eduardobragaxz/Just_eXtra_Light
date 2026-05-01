@@ -159,7 +159,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         fileTypes = FrozenSet.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
         ImagesList.CollectionChanged += Images_CollectionChanged;
     }
-    public async Task AddFolderImages()
+    public async Task AddImagesFromFolder()
     {
         FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
@@ -182,7 +182,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
-    public async Task AddImages()
+    public async Task AddDraggedImages()
     {
         Microsoft.Windows.Storage.Pickers.FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
 

@@ -4,6 +4,6 @@ public sealed partial class AddImagesCommand(MainPageViewModel mainPageViewModel
 {
     public override async void Execute(object? parameter)
     {
-        await mainPageViewModel.AddImages();
+        await mainPageViewModel.AddDraggedImages();
     }
 }
