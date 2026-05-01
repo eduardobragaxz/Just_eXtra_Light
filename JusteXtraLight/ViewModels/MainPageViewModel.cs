@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace JustExtraLight.ViewModels;
+﻿namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -414,24 +412,15 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         {
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
 
-            const string jxlFileType = ".jxl";
-            ImmutableArray<string> jpegFileType = [".jpeg", ".jpg"];
-
             foreach (ImageInfo imageInfo in ImagesList)
             {
                 if (ConvertToJXL == true)
                 {
-                    if (jpegFileType.Contains(imageInfo.FileType))
-                    {
-                        File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OldName}{jxlFileType}", false);
-                    }
+                    File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OriginalName}.jxl", false);
                 }
                 else
                 {
-                    if (imageInfo.FileType == jxlFileType)
-                    {
-                        File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OldName}{jxlFileType}", false);
-                    }
+                    File.Move(imageInfo.ConvertedPath, $@"{storageFolder.Path}\{imageInfo.OriginalName}.jpg", false);
                 }
             }
 
@@ -447,11 +436,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
 }
 
-public sealed class ImageInfo(string oldName, string temporaryName, string temporaryPath, string fileType)
+public sealed class ImageInfo(string originalName, string temporaryName, string temporaryPath, string originalFileType)
 {
-    public string OldName { get; } = oldName;
+    public string OriginalName { get; } = originalName;
     public string TemporaryName { get; } = temporaryName;
     public string TemporaryPath { get; } = temporaryPath;
-    public string FileType { get; } = fileType;
+    public string OriginalFileType { get; } = originalFileType;
     public string ConvertedPath { get; set; } = "";
 }

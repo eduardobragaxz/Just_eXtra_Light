@@ -20,4 +20,3 @@ global using System.Threading.Tasks;
 global using System.Windows.Input;
 global using Windows.ApplicationModel.DataTransfer;
 global using Windows.Storage;
-global using System.Linq;
