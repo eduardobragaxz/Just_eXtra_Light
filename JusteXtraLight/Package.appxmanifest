@@ -4,14 +4,13 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
-  xmlns:uap18="http://schemas.microsoft.com/appx/manifest/uap/windows10/18"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
-  IgnorableNamespaces="uap uap18 rescap">
+  IgnorableNamespaces="uap rescap">
 
 	<Identity
 	  Name="EduardoBraga.JusteXtraLight"
 	  Publisher="CN=7C650FF2-F08B-40D9-8C5B-3C0C7B8817AB"
-	  Version="0.7.0.0" />
+	  Version="0.8.0.0" />
 
 	<mp:PhoneIdentity PhoneProductId="71d29c72-037e-48bb-8e70-51bf115f1c8c" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -34,10 +33,7 @@
 	<Applications>
 		<Application Id="App"
 					 Executable="$targetnametoken$.exe"
-					 EntryPoint="windows.fullTrustApplication"
-					 uap18:EntryPoint="Isolated.App"
-					 uap18:TrustLevel="appContainer"
-					 uap18:RuntimeBehavior="appSilo">
+					 EntryPoint="windows.fullTrustApplication">
 			<uap:VisualElements
 			  DisplayName="Just eXtra Light"
 			  Description="Just eXtra Light is an application to convert images to the JPEG XL (.jxl) with a focus on converting in bulk"
