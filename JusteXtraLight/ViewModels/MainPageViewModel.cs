@@ -1,4 +1,6 @@
-﻿namespace JustExtraLight.ViewModels;
+﻿using System.Linq;
+
+namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -173,6 +175,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 foreach (StorageFile file in files)
                 {
+                    if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
+                    {
+                        break;
+                    }
+
                     if (fileTypes.Contains(file.FileType.ToLower()))
                     {
                         ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
@@ -198,6 +205,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             foreach (PickFileResult result in results)
             {
                 StorageFile file = await StorageFile.GetFileFromPathAsync(result.Path);
+
+                if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
+                {
+                    break;
+                }
 
                 ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
                 TryAddImageToList(imageInfo);
@@ -229,6 +241,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 foreach (IStorageItem item in items)
                 {
                     StorageFile storageFile = (StorageFile)item;
+
+                    if (ImagesList.FirstOrDefault(i => i.OriginalName == storageFile.DisplayName) is not null)
+                    {
+                        break;
+                    }
 
                     if (ConvertToJXL == true)
                     {
