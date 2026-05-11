@@ -29,6 +29,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     } = true;
+    public bool AreRadioButtonsEnabled
+    {
+        get => field;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    } = true;
     public bool IsConversionInProgress
     {
         get;
@@ -218,8 +230,16 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
-        ShowListText = ImagesList.Count == 0;
+        if (ImagesList.Count != 0)
+        {
+            EnableConvertButton = EnableClearButton = true;
+            AreRadioButtonsEnabled = false;
+        }
+        else
+        {
+            ShowListText = true;
+            AreRadioButtonsEnabled = true;
+        }
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -417,9 +437,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             await file.DeleteAsync();
         }
 
+        ImagesList.Clear();
         EnableAddButtons = true;
         EnableConvertButton = EnableSaveButton = EnableClearButton = false;
-        ImagesList.Clear();
     }
     public async Task SaveImages()
     {

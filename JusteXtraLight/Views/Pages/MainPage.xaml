@@ -199,6 +199,7 @@
                           Grid.ColumnSpan="4"
                           Grid.Row="0"
                           HorizontalAlignment="Center"
+                          IsEnabled="{x:Bind mainPageViewModel.AreRadioButtonsEnabled, Mode=OneWay}"
                           Margin="0,0,0,4"
                           MaxColumns="2">
 
@@ -411,14 +412,14 @@
 
                         <ItemContainer>
 
-                            <Image Height="88"
-                                   Width="88">
+                            <Image Height="72"
+                                   Width="72">
 
                                 <Image.Source>
 
-                                    <BitmapImage DecodePixelHeight="88"
+                                    <BitmapImage DecodePixelHeight="72"
                                                  DecodePixelType="Logical"
-                                                 DecodePixelWidth="88"
+                                                 DecodePixelWidth="72"
                                                  UriSource="{x:Bind TemporaryPath}" />
 
                                 </Image.Source>
@@ -433,8 +434,9 @@
 
                 <ItemsView.Layout>
 
-                    <UniformGridLayout MinColumnSpacing="12"
-                                       MinRowSpacing="12" />
+                    <UniformGridLayout ItemsStretch="Uniform"
+                                       MinColumnSpacing="4"
+                                       MinRowSpacing="4" />
 
                 </ItemsView.Layout>
 
