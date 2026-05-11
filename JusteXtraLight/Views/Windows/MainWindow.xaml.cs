@@ -2,7 +2,6 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
-using WinRT;
 
 namespace JustExtraLight.Views.Windows;
 

@@ -217,6 +217,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         await DropImages(e);
     }
+
     private async Task DropImages(DragEventArgs e)
     {
         if (EnableAddButtons == true)
@@ -256,7 +257,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
 
         ImageInfo imageInfo = new(file.DisplayName, newName, newPath, fileType);
-        File.Copy(file.Path, newPath);
+        File.Copy(file.Path, newPath, true);
         return imageInfo;
 
         static string FixFileName(string displayName)

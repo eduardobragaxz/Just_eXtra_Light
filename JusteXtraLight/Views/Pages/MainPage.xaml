@@ -16,7 +16,7 @@
 
     </Page.DataContext>
 
-        <Grid>
+    <Grid>
 
         <Grid.Resources>
 
@@ -393,41 +393,52 @@
                           x:Name="LoadingRing"
                           VerticalAlignment="Bottom" />
 
-            <GridView AllowDrop="True"
-                      Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                      DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
-                      Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="4"
-                      Grid.Row="5"
-                      ItemsSource="{x:Bind mainPageViewModel.ImagesList}"
-                      Margin="0,8,0,0"
-                      x:Name="ImageItemsView"
-                      SelectionMode="None">
+            <ItemsView AllowDrop="True"
+                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                       DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
+                       Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       Grid.Row="5"
+                       ItemsSource="{x:Bind mainPageViewModel.ImagesList}"
+                       Margin="0,8,0,0"
+                       x:Name="ImageItemsView"
+                       SelectionMode="None">
 
-                <GridView.ItemTemplate>
+                <ItemsView.ItemTemplate>
 
                     <DataTemplate x:DataType="viewmodels:ImageInfo">
 
-                        <Image Height="88"
-                               Width="88">
+                        <ItemContainer>
 
-                            <Image.Source>
+                            <Image Height="88"
+                                   Width="88">
 
-                                <BitmapImage DecodePixelHeight="88"
-                                             DecodePixelType="Logical"
-                                             DecodePixelWidth="88"
-                                             UriSource="{x:Bind TemporaryPath}" />
+                                <Image.Source>
 
-                            </Image.Source>
+                                    <BitmapImage DecodePixelHeight="88"
+                                                 DecodePixelType="Logical"
+                                                 DecodePixelWidth="88"
+                                                 UriSource="{x:Bind TemporaryPath}" />
 
-                        </Image>
+                                </Image.Source>
+
+                            </Image>
+
+                        </ItemContainer>
 
                     </DataTemplate>
 
-                </GridView.ItemTemplate>
+                </ItemsView.ItemTemplate>
 
-            </GridView>
+                <ItemsView.Layout>
+
+                    <UniformGridLayout MinColumnSpacing="12"
+                                       MinRowSpacing="12" />
+
+                </ItemsView.Layout>
+
+            </ItemsView>
 
         </Grid>
 
