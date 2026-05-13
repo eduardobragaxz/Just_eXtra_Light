@@ -71,7 +71,7 @@
 
             <TitleBar.IconSource>
 
-                <ImageIconSource ImageSource="/Assets/Icons/TitleBarIco.ico" />
+                <ImageIconSource ImageSource="/Assets/Icons/JXLIco.ico" />
 
             </TitleBar.IconSource>
 
@@ -113,7 +113,7 @@
                                         <BitmapImage DecodePixelHeight="60"
                                                      DecodePixelType="Logical"
                                                      DecodePixelWidth="60"
-                                                     UriSource="/Assets/Icons/TitleBarIco.ico" />
+                                                     UriSource="/Assets/Icons/JXLIco.ico" />
 
                                     </Image.Source>
 
@@ -199,6 +199,7 @@
                           Grid.ColumnSpan="4"
                           Grid.Row="0"
                           HorizontalAlignment="Center"
+                          IsEnabled="{x:Bind mainPageViewModel.AreRadioButtonsEnabled, Mode=OneWay}"
                           Margin="0,0,0,4"
                           MaxColumns="2">
 
@@ -393,41 +394,53 @@
                           x:Name="LoadingRing"
                           VerticalAlignment="Bottom" />
 
-            <GridView AllowDrop="True"
-                      Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                      DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
-                      Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
-                      Grid.Column="0"
-                      Grid.ColumnSpan="4"
-                      Grid.Row="5"
-                      ItemsSource="{x:Bind mainPageViewModel.ImagesList}"
-                      Margin="0,8,0,0"
-                      x:Name="ImageItemsView"
-                      SelectionMode="None">
+            <ItemsView AllowDrop="True"
+                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                       DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
+                       Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
+                       Grid.Column="0"
+                       Grid.ColumnSpan="4"
+                       Grid.Row="5"
+                       ItemsSource="{x:Bind mainPageViewModel.ImagesList}"
+                       Margin="0,8,0,0"
+                       x:Name="ImageItemsView"
+                       SelectionMode="None">
 
-                <GridView.ItemTemplate>
+                <ItemsView.ItemTemplate>
 
-                    <DataTemplate x:DataType="storage:StorageFile">
+                    <DataTemplate x:DataType="viewmodels:ImageInfo">
 
-                        <Image Height="88"
-                               Width="88">
+                        <ItemContainer>
 
-                            <Image.Source>
+                            <Image Height="72"
+                                   Width="72">
 
-                                <BitmapImage DecodePixelHeight="88"
-                                             DecodePixelType="Logical"
-                                             DecodePixelWidth="88"
-                                             UriSource="{x:Bind Path}" />
+                                <Image.Source>
 
-                            </Image.Source>
+                                    <BitmapImage DecodePixelHeight="72"
+                                                 DecodePixelType="Logical"
+                                                 DecodePixelWidth="72"
+                                                 UriSource="{x:Bind TemporaryPath}" />
 
-                        </Image>
+                                </Image.Source>
+
+                            </Image>
+
+                        </ItemContainer>
 
                     </DataTemplate>
 
-                </GridView.ItemTemplate>
+                </ItemsView.ItemTemplate>
 
-            </GridView>
+                <ItemsView.Layout>
+
+                    <UniformGridLayout ItemsStretch="Uniform"
+                                       MinColumnSpacing="4"
+                                       MinRowSpacing="4" />
+
+                </ItemsView.Layout>
+
+            </ItemsView>
 
         </Grid>
 

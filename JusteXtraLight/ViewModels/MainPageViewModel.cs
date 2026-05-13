@@ -1,4 +1,4 @@
-﻿using WinRT;
+﻿using System.Linq;
 
 namespace JustExtraLight.ViewModels;
 
@@ -25,6 +25,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 field = value;
                 DeleteFilesAfterConversion();
+                NotifyPropertyChanged();
+            }
+        }
+    } = true;
+    public bool AreRadioButtonsEnabled
+    {
+        get => field;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
                 NotifyPropertyChanged();
             }
         }
@@ -138,7 +150,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
     } = true;
     public StorageFolder? TempFolder { get; set; }
-    public ObservableCollection<StorageFile> ImagesList { get; set; }
+    public ObservableCollection<ImageInfo> ImagesList { get; set; }
     private readonly FrozenSet<string> fileTypes;
     private int failCount;
     private int successCount;
@@ -161,7 +173,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         fileTypes = FrozenSet.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
         ImagesList.CollectionChanged += Images_CollectionChanged;
     }
-    public async Task AddFolderImages()
+    public async Task AddImagesFromFolder()
     {
         FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
@@ -175,18 +187,21 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 foreach (StorageFile file in files)
                 {
+                    if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
+                    {
+                        break;
+                    }
+
                     if (fileTypes.Contains(file.FileType.ToLower()))
                     {
-                        if (await TryToCopyImageToTempFolder(file))
-                        {
-                            TryAddImageToList(file);
-                        }
+                        ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
+                        TryAddImageToList(imageInfo);
                     }
                 }
             }
         }
     }
-    public async Task AddImages()
+    public async Task AddDraggedImages()
     {
         Microsoft.Windows.Storage.Pickers.FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
 
@@ -203,17 +218,28 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 StorageFile file = await StorageFile.GetFileFromPathAsync(result.Path);
 
-                if (await TryToCopyImageToTempFolder(file))
+                if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
                 {
-                    TryAddImageToList(file);
+                    break;
                 }
+
+                ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
+                TryAddImageToList(imageInfo);
             }
         }
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        EnableConvertButton = EnableClearButton = ImagesList.Count != 0;
-        ShowListText = ImagesList.Count == 0;
+        if (ImagesList.Count != 0)
+        {
+            EnableConvertButton = EnableClearButton = true;
+            AreRadioButtonsEnabled = false;
+        }
+        else
+        {
+            ShowListText = true;
+            AreRadioButtonsEnabled = true;
+        }
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -224,7 +250,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         await DropImages(e);
     }
 
-    [DynamicWindowsRuntimeCast(typeof(StorageFile))]
     private async Task DropImages(DragEventArgs e)
     {
         if (EnableAddButtons == true)
@@ -237,45 +262,40 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 {
                     StorageFile storageFile = (StorageFile)item;
 
+                    if (ImagesList.FirstOrDefault(i => i.OriginalName == storageFile.DisplayName) is not null)
+                    {
+                        break;
+                    }
+
                     if (ConvertToJXL == true)
                     {
                         if (fileTypes.Contains(storageFile.FileType.ToLower()))
                         {
-                            if (await TryToCopyImageToTempFolder(storageFile))
-                            {
-                                ImagesList.Add(storageFile);
-                            }
+                            ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                            ImagesList.Add(imageInfo);
                         }
                     }
                     else
                     {
                         if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            if (await TryToCopyImageToTempFolder(storageFile))
-                            {
-                                ImagesList.Add(storageFile);
-                            }
+                            ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                            ImagesList.Add(imageInfo);
                         }
                     }
                 }
             }
         }
     }
-    private async Task<bool> TryToCopyImageToTempFolder(StorageFile file)
+    private async Task<ImageInfo> TryToCopyImageToTempFolder(StorageFile file)
     {
-        try
-        {
-            string fileType = file.FileType;
-            string newName = FixFileName(file.DisplayName);
-            string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
+        string fileType = file.FileType;
+        string newName = FixFileName(file.DisplayName);
+        string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
 
-            File.Copy(file.Path, newPath);
-            return true;
-        }
-        catch (COMException)
-        {
-            return false;
-        }
+        ImageInfo imageInfo = new(file.DisplayName, newName, newPath, fileType);
+        File.Copy(file.Path, newPath, true);
+        return imageInfo;
 
         static string FixFileName(string displayName)
         {
@@ -293,9 +313,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             return $"{newName}";
         }
     }
-    private void TryAddImageToList(StorageFile file)
+    private void TryAddImageToList(ImageInfo imageInfo)
     {
-        ImagesList.Add(file);
+        ImagesList.Add(imageInfo);
     }
     public async Task ConvertImages()
     {
@@ -321,13 +341,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             await Task.Run(async () =>
             {
-                IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
-
-                foreach (StorageFile file in files)
+                foreach (ImageInfo imageInfo in ImagesList)
                 {
-                    string finalArguments = ConvertToJXL
-                    ? $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl"
-                    : $@"{Arguments} {file.Path} {TempFolder.Path}\{file.DisplayName}.jpg";
+                    imageInfo.ConvertedPath = ConvertToJXL
+                    ? $@"{TempFolder!.Path}\{imageInfo.TemporaryName}.jxl"
+                    : $@"{TempFolder!.Path}\{imageInfo.TemporaryName}.jpg";
+
+                    string finalArguments = $"{Arguments} {imageInfo.TemporaryPath} {imageInfo.ConvertedPath}";
                     processStart.Arguments = finalArguments;
 
                     using Process? process = Process.Start(processStart);
@@ -349,11 +369,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     {
                         if (error.Contains("--allow_jpeg_reconstruction 0"))
                         {
-                            string newArguments = $@"--allow_jpeg_reconstruction 0 {file.Path} {TempFolder.Path}\{file.DisplayName}.jxl";
+                            string newArguments = $@"--allow_jpeg_reconstruction 0 {Arguments} {imageInfo.TemporaryPath} {TempFolder.Path}\{imageInfo.TemporaryName}.jxl";
                             processStart.Arguments = newArguments;
 
                             using Process? newProcess = Process.Start(processStart);
-
 
                             if (newProcess is null)
                             {
@@ -418,35 +437,28 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             await file.DeleteAsync();
         }
 
+        ImagesList.Clear();
         EnableAddButtons = true;
         EnableConvertButton = EnableSaveButton = EnableClearButton = false;
-        ImagesList.Clear();
     }
     public async Task SaveImages()
     {
-        Microsoft.Windows.Storage.Pickers.FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
+        FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
 
         if (result is not null)
         {
-            StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(result.Path);
-            IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
+            string pickedPath = result.Path;
 
-            foreach (StorageFile file in files)
+            foreach (ImageInfo imageInfo in ImagesList)
             {
                 if (ConvertToJXL == true)
                 {
-                    if (file.FileType == ".jxl")
-                    {
-                        await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
-                    }
+                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jxl", false);
                 }
                 else
                 {
-                    if (file.FileType != ".jxl")
-                    {
-                        await file.MoveAsync(storageFolder, file.Name, NameCollisionOption.GenerateUniqueName);
-                    }
+                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jpg", false);
                 }
             }
 
@@ -460,4 +472,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+}
+
+public sealed class ImageInfo(string originalName, string temporaryName, string temporaryPath, string originalFileType)
+{
+    public string OriginalName { get; } = originalName;
+    public string TemporaryName { get; } = temporaryName;
+    public string TemporaryPath { get; } = temporaryPath;
+    public string OriginalFileType { get; } = originalFileType;
+    public string ConvertedPath { get; set; } = "";
 }

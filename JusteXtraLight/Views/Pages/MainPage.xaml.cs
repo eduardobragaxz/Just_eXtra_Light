@@ -10,14 +10,14 @@ public sealed partial class MainPage : Page
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         App.MWindow!.SetTitleBar(AppTitleBar);
-        await LoadPage();
+        await CreateFolder();
     }
 
-    private async Task LoadPage()
+    private async Task CreateFolder()
     {
         StorageFolder temporaryFolder = Microsoft.Windows.Storage.ApplicationData.GetDefault().TemporaryFolder;
         IReadOnlyList<StorageFolder> folders = await temporaryFolder.GetFoldersAsync();
-        StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}");
+        StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}", CreationCollisionOption.GenerateUniqueName);
 
         mainPageViewModel.TempFolder = currentInstancetempFolder;
     }

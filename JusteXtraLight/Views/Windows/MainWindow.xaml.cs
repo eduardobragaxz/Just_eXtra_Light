@@ -2,7 +2,6 @@ using Microsoft.UI.Composition.SystemBackdrops;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
-using WinRT;
 
 namespace JustExtraLight.Views.Windows;
 
@@ -22,7 +21,7 @@ public sealed partial class MainWindow : Window
             SystemBackdrop = new MicaBackdrop() { Kind = MicaKind.Base };
         }
 
-        AppWindow.SetIcon("Assets/Icons/TitleBarIco.ico");
+        AppWindow.SetIcon("Assets/Icons/JXLIco.ico");
         ExtendsContentIntoTitleBar = true;
 
         uint dpi = GetDpiForWindow((nint)AppWindow.Id.Value);
