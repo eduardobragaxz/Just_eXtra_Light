@@ -16,6 +16,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
+    public int ImagesCount
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
     public bool ConvertToJXL
     {
         get => field;
@@ -230,10 +242,12 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        if (ImagesList.Count != 0)
+        ImagesCount = ImagesList.Count;
+
+        if (ImagesCount != 0)
         {
             EnableConvertButton = EnableClearButton = true;
-            AreRadioButtonsEnabled = false;
+            AreRadioButtonsEnabled = ShowListText = false;
         }
         else
         {
