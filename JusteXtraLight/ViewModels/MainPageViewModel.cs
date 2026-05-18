@@ -185,7 +185,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         fileTypes = FrozenSet.Create(".exr", ".gif", ".jpg", ".jpeg", ".pam", ".pgm", ".ppm", ".pfm", ".pgx", ".png", ".apng");
         ImagesList.CollectionChanged += Images_CollectionChanged;
     }
-    public async Task AddImagesFromFolder()
+    public async Task AddFolderPickerImages()
     {
         FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
@@ -197,29 +197,21 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             if (files.Count != 0)
             {
-                foreach (StorageFile file in files)
-                {
-                    if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
-                    {
-                        break;
-                    }
-
-                    if (fileTypes.Contains(file.FileType.ToLower()))
-                    {
-                        ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
-                        TryAddImageToList(imageInfo);
-                    }
-                }
+                await AddImages(files);
             }
         }
     }
-    public async Task AddDraggedImages()
+    public async Task AddFilePickerImages()
     {
-        Microsoft.Windows.Storage.Pickers.FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
+        FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
 
-        foreach (string type in fileTypes)
+        if (ConvertToJXL == true)
         {
-            fileOpenPicker.FileTypeFilter.Add(type);
+            fileOpenPicker.FileTypeChoices.Add(string.Join(", ", fileTypes), fileTypes.Items);
+        }
+        else
+        {
+            fileOpenPicker.FileTypeChoices.Add(".jxl", []);
         }
 
         IReadOnlyList<PickFileResult> results = await fileOpenPicker.PickMultipleFilesAsync();
@@ -232,7 +224,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                 if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
                 {
-                    break;
+                    continue;
                 }
 
                 ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
@@ -272,31 +264,35 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
 
-                foreach (IStorageItem item in items)
+                await AddImages(items);
+            }
+        }
+    }
+    private async Task AddImages(IReadOnlyList<IStorageItem> items)
+    {
+        foreach (IStorageItem item in items)
+        {
+            StorageFile storageFile = (StorageFile)item;
+
+            if (ImagesList.FirstOrDefault(i => i.OriginalName == storageFile.DisplayName) is not null)
+            {
+                continue;
+            }
+
+            if (ConvertToJXL == true)
+            {
+                if (fileTypes.Contains(storageFile.FileType.ToLower()))
                 {
-                    StorageFile storageFile = (StorageFile)item;
-
-                    if (ImagesList.FirstOrDefault(i => i.OriginalName == storageFile.DisplayName) is not null)
-                    {
-                        break;
-                    }
-
-                    if (ConvertToJXL == true)
-                    {
-                        if (fileTypes.Contains(storageFile.FileType.ToLower()))
-                        {
-                            ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                            ImagesList.Add(imageInfo);
-                        }
-                    }
-                    else
-                    {
-                        if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                            ImagesList.Add(imageInfo);
-                        }
-                    }
+                    ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                    ImagesList.Add(imageInfo);
+                }
+            }
+            else
+            {
+                if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                    ImagesList.Add(imageInfo);
                 }
             }
         }
