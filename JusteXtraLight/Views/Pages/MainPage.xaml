@@ -192,6 +192,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
 
             </Grid.RowDefinitions>
 
@@ -441,6 +442,20 @@
                 </ItemsView.Layout>
 
             </ItemsView>
+
+            <Border Background="{ThemeResource AccentAcrylicInAppFillColorDefaultBrush}"
+                    CornerRadius="{StaticResource ControlCornerRadius}"
+                    Grid.Column="3"
+                    Grid.Row="5"
+                    HorizontalAlignment="Right"
+                    Margin="8"
+                    Padding="12,8"
+                    VerticalAlignment="Bottom">
+
+                <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
+                           Text="{x:Bind mainPageViewModel.ImagesCount, Mode=OneWay}" />
+
+            </Border>
 
         </Grid>
 
