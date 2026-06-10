@@ -23,14 +23,13 @@
 		<GenerateTestArtifacts>False</GenerateTestArtifacts>
 		<AppxBundle>Never</AppxBundle>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<PublishAot>true</PublishAot>
+		<CsWinRTAotWarningLevel>3</CsWinRTAotWarningLevel>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-
-		<PublishTrimmed>true</PublishTrimmed>
-		<PublishReadyToRun>true</PublishReadyToRun>
+		<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
-
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -57,7 +56,7 @@
 		<ProjectCapability Include="Msix" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.1839" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260518100">
 			<PrivateAssets>all</PrivateAssets>

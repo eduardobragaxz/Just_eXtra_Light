@@ -275,6 +275,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             }
         }
     }
+
+    [DynamicWindowsRuntimeCast(typeof(StorageFile))]
     private async Task AddImages(IReadOnlyList<IStorageItem> items)
     {
         foreach (IStorageItem item in items)
