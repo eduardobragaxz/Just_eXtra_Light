@@ -187,7 +187,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async Task AddFolderPickerImages()
     {
-        FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id);
+        FolderPicker folderPicker = new(App.MWindow!.AppWindow.Id)
+        {
+            SuggestedStartLocation = PickerLocationId.PicturesLibrary
+        };
+
         PickFolderResult result = await folderPicker.PickSingleFolderAsync();
 
         if (result is not null)
@@ -203,7 +207,10 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async Task AddFilePickerImages()
     {
-        FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id);
+        FileOpenPicker fileOpenPicker = new(App.MWindow!.AppWindow.Id)
+        {
+            SuggestedStartLocation = PickerLocationId.PicturesLibrary
+        };
 
         if (ConvertToJXL == true)
         {
