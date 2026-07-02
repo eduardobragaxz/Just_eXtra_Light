@@ -38,8 +38,6 @@
 
 	<ItemGroup>
 		<None Remove="Assets\Icons\JXLIcon.png" />
-		<None Remove="Assets\Program\cjxl.exe" />
-		<None Remove="Assets\Program\djxl.exe" />
 		<None Remove="MainPage.xaml" />
 	</ItemGroup>
 
