@@ -30,7 +30,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public bool ConvertToJXL
     {
-        get => field;
+        get;
         set
         {
             if (value != field)
@@ -61,10 +61,25 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             if (value != field)
             {
                 field = value;
+
+                ShowProgressRing = field == true ? Visibility.Visible : Visibility.Collapsed;
+
                 NotifyPropertyChanged();
             }
         }
     }
+    public Visibility ShowProgressRing
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    } = Visibility.Collapsed;
     public bool EnableAddButtons
     {
         get;

@@ -196,9 +196,7 @@
 
             </Grid.RowDefinitions>
 
-            <RadioButtons Grid.Column="0"
-                          Grid.ColumnSpan="4"
-                          Grid.Row="0"
+            <RadioButtons Grid.ColumnSpan="4"
                           HorizontalAlignment="Center"
                           IsEnabled="{x:Bind mainPageViewModel.AreRadioButtonsEnabled, Mode=OneWay}"
                           Margin="0,0,0,4"
@@ -215,8 +213,7 @@
 
             </RadioButtons>
 
-            <Expander Grid.Column="0"
-                      Grid.ColumnSpan="4"
+            <Expander Grid.ColumnSpan="4"
                       Grid.Row="1"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
@@ -261,7 +258,6 @@
             </Expander>
 
             <Button Command="{x:Bind mainPageViewModel.FolderCommand}"
-                    Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Grid.Row="2"
                     IsEnabled="{x:Bind mainPageViewModel.EnableAddButtons, Mode=OneWay}"
@@ -306,7 +302,6 @@
             </Button>
 
             <Button Command="{x:Bind mainPageViewModel.ConvertImagesCommand}"
-                    Grid.Column="0"
                     Grid.ColumnSpan="4"
                     Grid.Row="3"
                     Height="60"
@@ -330,7 +325,6 @@
             </Button>
 
             <Button Command="{x:Bind mainPageViewModel.SaveImagesCommand}"
-                    Grid.Column="0"
                     Grid.ColumnSpan="3"
                     Grid.Row="4"
                     HorizontalAlignment="Stretch"
@@ -385,16 +379,6 @@
                        x:Uid="DragAndDropInstructions"
                        Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}" />
 
-            <ProgressRing Canvas.ZIndex="1"
-                          Grid.Column="4"
-                          Grid.ColumnSpan="1"
-                          Grid.Row="5"
-                          HorizontalAlignment="Right"
-                          IsActive="{x:Bind mainPageViewModel.IsConversionInProgress, Mode=OneWay}"
-                          Margin="8"
-                          x:Name="LoadingRing"
-                          VerticalAlignment="Bottom" />
-
             <ItemsView AllowDrop="True"
                        Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
                        DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
@@ -443,19 +427,27 @@
 
             </ItemsView>
 
-            <Border Background="{ThemeResource AccentAcrylicInAppFillColorDefaultBrush}"
-                    CornerRadius="{StaticResource ControlCornerRadius}"
-                    Grid.Column="3"
-                    Grid.Row="5"
-                    HorizontalAlignment="Right"
-                    Margin="8"
-                    Padding="12,8"
-                    VerticalAlignment="Bottom">
+            <StackPanel Background="{ThemeResource AccentAcrylicInAppFillColorDefaultBrush}"
+                        CornerRadius="{StaticResource ControlCornerRadius}"
+                        Grid.Column="3"
+                        Grid.Row="5"
+                        HorizontalAlignment="Right"
+                        Margin="8"
+                        Orientation="Horizontal"
+                        Padding="12,8"
+                        VerticalAlignment="Bottom">
+
+                <ProgressRing Height="24"
+                              IsActive="{x:Bind mainPageViewModel.IsConversionInProgress, Mode=OneWay}"
+                              Margin="0,0,8,0"
+                              x:Name="LoadingRing"
+                              Visibility="{x:Bind mainPageViewModel.ShowProgressRing, Mode=OneWay}"
+                              Width="24" />
 
                 <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
                            Text="{x:Bind mainPageViewModel.ImagesCount, Mode=OneWay}" />
 
-            </Border>
+            </StackPanel>
 
         </Grid>
 
