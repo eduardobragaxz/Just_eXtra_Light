@@ -364,7 +364,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
             string fullPath;
-            
+
             if (System.Environment.Is64BitOperatingSystem)
             {
                 fullPath = ConvertToJXL
@@ -473,13 +473,17 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             successCount = failCount = 0;
         }
     }
-    public async void DeleteFilesAfterConversion()
+    private async void DeleteFilesAfterConversion()
+    {
+        await DeleteFilesAfterConversionAsync();
+    }
+    public async Task DeleteFilesAfterConversionAsync()
     {
         IReadOnlyList<StorageFile> files = await TempFolder!.GetFilesAsync();
 
         foreach (StorageFile file in files)
         {
-            await file.DeleteAsync();
+            File.Delete(file.Path);
         }
 
         ImagesList.Clear();
@@ -507,9 +511,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
             }
 
-            DeleteFilesAfterConversion();
-            EnableAddButtons = true;
-            EnableConvertButton = EnableSaveButton = EnableClearButton = false;
+            await DeleteFilesAfterConversionAsync();
         }
     }
     public event PropertyChangedEventHandler? PropertyChanged;
