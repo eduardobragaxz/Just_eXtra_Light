@@ -214,7 +214,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         if (ConvertToJXL == true)
         {
-            fileOpenPicker.FileTypeChoices.Add(string.Join(", ", fileTypes), fileTypes.Items);
+            fileOpenPicker.FileTypeChoices.Add(string.Join(", ", fileTypes), [.. fileTypes.Items]);
         }
         else
         {
