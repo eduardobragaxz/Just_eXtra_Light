@@ -363,21 +363,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            string fullPath;
-
-            if (System.Environment.Is64BitOperatingSystem)
-            {
-                fullPath = ConvertToJXL
+            string fullPath = Environment.Is64BitOperatingSystem
+                ? ConvertToJXL
                     ? $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\cjxl.exe"
-                    : $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\djxl.exe";
-            }
-            else
-            {
-                fullPath = ConvertToJXL
+                    : $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\djxl.exe"
+                : ConvertToJXL
                     ? $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\cjxl.exe"
                     : $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\djxl.exe";
-            }
-
             ProcessStartInfo processStart = new(fullPath)
             {
                 CreateNoWindow = true,
