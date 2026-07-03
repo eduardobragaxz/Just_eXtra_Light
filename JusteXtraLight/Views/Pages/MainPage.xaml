@@ -126,19 +126,8 @@
                                            TextWrapping="Wrap"
                                            VerticalAlignment="Center">
                                     
-                                    <Bold>
-                                        
-                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Major}" />
-                                    
-                                        <Run Text="." />
-                                    
-                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Minor}" />
-                                    
-                                        <Run Text="." />
-                                    
-                                        <Run Text="{x:Bind applicationModel:AppInfo.Current.Package.Id.Version.Build}" />
-                                    
-                                    </Bold>
+                                    <Run FontWeight="SemiBold"
+                                         x:Name="AppVersionRun" />
                                     
                                     <LineBreak />
                                     
@@ -155,7 +144,7 @@
                                     </Hyperlink>
                                     
                                     <Run FontSize="12"
-                                         Text="(ver 0.11.2)" />
+                                         Text="(ver 0.12.0)" />
 
                                 </TextBlock>
 
