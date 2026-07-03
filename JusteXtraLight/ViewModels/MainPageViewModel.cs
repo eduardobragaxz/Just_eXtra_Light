@@ -353,8 +353,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async Task ConvertImages()
     {
-        string error = "";
-
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
             IsConversionInProgress = true;
@@ -395,7 +393,6 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                         break;
                     }
 
-                    error = await process.StandardError.ReadToEndAsync();
                     await process.WaitForExitAsync();
 
                     if (process.ExitCode == 0)
@@ -404,6 +401,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     }
                     else
                     {
+                        string error = await process.StandardError.ReadToEndAsync();
+
                         if (error.Contains("--allow_jpeg_reconstruction 0"))
                         {
                             string newArguments = $@"--allow_jpeg_reconstruction 0 {Arguments} {imageInfo.TemporaryPath} {TempFolder.Path}\{imageInfo.TemporaryName}.jxl";

@@ -28,7 +28,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-		<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>
+		<!--<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>-->
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 	</PropertyGroup>
 

@@ -223,7 +223,7 @@
 
                     <TextBox Margin="16"
                              x:Name="ArgumentsTextBox"
-                             Text="{x:Bind mainPageViewModel.Arguments, Mode=OneWay}"
+                             Text="{x:Bind mainPageViewModel.Arguments, Mode=TwoWay}"
                              x:Uid="ArgumentsTextBox" />
 
                 </Expander.Content>
