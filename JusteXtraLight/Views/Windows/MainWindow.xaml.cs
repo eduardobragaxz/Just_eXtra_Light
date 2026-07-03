@@ -1,8 +1,3 @@
-using Microsoft.UI.Composition.SystemBackdrops;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml.Media;
-using Windows.Graphics;
-
 namespace JustExtraLight.Views.Windows;
 
 public sealed partial class MainWindow : Window

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace JustExtraLight.ViewModels;
+﻿namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {

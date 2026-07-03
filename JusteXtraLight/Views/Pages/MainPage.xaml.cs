@@ -1,6 +1,3 @@
-using Microsoft.UI.Xaml.Documents;
-using Windows.ApplicationModel;
-
 namespace JustExtraLight.Views.Pages;
 
 public sealed partial class MainPage : Page
