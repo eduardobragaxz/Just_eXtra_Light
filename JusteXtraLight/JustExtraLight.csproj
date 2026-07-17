@@ -32,6 +32,10 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Content Remove="Assets\Package icons\StoreLogo.scale-400.png" />
 	</ItemGroup>
