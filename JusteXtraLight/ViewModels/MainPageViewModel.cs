@@ -1,7 +1,10 @@
-﻿namespace JustExtraLight.ViewModels;
+﻿using Microsoft.UI.Dispatching;
+
+namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
+    public DispatcherQueue? DispatcherQueue { get; set; }
     public string Arguments
     {
         get;
@@ -41,7 +44,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     } = true;
     public bool AreRadioButtonsEnabled
     {
-        get => field;
+        get;
         set
         {
             if (value != field)
@@ -60,7 +63,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 field = value;
 
-                ShowProgressRing = field == true ? Visibility.Visible : Visibility.Collapsed;
+                DispatcherQueue?.TryEnqueue(() => ShowProgressRing = field == true ? Visibility.Visible : Visibility.Collapsed);
 
                 NotifyPropertyChanged();
             }
@@ -254,18 +257,21 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        ImagesCount = ImagesList.Count;
+        DispatcherQueue?.TryEnqueue(() =>
+        {
+            ImagesCount = ImagesList.Count;
 
-        if (ImagesCount != 0)
-        {
-            EnableConvertButton = EnableClearButton = true;
-            AreRadioButtonsEnabled = ShowListText = false;
-        }
-        else
-        {
-            ShowListText = true;
-            AreRadioButtonsEnabled = true;
-        }
+            if (ImagesCount != 0)
+            {
+                EnableConvertButton = EnableClearButton = true;
+                AreRadioButtonsEnabled = ShowListText = false;
+            }
+            else
+            {
+                ShowListText = true;
+                AreRadioButtonsEnabled = true;
+            }
+        });
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -306,7 +312,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 if (fileTypes.Contains(storageFile.FileType.ToLower()))
                 {
                     ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                    ImagesList.Add(imageInfo);
+                    TryAddImageToList(imageInfo);
                 }
             }
             else
@@ -314,7 +320,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
                 {
                     ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                    ImagesList.Add(imageInfo);
+                    TryAddImageToList(imageInfo);
                 }
             }
         }
@@ -347,15 +353,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void TryAddImageToList(ImageInfo imageInfo)
     {
-        ImagesList.Add(imageInfo);
+        DispatcherQueue?.TryEnqueue(() => ImagesList.Add(imageInfo));
     }
     public async Task ConvertImages()
     {
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
-            IsConversionInProgress = true;
-
-            EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false;
+            DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = true; EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false; });
 
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -433,9 +437,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
             });
 
-            IsConversionInProgress = false;
-            EnableSaveButton = EnableClearButton = true;
-            SetInfoBarProperties();
+            DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = false; EnableSaveButton = EnableClearButton = true; SetInfoBarProperties(); });
         }
 
         void SetInfoBarProperties()
@@ -475,9 +477,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             File.Delete(file.Path);
         }
 
-        ImagesList.Clear();
-        EnableAddButtons = true;
-        EnableConvertButton = EnableSaveButton = EnableClearButton = false;
+        DispatcherQueue?.TryEnqueue(() => { ImagesList.Clear(); EnableAddButtons = true; EnableConvertButton = EnableSaveButton = EnableClearButton = false; });
     }
     public async Task SaveImages()
     {
