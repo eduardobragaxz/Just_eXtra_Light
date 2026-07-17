@@ -60,7 +60,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.2.0" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.3.1" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="MainPage.xaml">
