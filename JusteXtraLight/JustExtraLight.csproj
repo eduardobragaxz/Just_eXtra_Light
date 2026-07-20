@@ -33,8 +33,13 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<DefineConstants>$(DefineConstants);DISABLE_XAML_GENERATED_MAIN</DefineConstants>
-	</PropertyGroup>
+	<EnabledXamlOptionalChanges>
+		DefaultStyleOptimizations,
+		DeferContextFlyoutInit,
+		IconNoGridOptimization,
+		OptimizeApplyStyles,
+	</EnabledXamlOptionalChanges>
+</PropertyGroup>
 
 	<ItemGroup>
 		<Content Remove="Assets\Package icons\StoreLogo.scale-400.png" />
