@@ -9,6 +9,7 @@ public sealed partial class MainWindow : Window
         InitliazeWindow();
     }
 
+    [DynamicWindowsRuntimeCast(typeof(OverlappedPresenter))]
     private void InitliazeWindow()
     {
         if (MicaController.IsSupported())
@@ -25,9 +26,9 @@ public sealed partial class MainWindow : Window
         AppWindow.Resize(new SizeInt32(calculatedWidth, calculatedHeight));
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;
 
-        OverlappedPresenter overlappedPresenter = AppWindow.Presenter.As<OverlappedPresenter>();
-        overlappedPresenter.PreferredMinimumWidth = calculatedWidth;
-        overlappedPresenter.PreferredMinimumHeight = calculatedHeight;
+        OverlappedPresenter overlappedPresenter = (OverlappedPresenter)AppWindow.Presenter;
+        overlappedPresenter.PreferredMinimumWidth = DipToPhysical(640, dpi);
+        overlappedPresenter.PreferredMinimumHeight = DipToPhysical(600, dpi);
 
         DisplayArea displayArea = DisplayArea.GetFromWindowId(AppWindow.OwnerWindowId, DisplayAreaFallback.Nearest);
         if (displayArea is not null)
