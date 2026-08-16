@@ -399,6 +399,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process.ExitCode == 0)
                     {
+                        imageInfo.IsConverted = true;
                         successCount++;
                     }
                     else
@@ -422,6 +423,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess.ExitCode == 0)
                             {
+                                imageInfo.IsConverted = true;
                                 successCount++;
                             }
                             else
@@ -437,7 +439,12 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 }
             });
 
-            DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = false; EnableSaveButton = EnableClearButton = true; SetInfoBarProperties(); });
+            DispatcherQueue?.TryEnqueue(() =>
+            {
+                IsConversionInProgress = false;
+                EnableSaveButton = EnableClearButton = true;
+                SetInfoBarProperties();
+            });
         }
 
         void SetInfoBarProperties()
@@ -487,16 +494,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         if (result is not null)
         {
             string pickedPath = result.Path;
+            string fileType = ConvertToJXL == true ? ".jxl" : ".jpg";
 
             foreach (ImageInfo imageInfo in ImagesList)
             {
-                if (ConvertToJXL == true)
+                if (imageInfo.IsConverted == true)
                 {
-                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jxl", false);
-                }
-                else
-                {
-                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}.jpg", false);
+                    File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}{fileType}", false);
                 }
             }
 
@@ -517,4 +521,5 @@ public sealed class ImageInfo(string originalName, string temporaryName, string 
     public string TemporaryPath { get; } = temporaryPath;
     public string OriginalFileType { get; } = originalFileType;
     public string ConvertedPath { get; set; } = "";
+    public bool IsConverted { get; set; }
 }
