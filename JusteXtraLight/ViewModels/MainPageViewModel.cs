@@ -460,7 +460,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                         }
                         else
                         {
-                            _ = (DispatcherQueue?.TryEnqueue(async () =>
+                            _ = (DispatcherQueue?.TryEnqueue(() =>
                             {
                                 imageInfo.IsConversionCompleted = true;
                                 imageInfo.IsConversionSuccessful = false;
