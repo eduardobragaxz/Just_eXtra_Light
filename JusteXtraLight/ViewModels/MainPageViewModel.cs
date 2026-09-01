@@ -397,7 +397,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                             imageInfo.IsConversionSuccessful = false;
                         }));
                         failCount++;
-                        break;
+                        continue;
                     }
 
                     await process.WaitForExitAsync();
@@ -428,9 +428,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
+
+                                    imageInfo.Error = error;
                                 }));
                                 failCount++;
-                                break;
+                                continue;
                             }
 
                             await newProcess.WaitForExitAsync();
@@ -450,16 +452,20 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
+
+                                    imageInfo.Error = error;
                                 }));
                                 failCount++;
                             }
                         }
                         else
                         {
-                            _ = (DispatcherQueue?.TryEnqueue(() =>
+                            _ = (DispatcherQueue?.TryEnqueue(async () =>
                             {
                                 imageInfo.IsConversionCompleted = true;
                                 imageInfo.IsConversionSuccessful = false;
+
+                                imageInfo.Error = error;
                             }));
                             failCount++;
                         }

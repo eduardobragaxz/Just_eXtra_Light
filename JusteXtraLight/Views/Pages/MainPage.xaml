@@ -364,7 +364,7 @@
 
                     <DataTemplate x:DataType="viewmodels:ImageInfoViewModel">
 
-                        <ItemContainer>
+                        <ItemContainer ToolTipService.ToolTip="{x:Bind Error, Mode=OneWay, TargetNullValue=}">
 
                             <Grid BorderBrush="{x:Bind BorderColor, Mode=OneWay}"
                                   BorderThickness="2"

@@ -64,6 +64,18 @@ public sealed partial class ImageInfoViewModel(string originalName, string tempo
             }
         }
     }
+    public string? Error
+    {
+        get;
+        set
+        {
+            if (value != field)
+            {
+                field = value;
+                NotifyPropertyChanged();
+            }
+        }
+    }
 
     private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
     {
