@@ -63,7 +63,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 field = value;
 
-                DispatcherQueue?.TryEnqueue(() => ShowProgressRing = field == true ? Visibility.Visible : Visibility.Collapsed);
+                _ = (DispatcherQueue?.TryEnqueue(() => ShowProgressRing = field == true ? Visibility.Visible : Visibility.Collapsed));
 
                 NotifyPropertyChanged();
             }
@@ -257,7 +257,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
     {
-        DispatcherQueue?.TryEnqueue(() =>
+        _ = (DispatcherQueue?.TryEnqueue(() =>
         {
             ImagesCount = ImagesList.Count;
 
@@ -271,7 +271,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 ShowListText = true;
                 AreRadioButtonsEnabled = true;
             }
-        });
+        }));
     }
     public void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
@@ -353,13 +353,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     private void TryAddImageToList(ImageInfoViewModel imageInfo)
     {
-        DispatcherQueue?.TryEnqueue(() => ImagesList.Add(imageInfo));
+        _ = (DispatcherQueue?.TryEnqueue(() => ImagesList.Add(imageInfo)));
     }
     public async Task ConvertImages()
     {
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
-            DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = true; EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false; });
+            _ = (DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = true; EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false; }));
 
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
             StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
@@ -391,11 +391,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process is null)
                     {
-                        DispatcherQueue?.TryEnqueue(() =>
+                        _ = (DispatcherQueue?.TryEnqueue(() =>
                         {
                             imageInfo.IsConversionCompleted = true;
                             imageInfo.IsConversionSuccessful = false;
-                        });
+                        }));
                         failCount++;
                         break;
                     }
@@ -404,11 +404,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process.ExitCode == 0)
                     {
-                        DispatcherQueue?.TryEnqueue(() =>
+                        _ = (DispatcherQueue?.TryEnqueue(() =>
                         {
                             imageInfo.IsConversionSuccessful =
                                 imageInfo.IsConversionCompleted = true;
-                        });
+                        }));
                         successCount++;
                     }
                     else
@@ -424,11 +424,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess is null)
                             {
-                                DispatcherQueue?.TryEnqueue(() =>
+                                _ = (DispatcherQueue?.TryEnqueue(() =>
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
-                                });
+                                }));
                                 failCount++;
                                 break;
                             }
@@ -437,42 +437,42 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess.ExitCode == 0)
                             {
-                                DispatcherQueue?.TryEnqueue(() =>
+                                _ = (DispatcherQueue?.TryEnqueue(() =>
                                 {
-                                    imageInfo.IsConversionSuccessful = 
+                                    imageInfo.IsConversionSuccessful =
                                         imageInfo.IsConversionCompleted = true;
-                                });
+                                }));
                                 successCount++;
                             }
                             else
                             {
-                                DispatcherQueue?.TryEnqueue(() =>
+                                _ = (DispatcherQueue?.TryEnqueue(() =>
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
-                                });
+                                }));
                                 failCount++;
                             }
                         }
                         else
                         {
-                            DispatcherQueue?.TryEnqueue(() =>
+                            _ = (DispatcherQueue?.TryEnqueue(() =>
                             {
                                 imageInfo.IsConversionCompleted = true;
                                 imageInfo.IsConversionSuccessful = false;
-                            });
+                            }));
                             failCount++;
                         }
                     }
                 }
             });
 
-            DispatcherQueue?.TryEnqueue(() =>
+            _ = (DispatcherQueue?.TryEnqueue(() =>
             {
                 IsConversionInProgress = false;
                 EnableSaveButton = EnableClearButton = true;
                 SetInfoBarProperties();
-            });
+            }));
         }
 
         void SetInfoBarProperties()
@@ -512,7 +512,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             File.Delete(file.Path);
         }
 
-        DispatcherQueue?.TryEnqueue(() => { ImagesList.Clear(); EnableAddButtons = true; EnableConvertButton = EnableSaveButton = EnableClearButton = false; });
+        _ = (DispatcherQueue?.TryEnqueue(() => { ImagesList.Clear(); EnableAddButtons = true; EnableConvertButton = EnableSaveButton = EnableClearButton = false; }));
     }
     public async Task SaveImages()
     {
