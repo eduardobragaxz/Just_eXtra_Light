@@ -476,7 +476,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             _ = (DispatcherQueue?.TryEnqueue(() =>
             {
                 IsConversionInProgress = false;
-                EnableSaveButton = EnableClearButton = true;
+                EnableSaveButton = failCount != ImagesList.Count;
+                EnableClearButton = true;
                 SetInfoBarProperties();
             }));
         }
