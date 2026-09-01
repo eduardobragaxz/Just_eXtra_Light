@@ -20,27 +20,7 @@
 
         <Grid.Resources>
 
-            <DataTemplate x:Key="ImagesTemplate">
 
-                <ItemContainer>
-
-                    <Grid CornerRadius="5"
-                          Height="200"
-                          x:Name="AttachmentTemplateGrid"
-                          Padding="5"
-                          Width="200">
-
-                        <Grid.Background>
-
-                            <ImageBrush Stretch="UniformToFill" />
-
-                        </Grid.Background>
-
-                    </Grid>
-
-                </ItemContainer>
-
-            </DataTemplate>
 
             <Style BasedOn="{StaticResource AccentButtonStyle}"
                    x:Key="LocalButtonStyle"
@@ -382,23 +362,45 @@
 
                 <ItemsView.ItemTemplate>
 
-                    <DataTemplate x:DataType="viewmodels:ImageInfo">
+                    <DataTemplate x:DataType="viewmodels:ImageInfoViewModel">
 
                         <ItemContainer>
 
-                            <Image Height="72"
-                                   Width="72">
+                            <Grid BorderBrush="{x:Bind BorderColor, Mode=OneWay}"
+                                  BorderThickness="2"
+                                  CornerRadius="{StaticResource ControlCornerRadius}">
 
-                                <Image.Source>
+                                <Image Height="72"
+                                       Width="72">
 
-                                    <BitmapImage DecodePixelHeight="72"
-                                                 DecodePixelType="Logical"
-                                                 DecodePixelWidth="72"
-                                                 UriSource="{x:Bind TemporaryPath}" />
+                                    <Image.Source>
 
-                                </Image.Source>
+                                        <BitmapImage DecodePixelHeight="72"
+                                                     DecodePixelType="Logical"
+                                                     DecodePixelWidth="72"
+                                                     UriSource="{x:Bind TemporaryPath}" />
 
-                            </Image>
+                                    </Image.Source>
+
+                                </Image>
+
+                                <Border Background="{x:Bind BorderColor, Mode=OneWay}"
+                                        CornerRadius="50"
+                                        Height="24"
+                                        HorizontalAlignment="Right"
+                                        x:Load="{x:Bind IsConversionCompleted, Mode=OneWay}"
+                                        x:Name="SuccessfulBorder"
+                                        Padding="4"
+                                        VerticalAlignment="Bottom"
+                                        Width="24">
+
+                                    <FontIcon FontSize="16"
+                                              Foreground="White"
+                                              Glyph="{x:Bind Icon, Mode=OneWay}" />
+
+                                </Border>
+
+                            </Grid>
 
                         </ItemContainer>
 

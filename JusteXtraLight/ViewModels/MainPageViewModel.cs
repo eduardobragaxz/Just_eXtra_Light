@@ -178,7 +178,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
     } = true;
     public StorageFolder? TempFolder { get; set; }
-    public ObservableCollection<ImageInfo> ImagesList { get; set; }
+    public ObservableCollection<ImageInfoViewModel> ImagesList { get; set; }
     private readonly FrozenSet<string> fileTypes;
     private int failCount;
     private int successCount;
@@ -250,7 +250,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                     continue;
                 }
 
-                ImageInfo imageInfo = await TryToCopyImageToTempFolder(file);
+                ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(file);
                 TryAddImageToList(imageInfo);
             }
         }
@@ -311,7 +311,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 if (fileTypes.Contains(storageFile.FileType.ToLower()))
                 {
-                    ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                    ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(storageFile);
                     TryAddImageToList(imageInfo);
                 }
             }
@@ -319,19 +319,19 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             {
                 if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
                 {
-                    ImageInfo imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                    ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(storageFile);
                     TryAddImageToList(imageInfo);
                 }
             }
         }
     }
-    private async Task<ImageInfo> TryToCopyImageToTempFolder(StorageFile file)
+    private async Task<ImageInfoViewModel> TryToCopyImageToTempFolder(StorageFile file)
     {
         string fileType = file.FileType;
         string newName = FixFileName(file.DisplayName);
         string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
 
-        ImageInfo imageInfo = new(file.DisplayName, newName, newPath, fileType);
+        ImageInfoViewModel imageInfo = new(file.DisplayName, newName, newPath, fileType);
         File.Copy(file.Path, newPath, true);
         return imageInfo;
 
@@ -351,7 +351,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             return $"{newName}";
         }
     }
-    private void TryAddImageToList(ImageInfo imageInfo)
+    private void TryAddImageToList(ImageInfoViewModel imageInfo)
     {
         DispatcherQueue?.TryEnqueue(() => ImagesList.Add(imageInfo));
     }
@@ -378,7 +378,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             await Task.Run(async () =>
             {
-                foreach (ImageInfo imageInfo in ImagesList)
+                foreach (ImageInfoViewModel imageInfo in ImagesList)
                 {
                     imageInfo.ConvertedPath = ConvertToJXL
                     ? $@"{TempFolder!.Path}\{imageInfo.TemporaryName}.jxl"
@@ -391,6 +391,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process is null)
                     {
+                        DispatcherQueue?.TryEnqueue(() =>
+                        {
+                            imageInfo.IsConversionCompleted = true;
+                            imageInfo.IsConversionSuccessful = false;
+                        });
                         failCount++;
                         break;
                     }
@@ -399,7 +404,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process.ExitCode == 0)
                     {
-                        imageInfo.IsConverted = true;
+                        DispatcherQueue?.TryEnqueue(() =>
+                        {
+                            imageInfo.IsConversionSuccessful =
+                                imageInfo.IsConversionCompleted = true;
+                        });
                         successCount++;
                     }
                     else
@@ -415,6 +424,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess is null)
                             {
+                                DispatcherQueue?.TryEnqueue(() =>
+                                {
+                                    imageInfo.IsConversionCompleted = true;
+                                    imageInfo.IsConversionSuccessful = false;
+                                });
                                 failCount++;
                                 break;
                             }
@@ -423,16 +437,30 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess.ExitCode == 0)
                             {
-                                imageInfo.IsConverted = true;
+                                DispatcherQueue?.TryEnqueue(() =>
+                                {
+                                    imageInfo.IsConversionSuccessful = 
+                                        imageInfo.IsConversionCompleted = true;
+                                });
                                 successCount++;
                             }
                             else
                             {
+                                DispatcherQueue?.TryEnqueue(() =>
+                                {
+                                    imageInfo.IsConversionCompleted = true;
+                                    imageInfo.IsConversionSuccessful = false;
+                                });
                                 failCount++;
                             }
                         }
                         else
                         {
+                            DispatcherQueue?.TryEnqueue(() =>
+                            {
+                                imageInfo.IsConversionCompleted = true;
+                                imageInfo.IsConversionSuccessful = false;
+                            });
                             failCount++;
                         }
                     }
@@ -496,9 +524,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             string pickedPath = result.Path;
             string fileType = ConvertToJXL == true ? ".jxl" : ".jpg";
 
-            foreach (ImageInfo imageInfo in ImagesList)
+            foreach (ImageInfoViewModel imageInfo in ImagesList)
             {
-                if (imageInfo.IsConverted == true)
+                if (imageInfo.IsConversionSuccessful == true)
                 {
                     File.Move(imageInfo.ConvertedPath, $@"{pickedPath}\{imageInfo.OriginalName}{fileType}", false);
                 }
@@ -512,14 +540,4 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-}
-
-public sealed class ImageInfo(string originalName, string temporaryName, string temporaryPath, string originalFileType)
-{
-    public string OriginalName { get; } = originalName;
-    public string TemporaryName { get; } = temporaryName;
-    public string TemporaryPath { get; } = temporaryPath;
-    public string OriginalFileType { get; } = originalFileType;
-    public string ConvertedPath { get; set; } = "";
-    public bool IsConverted { get; set; }
 }
