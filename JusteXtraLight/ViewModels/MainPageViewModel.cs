@@ -179,15 +179,15 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     } = true;
     public StorageFolder? TempFolder { get; set; }
     public ObservableCollection<ImageInfoViewModel> ImagesList { get; set; }
-    private readonly FrozenSet<string> fileTypes;
-    private int failCount;
-    private int successCount;
-    private readonly ResourceLoader resourceLoader;
     public AddImagesCommand ImagesCommand { get; }
     public AddFolderCommand FolderCommand { get; }
     public ConvertImagesCommand ConvertImagesCommand { get; }
     public SaveImagesCommand SaveImagesCommand { get; }
     public ClearImagesCommand ClearImagesCommand { get; }
+    private readonly FrozenSet<string> fileTypes;
+    private int failCount;
+    private int successCount;
+    private readonly ResourceLoader resourceLoader;
     public MainPageViewModel()
     {
         ImagesCommand = new(this);
@@ -239,20 +239,9 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
         IReadOnlyList<PickFileResult> results = await fileOpenPicker.PickMultipleFilesAsync();
 
-        if (results is not null && results.Count != 0)
+        if (results.Count != 0)
         {
-            foreach (PickFileResult result in results)
-            {
-                StorageFile file = await StorageFile.GetFileFromPathAsync(result.Path);
-
-                if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
-                {
-                    continue;
-                }
-
-                ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(file);
-                TryAddImageToList(imageInfo);
-            }
+            await AddImages(results);
         }
     }
     private void Images_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -279,19 +268,19 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
     }
     public async void ImageItemsView_Drop(object sender, DragEventArgs e)
     {
-        await DropImages(e);
+        if (EnableAddButtons == true)
+        {
+            await DropImages(e);
+        }
     }
 
     private async Task DropImages(DragEventArgs e)
     {
-        if (EnableAddButtons == true)
+        if (e.DataView.Contains(StandardDataFormats.StorageItems))
         {
-            if (e.DataView.Contains(StandardDataFormats.StorageItems))
-            {
-                IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
+            IReadOnlyList<IStorageItem> items = await e.DataView.GetStorageItemsAsync();
 
-                await AddImages(items);
-            }
+            await AddImages(items);
         }
     }
 
@@ -312,32 +301,47 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 if (fileTypes.Contains(storageFile.FileType.ToLower()))
                 {
                     ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                    TryAddImageToList(imageInfo);
+                    ImagesList.Add(imageInfo);
                 }
             }
-            else
+            else if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
             {
-                if (storageFile.FileType.Equals(".jxl", StringComparison.CurrentCultureIgnoreCase))
+                ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(storageFile);
+                ImagesList.Add(imageInfo);
+            }
+        }
+    }
+    private async Task AddImages(IReadOnlyList<PickFileResult> results)
+    {
+        if (results is not null && results.Count != 0)
+        {
+            foreach (PickFileResult result in results)
+            {
+                StorageFile file = await StorageFile.GetFileFromPathAsync(result.Path);
+
+                if (ImagesList.FirstOrDefault(i => i.OriginalName == file.DisplayName) is not null)
                 {
-                    ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(storageFile);
-                    TryAddImageToList(imageInfo);
+                    continue;
                 }
+
+                ImageInfoViewModel imageInfo = await TryToCopyImageToTempFolder(file);
+                ImagesList.Add(imageInfo);
             }
         }
     }
     private async Task<ImageInfoViewModel> TryToCopyImageToTempFolder(StorageFile file)
     {
-        string fileType = file.FileType;
-        string newName = FixFileName(file.DisplayName);
-        string newPath = $@"{TempFolder!.Path}\{newName}{fileType}";
+        string originalFileType = file.FileType;
+        string temporaryName = FixFileName();
+        string temporaryPath = $@"{TempFolder!.Path}\{temporaryName}{originalFileType}";
 
-        ImageInfoViewModel imageInfo = new(file.DisplayName, newName, newPath, fileType);
-        File.Copy(file.Path, newPath, true);
+        ImageInfoViewModel imageInfo = new(file.DisplayName, temporaryName, temporaryPath, originalFileType);
+        File.Copy(file.Path, temporaryPath, true);
         return imageInfo;
 
-        static string FixFileName(string displayName)
+        string FixFileName()
         {
-            StringBuilder newName = new(displayName, displayName.Length);
+            StringBuilder newName = new(file.DisplayName, file.DisplayName.Length);
             _ = newName.Replace(' ', '_')
                 .Replace('-', '_')
                 .Replace('.', '_');
@@ -351,25 +355,21 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             return $"{newName}";
         }
     }
-    private void TryAddImageToList(ImageInfoViewModel imageInfo)
-    {
-        _ = (DispatcherQueue?.TryEnqueue(() => ImagesList.Add(imageInfo)));
-    }
     public async Task ConvertImages()
     {
         if (Arguments == "" || (Arguments != "" && Arguments[0..2] == "--"))
         {
-            _ = (DispatcherQueue?.TryEnqueue(() => { IsConversionInProgress = true; EnableAddButtons = EnableConvertButton = EnableSaveButton = EnableClearButton = false; }));
+            _ = (DispatcherQueue?.TryEnqueue(() =>
+            {
+                IsConversionInProgress = true;
+                EnableAddButtons =
+                    EnableConvertButton =
+                    EnableSaveButton =
+                    EnableClearButton = false;
+            }));
 
             //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
-            StorageFolder appFolder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-            string fullPath = Environment.Is64BitOperatingSystem
-                ? ConvertToJXL
-                    ? $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\cjxl.exe"
-                    : $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\djxl.exe"
-                : ConvertToJXL
-                    ? $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\cjxl.exe"
-                    : $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\djxl.exe";
+            string fullPath = GetPath();
             ProcessStartInfo processStart = new(fullPath)
             {
                 CreateNoWindow = true,
@@ -505,6 +505,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             successCount = failCount = 0;
         }
+        string GetPath()
+        {
+            StorageFolder appFolder = Package.Current.InstalledLocation;
+
+            return Environment.Is64BitOperatingSystem
+                ? ConvertToJXL
+                    ? $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\cjxl.exe"
+                    : $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\djxl.exe"
+                : ConvertToJXL
+                    ? $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\cjxl.exe"
+                    : $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\djxl.exe";
+        }
     }
     private async void DeleteFilesAfterConversion()
     {
@@ -519,7 +531,14 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
             File.Delete(file.Path);
         }
 
-        _ = (DispatcherQueue?.TryEnqueue(() => { ImagesList.Clear(); EnableAddButtons = true; EnableConvertButton = EnableSaveButton = EnableClearButton = false; }));
+        _ = (DispatcherQueue?.TryEnqueue(() =>
+        {
+            ImagesList.Clear();
+            EnableAddButtons = true;
+            EnableConvertButton =
+                EnableSaveButton =
+                EnableClearButton = false;
+        }));
     }
     public async Task SaveImages()
     {
