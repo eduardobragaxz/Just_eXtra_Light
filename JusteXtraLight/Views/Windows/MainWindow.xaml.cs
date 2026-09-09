@@ -5,7 +5,6 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        Content = new MainPage();
         InitliazeWindow();
     }
 
@@ -21,7 +20,7 @@ public sealed partial class MainWindow : Window
         ExtendsContentIntoTitleBar = true;
 
         uint dpi = GetDpiForWindow((nint)AppWindow.Id.Value);
-        int calculatedWidth = DipToPhysical(900, dpi);
+        int calculatedWidth = DipToPhysical(1000, dpi);
         int calculatedHeight = DipToPhysical(760, dpi);
         AppWindow.Resize(new SizeInt32(calculatedWidth, calculatedHeight));
         AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Tall;

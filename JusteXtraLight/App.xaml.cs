@@ -9,7 +9,10 @@ public partial class App : Application
 
     protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
     {
-        MWindow = new MainWindow();
+        MWindow = new MainWindow()
+        {
+            Content = new MainPage()
+        };
         MWindow.Activate();
     }
 

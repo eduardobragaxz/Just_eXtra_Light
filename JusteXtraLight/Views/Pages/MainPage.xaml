@@ -8,19 +8,43 @@
       xmlns:storage="using:Windows.Storage"
       xmlns:viewmodels="using:JustExtraLight.ViewModels"
       mc:Ignorable="d"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      SizeChanged="Page_SizeChanged">
 
     <Page.DataContext>
 
-        <viewmodels:MainPageViewModel x:Name="mainPageViewModel" />
+        <viewmodels:MainPageViewModel x:Name="viewModel" />
 
     </Page.DataContext>
 
     <Grid>
 
+        <VisualStateManager.VisualStateGroups>
+
+            <VisualStateGroup>
+
+                <VisualState x:Name="DefaultState" />
+
+                <VisualState x:Name="WideState">
+
+                    <VisualState.Setters>
+
+                        <Setter Target="AppTitleBar.IsPaneToggleButtonVisible"
+                                Value="False" />
+                        <Setter Target="MainView.DisplayMode"
+                                Value="Inline"/>
+                        <Setter Target="MainView.IsPaneOpen"
+                                Value="True"/>
+
+                    </VisualState.Setters>
+                    
+                </VisualState>
+                
+            </VisualStateGroup>
+            
+        </VisualStateManager.VisualStateGroups>
+
         <Grid.Resources>
-
-
 
             <Style BasedOn="{StaticResource AccentButtonStyle}"
                    x:Key="LocalButtonStyle"
@@ -45,7 +69,9 @@
         <TitleBar Background="{ThemeResource ControlFillColorDefaultBrush}"
                   Grid.Row="0"
                   Height="48"
+                  IsPaneToggleButtonVisible="True"
                   x:Name="AppTitleBar"
+                  PaneToggleRequested="AppTitleBar_PaneToggleRequested"
                   Subtitle="BETA"
                   Title="Just eXtra Light">
 
@@ -140,314 +166,313 @@
 
         </TitleBar>
 
-        <Grid Grid.Row="1"
-              MaxWidth="1500"
-              Padding="36">
+        <SplitView DisplayMode="Overlay"
+                   Grid.Row="1"
+                   IsPaneOpen="False"
+                   x:Name="MainView"
+                   OpenPaneLength="400">
 
-            <Grid.ColumnDefinitions>
+            <SplitView.Content>
 
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <Grid Padding="36">
 
-            </Grid.ColumnDefinitions>
+                    <TextBlock HorizontalAlignment="Center"
+                               x:Name="DragAndDropText"
+                               Style="{StaticResource TitleTextBlockStyle}"
+                               TextAlignment="Center"
+                               x:Uid="DragAndDropInstructions"
+                               VerticalAlignment="Center"
+                               Visibility="{x:Bind viewModel.ShowListText, Mode=OneWay}" />
 
-            <Grid.RowDefinitions>
+                    <ItemsView AllowDrop="True"
+                               Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
+                               DragOver="{x:Bind viewModel.ImageItemsView_DragOver}"
+                               Drop="{x:Bind viewModel.ImageItemsView_Drop}"
+                               ItemsSource="{x:Bind viewModel.ImagesList}"
+                               Margin="0,8,0,0"
+                               x:Name="ImageItemsView"
+                               SelectionMode="None">
 
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                        <ItemsView.ItemTemplate>
 
-            </Grid.RowDefinitions>
+                            <DataTemplate x:DataType="viewmodels:ImageInfoViewModel">
 
-            <RadioButtons Grid.ColumnSpan="4"
-                          HorizontalAlignment="Center"
-                          IsEnabled="{x:Bind mainPageViewModel.AreRadioButtonsEnabled, Mode=OneWay}"
-                          Margin="0,0,0,4"
-                          MaxColumns="2">
+                                <ItemContainer ToolTipService.ToolTip="{x:Bind Error, Mode=OneWay, TargetNullValue=}">
 
-                <RadioButtons.Items>
+                                    <Grid BorderBrush="{x:Bind BorderColor, Mode=OneWay}"
+                                          BorderThickness="2"
+                                          CornerRadius="{StaticResource ControlCornerRadius}">
 
-                    <RadioButton IsChecked="{x:Bind mainPageViewModel.ConvertToJXL, Mode=TwoWay}"
-                                 x:Uid="ToJpegXL" />
+                                        <Image Height="72"
+                                               Width="72">
 
-                    <RadioButton x:Uid="FromJpegXL" />
+                                            <Image.Source>
 
-                </RadioButtons.Items>
+                                                <BitmapImage DecodePixelHeight="72"
+                                                             DecodePixelType="Logical"
+                                                             DecodePixelWidth="72"
+                                                             UriSource="{x:Bind TemporaryPath}" />
 
-            </RadioButtons>
+                                            </Image.Source>
 
-            <Expander Grid.ColumnSpan="4"
-                      Grid.Row="1"
-                      HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch"
-                      Margin="0,0,0,8">
+                                        </Image>
 
-                <Expander.Content>
+                                        <Border Background="{x:Bind BorderColor, Mode=OneWay}"
+                                                CornerRadius="50"
+                                                Height="24"
+                                                HorizontalAlignment="Right"
+                                                x:Load="{x:Bind IsConversionCompleted, Mode=OneWay}"
+                                                x:Name="SuccessfulBorder"
+                                                Padding="4"
+                                                VerticalAlignment="Bottom"
+                                                Width="24">
 
-                    <TextBox Margin="16"
-                             x:Name="ArgumentsTextBox"
-                             Text="{x:Bind mainPageViewModel.Arguments, Mode=TwoWay}"
-                             x:Uid="ArgumentsTextBox" />
+                                            <FontIcon FontSize="16"
+                                                      Foreground="White"
+                                                      Glyph="{x:Bind Icon, Mode=OneWay}" />
 
-                </Expander.Content>
+                                        </Border>
 
-                <Expander.Header>
+                                    </Grid>
 
-                    <StackPanel Orientation="Horizontal"
-                                Padding="12">
+                                </ItemContainer>
 
-                        <FontIcon FontSize="24"
-                                  Glyph="&#xE756;"
-                                  Margin="0,0,16,0" />
+                            </DataTemplate>
 
-                        <TextBlock VerticalAlignment="Center">
+                        </ItemsView.ItemTemplate>
 
-                            <TextBlock.Inlines>
+                        <ItemsView.Layout>
 
-                                <Run x:Uid="ExpertsSection1" />
-                                <LineBreak />
-                                <Run FontSize="12"
-                                     FontWeight="Light"
-                                     x:Uid="ExpertsSection2" />
+                            <UniformGridLayout ItemsStretch="Uniform"
+                                               MinColumnSpacing="4"
+                                               MinRowSpacing="4" />
 
-                            </TextBlock.Inlines>
+                        </ItemsView.Layout>
 
-                        </TextBlock>
+                    </ItemsView>
 
-                    </StackPanel>
+                </Grid>
 
-                </Expander.Header>
+            </SplitView.Content>
 
-            </Expander>
+            <SplitView.Pane>
 
-            <Button Command="{x:Bind mainPageViewModel.FolderCommand}"
-                    Grid.ColumnSpan="2"
-                    Grid.Row="2"
-                    IsEnabled="{x:Bind mainPageViewModel.EnableAddButtons, Mode=OneWay}"
-                    Margin="0,0,8,0"
-                    x:Name="AddFolderButton"
-                    Style="{StaticResource LocalButtonStyle}">
+                <Grid Padding="36">
 
-                <Button.Content>
+                    <Grid.RowDefinitions>
 
-                    <StackPanel Orientation="Horizontal">
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
 
-                        <FontIcon Glyph="&#xE8B7;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock x:Uid="AddFolderButton" />
+                    </Grid.RowDefinitions>
 
-                    </StackPanel>
+                    <RadioButtons HorizontalAlignment="Center"
+                                  IsEnabled="{x:Bind viewModel.AreRadioButtonsEnabled, Mode=OneWay}"
+                                  Margin="0,0,0,4"
+                                  MaxColumns="2">
 
-                </Button.Content>
+                        <RadioButtons.Items>
 
-            </Button>
+                            <RadioButton IsChecked="{x:Bind viewModel.ConvertToJXL, Mode=TwoWay}"
+                                         x:Uid="ToJpegXL" />
 
-            <Button Command="{x:Bind mainPageViewModel.ImagesCommand}"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    Grid.Row="2"
-                    IsEnabled="{x:Bind mainPageViewModel.EnableAddButtons, Mode=OneWay}"
-                    x:Name="AddImagesButton"
-                    Style="{StaticResource LocalButtonStyle}">
+                            <RadioButton x:Uid="FromJpegXL" />
 
-                <Button.Content>
+                        </RadioButtons.Items>
 
-                    <StackPanel Orientation="Horizontal">
+                    </RadioButtons>
 
-                        <FontIcon Glyph="&#xE8B9;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock x:Uid="ChooseImages" />
+                    <Expander Grid.Row="1"
+                              HorizontalAlignment="Stretch"
+                              HorizontalContentAlignment="Stretch"
+                              Margin="0,0,0,8">
 
-                    </StackPanel>
+                        <Expander.Content>
 
-                </Button.Content>
+                            <TextBox Margin="16"
+                                     x:Name="ArgumentsTextBox"
+                                     Text="{x:Bind viewModel.Arguments, Mode=TwoWay}"
+                                     x:Uid="ArgumentsTextBox" />
 
-            </Button>
+                        </Expander.Content>
 
-            <Button Command="{x:Bind mainPageViewModel.ConvertImagesCommand}"
-                    Grid.ColumnSpan="4"
-                    Grid.Row="3"
-                    Height="60"
-                    HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind mainPageViewModel.EnableConvertButton, Mode=OneWay}"
-                    Margin="0,8"
-                    x:Name="ConvertButton">
+                        <Expander.Header>
 
-                <Button.Content>
+                            <StackPanel Orientation="Horizontal"
+                                        Padding="12">
 
-                    <StackPanel Orientation="Horizontal">
+                                <FontIcon FontSize="24"
+                                          Glyph="&#xE756;"
+                                          Margin="0,0,16,0" />
 
-                        <FontIcon Glyph="&#xE895;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock x:Uid="ConvertButton" />
+                                <TextBlock VerticalAlignment="Center">
 
-                    </StackPanel>
+                                    <TextBlock.Inlines>
 
-                </Button.Content>
+                                        <Run x:Uid="ExpertsSection1" />
+                                        <LineBreak />
+                                        <Run FontSize="12"
+                                             FontWeight="Light"
+                                             x:Uid="ExpertsSection2" />
 
-            </Button>
+                                    </TextBlock.Inlines>
 
-            <Button Command="{x:Bind mainPageViewModel.SaveImagesCommand}"
-                    Grid.ColumnSpan="3"
-                    Grid.Row="4"
-                    HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind mainPageViewModel.EnableSaveButton, Mode=OneWay}"
-                    Margin="0,0,8,0"
-                    x:Name="SaveImagesButton">
+                                </TextBlock>
 
-                <Button.Content>
+                            </StackPanel>
 
-                    <StackPanel Orientation="Horizontal">
+                        </Expander.Header>
 
-                        <FontIcon Glyph="&#xE78C;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock x:Uid="SaveImagesButton" />
+                    </Expander>
 
-                    </StackPanel>
+                    <Button Command="{x:Bind viewModel.FolderCommand}"
+                            Grid.Row="2"
+                            IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
+                            Margin="0,0,0,4"
+                            x:Name="AddFolderButton"
+                            Style="{StaticResource LocalButtonStyle}">
 
-                </Button.Content>
+                        <Button.Content>
 
-            </Button>
+                            <StackPanel Orientation="Horizontal">
 
-            <Button Command="{x:Bind mainPageViewModel.ClearImagesCommand}"
-                    Grid.Column="3"
-                    Grid.ColumnSpan="1"
-                    Grid.Row="4"
-                    HorizontalAlignment="Stretch"
-                    IsEnabled="{x:Bind mainPageViewModel.EnableClearButton, Mode=OneWay}"
-                    x:Name="ClearListButton">
+                                <FontIcon Glyph="&#xE8B7;"
+                                          Margin="0,0,8,0" />
+                                <TextBlock x:Uid="AddFolderButton" />
 
-                <Button.Content>
+                            </StackPanel>
 
-                    <StackPanel Orientation="Horizontal">
+                        </Button.Content>
 
-                        <FontIcon Glyph="&#xE894;"
-                                  Margin="0,0,8,0" />
-                        <TextBlock x:Uid="ClearListButton" />
+                    </Button>
 
-                    </StackPanel>
+                    <Button Command="{x:Bind viewModel.ImagesCommand}"
+                            Grid.Column="2"
+                            Grid.Row="3"
+                            IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
+                            x:Name="AddImagesButton"
+                            Style="{StaticResource LocalButtonStyle}">
 
-                </Button.Content>
+                        <Button.Content>
 
-            </Button>
+                            <StackPanel Orientation="Horizontal">
 
-            <TextBlock Grid.Column="0"
-                       Grid.ColumnSpan="4"
-                       Grid.Row="5"
-                       HorizontalAlignment="Center"
-                       x:Name="DragAndDropText"
-                       Style="{StaticResource TitleTextBlockStyle}"
-                       TextAlignment="Center"
-                       VerticalAlignment="Center"
-                       x:Uid="DragAndDropInstructions"
-                       Visibility="{x:Bind mainPageViewModel.ShowListText, Mode=OneWay}" />
+                                <FontIcon Glyph="&#xE8B9;"
+                                          Margin="0,0,8,0" />
+                                <TextBlock x:Uid="ChooseImages" />
 
-            <ItemsView AllowDrop="True"
-                       Background="{ThemeResource LayerOnMicaBaseAltFillColorDefaultBrush}"
-                       DragOver="{x:Bind mainPageViewModel.ImageItemsView_DragOver}"
-                       Drop="{x:Bind mainPageViewModel.ImageItemsView_Drop}"
-                       Grid.Column="0"
-                       Grid.ColumnSpan="4"
-                       Grid.Row="5"
-                       ItemsSource="{x:Bind mainPageViewModel.ImagesList}"
-                       Margin="0,8,0,0"
-                       x:Name="ImageItemsView"
-                       SelectionMode="None">
+                            </StackPanel>
 
-                <ItemsView.ItemTemplate>
+                        </Button.Content>
 
-                    <DataTemplate x:DataType="viewmodels:ImageInfoViewModel">
+                    </Button>
 
-                        <ItemContainer ToolTipService.ToolTip="{x:Bind Error, Mode=OneWay, TargetNullValue=}">
+                    <Button Command="{x:Bind viewModel.ConvertImagesCommand}"
+                            Grid.Row="4"
+                            Height="60"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="{x:Bind viewModel.EnableConvertButton, Mode=OneWay}"
+                            Margin="0,8"
+                            x:Name="ConvertButton">
 
-                            <Grid BorderBrush="{x:Bind BorderColor, Mode=OneWay}"
-                                  BorderThickness="2"
-                                  CornerRadius="{StaticResource ControlCornerRadius}">
+                        <Button.Content>
 
-                                <Image Height="72"
-                                       Width="72">
+                            <StackPanel Orientation="Horizontal">
 
-                                    <Image.Source>
+                                <FontIcon Glyph="&#xE895;"
+                                          Margin="0,0,8,0" />
+                                <TextBlock x:Uid="ConvertButton" />
 
-                                        <BitmapImage DecodePixelHeight="72"
-                                                     DecodePixelType="Logical"
-                                                     DecodePixelWidth="72"
-                                                     UriSource="{x:Bind TemporaryPath}" />
+                            </StackPanel>
 
-                                    </Image.Source>
+                        </Button.Content>
 
-                                </Image>
+                    </Button>
 
-                                <Border Background="{x:Bind BorderColor, Mode=OneWay}"
-                                        CornerRadius="50"
-                                        Height="24"
-                                        HorizontalAlignment="Right"
-                                        x:Load="{x:Bind IsConversionCompleted, Mode=OneWay}"
-                                        x:Name="SuccessfulBorder"
-                                        Padding="4"
-                                        VerticalAlignment="Bottom"
-                                        Width="24">
+                    <Button Command="{x:Bind viewModel.SaveImagesCommand}"
+                            Grid.ColumnSpan="3"
+                            Grid.Row="5"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="{x:Bind viewModel.EnableSaveButton, Mode=OneWay}"
+                            Margin="0,0,0,4"
+                            x:Name="SaveImagesButton">
 
-                                    <FontIcon FontSize="16"
-                                              Foreground="White"
-                                              Glyph="{x:Bind Icon, Mode=OneWay}" />
+                        <Button.Content>
 
-                                </Border>
+                            <StackPanel Orientation="Horizontal">
 
-                            </Grid>
+                                <FontIcon Glyph="&#xE78C;"
+                                          Margin="0,0,8,0" />
+                                <TextBlock x:Uid="SaveImagesButton" />
 
-                        </ItemContainer>
+                            </StackPanel>
 
-                    </DataTemplate>
+                        </Button.Content>
 
-                </ItemsView.ItemTemplate>
+                    </Button>
 
-                <ItemsView.Layout>
+                    <Button Command="{x:Bind viewModel.ClearImagesCommand}"
+                            Grid.Row="6"
+                            HorizontalAlignment="Stretch"
+                            IsEnabled="{x:Bind viewModel.EnableClearButton, Mode=OneWay}"
+                            x:Name="ClearListButton">
 
-                    <UniformGridLayout ItemsStretch="Uniform"
-                                       MinColumnSpacing="4"
-                                       MinRowSpacing="4" />
+                        <Button.Content>
 
-                </ItemsView.Layout>
+                            <StackPanel Orientation="Horizontal">
 
-            </ItemsView>
+                                <FontIcon Glyph="&#xE894;"
+                                          Margin="0,0,8,0" />
+                                <TextBlock x:Uid="ClearListButton" />
 
-            <StackPanel Background="{ThemeResource AccentAcrylicInAppFillColorDefaultBrush}"
-                        CornerRadius="{StaticResource ControlCornerRadius}"
-                        Grid.Column="3"
-                        Grid.Row="5"
-                        HorizontalAlignment="Right"
-                        Margin="8"
-                        Orientation="Horizontal"
-                        Padding="12,8"
-                        VerticalAlignment="Bottom">
+                            </StackPanel>
 
-                <ProgressRing Height="24"
-                              IsActive="{x:Bind mainPageViewModel.IsConversionInProgress, Mode=OneWay}"
-                              Margin="0,0,8,0"
-                              x:Name="LoadingRing"
-                              Visibility="{x:Bind mainPageViewModel.ShowProgressRing, Mode=OneWay}"
-                              Width="24" />
+                        </Button.Content>
 
-                <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
-                           Text="{x:Bind mainPageViewModel.ImagesCount, Mode=OneWay}" />
+                    </Button>
 
-            </StackPanel>
+                    <InfoBar Grid.Row="7"
+                             IsClosable="False"
+                             IsOpen="True"
+                             Margin="-36"
+                             Message="{x:Bind viewModel.InfobarMessage, Mode=OneWay}"
+                             Title="{x:Bind viewModel.InfoBarTitle, Mode=OneWay}"
+                             Severity="{x:Bind viewModel.Severity, Mode=OneWay}"
+                             VerticalAlignment="Bottom">
 
-        </Grid>
+                        <InfoBar.Content>
 
-        <InfoBar Grid.Row="1"
-                 IsOpen="{x:Bind mainPageViewModel.EnableSaveButton, Mode=OneWay}"
-                 Message="{x:Bind mainPageViewModel.InfobarMessage, Mode=OneWay}"
-                 Title="{x:Bind mainPageViewModel.InfoBarTitle, Mode=OneWay}"
-                 Severity="{x:Bind mainPageViewModel.Severity, Mode=OneWay}"
-                 VerticalAlignment="Bottom" />
+                            <StackPanel Orientation="Horizontal"
+                                        Visibility="{x:Bind viewModel.ShowInfoBarContent, Mode=OneWay}">
+
+                                <ProgressRing Height="24"
+                                              IsActive="{x:Bind viewModel.IsConversionInProgress, Mode=OneWay}"
+                                              Margin="0,0,8,0"
+                                              x:Name="LoadingRing"
+                                              Width="24" />
+
+                                <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
+                                           Text="{x:Bind viewModel.ImagesCount, Mode=OneWay}" />
+
+                            </StackPanel>
+
+                        </InfoBar.Content>
+
+                    </InfoBar>
+
+                </Grid>
+
+            </SplitView.Pane>
+
+        </SplitView>
+
+
 
     </Grid>
 

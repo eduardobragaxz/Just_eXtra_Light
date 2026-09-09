@@ -10,7 +10,6 @@ public sealed partial class MainPage : Page
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
         App.MWindow!.SetTitleBar(AppTitleBar);
-        mainPageViewModel.DispatcherQueue = DispatcherQueue;
         //Can't do this while targeting the current min windows version
         //AppVersionRun.Text = $"{AppInfo.Current.Package.Id.Version.Major}.{AppInfo.Current.Package.Id.Version.Minor}.{AppInfo.Current.Package.Id.Version.Build}";
         AppVersionRun.Text = $"{Package.Current.Id.Version.Major}.{Package.Current.Id.Version.Minor}.{Package.Current.Id.Version.Build}";
@@ -23,11 +22,28 @@ public sealed partial class MainPage : Page
         IReadOnlyList<StorageFolder> folders = await temporaryFolder.GetFoldersAsync();
         StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}", CreationCollisionOption.GenerateUniqueName);
 
-        mainPageViewModel.TempFolder = currentInstancetempFolder;
+        viewModel.TempFolder = currentInstancetempFolder;
     }
 
     private void ImageItemsView_DragOver(object sender, DragEventArgs e)
     {
 
+    }
+
+    private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (ActualWidth > 1000)
+        {
+            VisualStateManager.GoToState(this, "WideState", false);
+        }
+        else
+        {
+            VisualStateManager.GoToState(this, "DefaultState", false);
+        }
+    }
+
+    private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args)
+    {
+        MainView.IsPaneOpen = !MainView.IsPaneOpen;
     }
 }
