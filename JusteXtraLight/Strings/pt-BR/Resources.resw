@@ -218,7 +218,7 @@
     <comment>Content text for the add folder button</comment>
   </data>
   <data name="ChooseImages.Text" xml:space="preserve">
-    <value>Escolher imagens</value>
+    <value>Adicionar imagens</value>
     <comment>Context text for the choose images button</comment>
   </data>
   <data name="ConversionOptions" xml:space="preserve">

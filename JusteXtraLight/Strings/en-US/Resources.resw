@@ -193,7 +193,7 @@
     <value>Add folder</value>
   </data>
   <data name="ChooseImages.Text" xml:space="preserve">
-    <value>Choose images</value>
+    <value>Add images</value>
   </data>
   <data name="ConversionOptions" xml:space="preserve">
     <value>Conversion options</value>

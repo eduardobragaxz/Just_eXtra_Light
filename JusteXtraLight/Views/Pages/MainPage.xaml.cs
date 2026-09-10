@@ -25,14 +25,9 @@ public sealed partial class MainPage : Page
         viewModel.TempFolder = currentInstancetempFolder;
     }
 
-    private void ImageItemsView_DragOver(object sender, DragEventArgs e)
-    {
-
-    }
-
     private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
     {
-        if (ActualWidth > 1000)
+        if (ActualWidth > 900)
         {
             VisualStateManager.GoToState(this, "WideState", false);
         }
