@@ -1,3 +1,6 @@
+using Microsoft.UI;
+using Windows.UI;
+
 namespace JustExtraLight.Views.Pages;
 
 public sealed partial class MainPage : Page
@@ -23,5 +26,19 @@ public sealed partial class MainPage : Page
         StorageFolder currentInstancetempFolder = await temporaryFolder.CreateFolderAsync($"TempFolder{folders.Count}", CreationCollisionOption.GenerateUniqueName);
 
         viewModel.TempFolder = currentInstancetempFolder;
+    }
+
+    private void Page_ActualThemeChanged(FrameworkElement sender, object args)
+    {
+        if (ActualTheme == ElementTheme.Light)
+        {
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.LightSkyBlue;
+        }
+        else
+        {
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.MidnightBlue;
+            App.MWindow!.AppWindow.TitleBar.ButtonPressedBackgroundColor = Colors.LightSkyBlue;
+            App.MWindow!.AppWindow.TitleBar.InactiveBackgroundColor = Colors.Transparent;
+        }
     }
 }
