@@ -38,21 +38,6 @@
 
         </Grid.Background>
 
-        <Grid.Resources>
-
-            <Style BasedOn="{StaticResource AccentButtonStyle}"
-                   x:Key="LocalButtonStyle"
-                   TargetType="Button">
-
-                <Setter Property="Height"
-                        Value="50" />
-                <Setter Property="HorizontalAlignment"
-                        Value="Stretch" />
-
-            </Style>
-
-        </Grid.Resources>
-
         <Grid.ColumnDefinitions>
 
             <ColumnDefinition Width="*" />
@@ -71,7 +56,8 @@
 
         </Grid.RowDefinitions>
 
-        <TitleBar Grid.ColumnSpan="2" Height="48"
+        <TitleBar Grid.ColumnSpan="2"
+                  Height="48"
                   Margin="-36,-36,-36,0"
                   x:Name="AppTitleBar"
                   Subtitle="BETA"
