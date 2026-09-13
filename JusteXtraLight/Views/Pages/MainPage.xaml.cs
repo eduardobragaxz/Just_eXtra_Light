@@ -24,21 +24,4 @@ public sealed partial class MainPage : Page
 
         viewModel.TempFolder = currentInstancetempFolder;
     }
-
-    private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
-    {
-        if (ActualWidth > 900)
-        {
-            VisualStateManager.GoToState(this, "WideState", false);
-        }
-        else
-        {
-            VisualStateManager.GoToState(this, "DefaultState", false);
-        }
-    }
-
-    private void AppTitleBar_PaneToggleRequested(TitleBar sender, object args)
-    {
-        MainView.IsPaneOpen = !MainView.IsPaneOpen;
-    }
 }

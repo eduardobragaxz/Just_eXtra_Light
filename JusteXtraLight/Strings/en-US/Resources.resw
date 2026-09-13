@@ -199,9 +199,12 @@
     <value>Conversion options</value>
   </data>
   <data name="ToJpegXl.Content" xml:space="preserve">
-    <value>To JPEG XL</value>
+    <value>JPEG XL</value>
   </data>
-  <data name="FromJpegXL.Content" xml:space="preserve">
-    <value>From JPEG XL</value>
+  <data name="ToJpeg.Content" xml:space="preserve">
+    <value>JPEG</value>
+  </data>
+  <data name="RadioButtonsHeader.Text" xml:space="preserve">
+    <value>Convert images to</value>
   </data>
 </root>

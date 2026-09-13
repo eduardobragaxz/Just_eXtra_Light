@@ -226,11 +226,15 @@
     <comment>Header text for the conversion options radio buttons</comment>
   </data>
   <data name="ToJpegXl.Content" xml:space="preserve">
-    <value>Para JPEG XL</value>
+    <value>JPEG XL</value>
     <comment>Content text for the option to convert to jxl</comment>
   </data>
-  <data name="FromJpegXL.Content" xml:space="preserve">
-    <value>De JPEG XL</value>
+  <data name="ToJpeg.Content" xml:space="preserve">
+    <value>JPEG</value>
     <comment>Content text for the option to convert from jxl</comment>
+  </data>
+  <data name="RadioButtonsHeader.Text" xml:space="preserve">
+    <value>Converter imagens para</value>
+    <comment>Radio buttons options header text</comment>
   </data>
 </root>
