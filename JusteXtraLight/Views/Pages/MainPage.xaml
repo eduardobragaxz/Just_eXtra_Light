@@ -212,10 +212,9 @@
                         HorizontalAlignment="Right">
 
                 <Button Command="{x:Bind viewModel.FolderCommand}"
-                        CornerRadius="4,4,0,0"
-                        Grid.Column="1"
                         HorizontalAlignment="Stretch"
                         IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
+                        Margin="0,0,0,4"
                         x:Name="AddFolderButton">
 
                     <Button.Content>
@@ -233,9 +232,6 @@
                 </Button>
 
                 <Button Command="{x:Bind viewModel.ImagesCommand}"
-                        CornerRadius="0,0,4,4"
-                        Grid.Column="1"
-                        Grid.Row="1"
                         HorizontalAlignment="Stretch"
                         IsEnabled="{x:Bind viewModel.EnableAddButtons, Mode=OneWay}"
                         x:Name="AddImagesButton">
@@ -260,7 +256,7 @@
                       Grid.Row="2"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"
-                      Margin="0,0,0,8">
+                      Margin="0,8">
 
                 <Expander.Content>
 
