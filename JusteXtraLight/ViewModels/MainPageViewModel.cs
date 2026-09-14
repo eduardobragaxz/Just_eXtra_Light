@@ -1,4 +1,4 @@
-namespace JustExtraLight.ViewModels;
+﻿namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
 {
@@ -497,15 +497,25 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
         string GetCorrectExecutablePath()
         {
-            StorageFolder appFolder = Package.Current.InstalledLocation;
+            string programFolderPath;
+
+            if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 19041))
+            {
+                programFolderPath = Package.Current.InstalledPath;
+            }
+            else
+            {
+                StorageFolder appFolder = Package.Current.InstalledLocation;
+                programFolderPath = appFolder.Path;
+            }
 
             return Environment.Is64BitOperatingSystem
                 ? ConvertToJXL
-                    ? $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\cjxl.exe"
-                    : $@"{appFolder.Path}\Assets\Program\x64-windows-static\bin\djxl.exe"
+                    ? $@"{programFolderPath}\Assets\Program\x64-windows-static\bin\cjxl.exe"
+                    : $@"{programFolderPath}\Assets\Program\x64-windows-static\bin\djxl.exe"
                 : ConvertToJXL
-                    ? $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\cjxl.exe"
-                    : $@"{appFolder.Path}\Assets\Program\x86-windows-static\bin\djxl.exe";
+                    ? $@"{programFolderPath}\Assets\Program\x86-windows-static\bin\cjxl.exe"
+                    : $@"{programFolderPath}\Assets\Program\x86-windows-static\bin\djxl.exe";
         }
     }
     private async void DeleteFilesAfterConversion()
