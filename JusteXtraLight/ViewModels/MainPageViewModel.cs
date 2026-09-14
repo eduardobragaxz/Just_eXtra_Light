@@ -1,5 +1,3 @@
-﻿using Microsoft.UI.Dispatching;
-
 namespace JustExtraLight.ViewModels;
 
 public sealed partial class MainPageViewModel : INotifyPropertyChanged
@@ -362,9 +360,8 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 EnableSaveButton =
                 EnableClearButton = false;
 
-            //string fullPath = $@"{Windows.ApplicationModel.Package.Current.InstalledPath}\Assets\Program\cjxl.exe";
-            string fullPath = GetPath();
-            ProcessStartInfo processStart = new(fullPath)
+            string executablePath = GetCorrectExecutablePath();
+            ProcessStartInfo processStart = new(executablePath)
             {
                 CreateNoWindow = true,
                 RedirectStandardError = true
@@ -498,7 +495,7 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             successCount = failCount = 0;
         }
-        string GetPath()
+        string GetCorrectExecutablePath()
         {
             StorageFolder appFolder = Package.Current.InstalledLocation;
 
