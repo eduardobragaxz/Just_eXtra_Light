@@ -12,6 +12,7 @@ public sealed partial class MainPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
+        ChangeCaptionButtonsBackground();
         App.MWindow!.SetTitleBar(AppTitleBar);
         //Can't do this while targeting the current min windows version
         //AppVersionRun.Text = $"{AppInfo.Current.Package.Id.Version.Major}.{AppInfo.Current.Package.Id.Version.Minor}.{AppInfo.Current.Package.Id.Version.Build}";
@@ -30,15 +31,22 @@ public sealed partial class MainPage : Page
 
     private void Page_ActualThemeChanged(FrameworkElement sender, object args)
     {
+        ChangeCaptionButtonsBackground();
+    }
+
+    private void ChangeCaptionButtonsBackground()
+    {
         if (ActualTheme == ElementTheme.Light)
         {
-            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.LightSkyBlue;
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.CornflowerBlue;
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverForegroundColor = Colors.White;
+            App.MWindow!.AppWindow.TitleBar.ButtonPressedBackgroundColor = Colors.SkyBlue;
         }
         else
         {
-            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.MidnightBlue;
-            App.MWindow!.AppWindow.TitleBar.ButtonPressedBackgroundColor = Colors.LightSkyBlue;
-            App.MWindow!.AppWindow.TitleBar.InactiveBackgroundColor = Colors.Transparent;
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverBackgroundColor = Colors.Blue;
+            App.MWindow!.AppWindow.TitleBar.ButtonHoverForegroundColor = Colors.White;
+            App.MWindow!.AppWindow.TitleBar.ButtonPressedBackgroundColor = Colors.RoyalBlue;
         }
     }
 }

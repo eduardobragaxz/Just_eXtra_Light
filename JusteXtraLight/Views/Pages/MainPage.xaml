@@ -24,10 +24,10 @@
                                          x:Key="ApplicationPageBackgroundThemeBrush"
                                          StartPoint="0.5,0">
 
-                        <GradientStop Color="LightSkyBlue"
+                        <GradientStop Color="LightBlue"
                                       Offset="0" />
                         <GradientStop Color="MediumPurple"
-                                      Offset="1" />
+                                      Offset="0.5" />
 
                     </LinearGradientBrush>
 
@@ -39,10 +39,10 @@
                                          x:Key="ApplicationPageBackgroundThemeBrush"
                                          StartPoint="0.5,0">
 
-                        <GradientStop Color="MidnightBlue"
+                        <GradientStop Color="DarkBlue"
                                       Offset="0" />
                         <GradientStop Color="MediumPurple"
-                                      Offset="1" />
+                                      Offset="0.5" />
 
                     </LinearGradientBrush>
 
@@ -69,8 +69,7 @@
 
         </Grid.RowDefinitions>
 
-        <TitleBar Background="{ThemeResource AcrylicInAppFillColorDefaultBrush}"
-                  x:Name="AppTitleBar"
+        <TitleBar x:Name="AppTitleBar"
                   Subtitle="BETA"
                   Title="Just eXtra Light">
 
