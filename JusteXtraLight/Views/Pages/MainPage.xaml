@@ -8,11 +8,9 @@
       xmlns:storage="using:Windows.Storage"
       xmlns:viewmodels="using:JustExtraLight.ViewModels"
       mc:Ignorable="d"
-      Loaded="Page_Loaded"
-      ActualThemeChanged="Page_ActualThemeChanged"
-      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+      Loaded="Page_Loaded">
 
-    <Page.Resources>
+    <!--<Page.Resources>
 
         <ResourceDictionary>
 
@@ -52,7 +50,7 @@
 
         </ResourceDictionary>
 
-    </Page.Resources>
+    </Page.Resources>-->
 
     <Page.DataContext>
 

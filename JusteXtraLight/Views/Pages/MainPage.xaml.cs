@@ -12,7 +12,6 @@ public sealed partial class MainPage : Page
 
     private async void Page_Loaded(object sender, RoutedEventArgs e)
     {
-        ChangeCaptionButtonsBackground();
         App.MWindow!.SetTitleBar(AppTitleBar);
         //Can't do this while targeting the current min windows version
         //AppVersionRun.Text = $"{AppInfo.Current.Package.Id.Version.Major}.{AppInfo.Current.Package.Id.Version.Minor}.{AppInfo.Current.Package.Id.Version.Build}";
