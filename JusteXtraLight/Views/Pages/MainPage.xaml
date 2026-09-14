@@ -191,7 +191,7 @@
 
                 <RadioButtons.Header>
 
-                    <TextBlock Style="{StaticResource SubtitleTextBlockStyle}"
+                    <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
                                x:Uid="RadioButtonsHeader" />
 
                 </RadioButtons.Header>
