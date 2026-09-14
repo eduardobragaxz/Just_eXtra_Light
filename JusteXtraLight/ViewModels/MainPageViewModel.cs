@@ -382,11 +382,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process is null)
                     {
-                        _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                        _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                         {
                             imageInfo.IsConversionCompleted = true;
                             imageInfo.IsConversionSuccessful = false;
-                        }));
+                        });
                         failCount++;
                         continue;
                     }
@@ -395,11 +395,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                     if (process.ExitCode == 0)
                     {
-                        _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                        _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                         {
                             imageInfo.IsConversionSuccessful =
                                 imageInfo.IsConversionCompleted = true;
-                        }));
+                        });
                         successCount++;
                     }
                     else
@@ -415,13 +415,13 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess is null)
                             {
-                                _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                                _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
 
                                     imageInfo.Error = error;
-                                }));
+                                });
                                 failCount++;
                                 continue;
                             }
@@ -430,34 +430,34 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
                             if (newProcess.ExitCode == 0)
                             {
-                                _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                                _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                                 {
                                     imageInfo.IsConversionSuccessful =
                                         imageInfo.IsConversionCompleted = true;
-                                }));
+                                });
                                 successCount++;
                             }
                             else
                             {
-                                _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                                _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                                 {
                                     imageInfo.IsConversionCompleted = true;
                                     imageInfo.IsConversionSuccessful = false;
 
                                     imageInfo.Error = error;
-                                }));
+                                });
                                 failCount++;
                             }
                         }
                         else
                         {
-                            _ = (App.MWindow.DispatcherQueue!.TryEnqueue(() =>
+                            _ = App.MWindow.DispatcherQueue!.TryEnqueue(() =>
                             {
                                 imageInfo.IsConversionCompleted = true;
                                 imageInfo.IsConversionSuccessful = false;
 
                                 imageInfo.Error = error;
-                            }));
+                            });
                             failCount++;
                         }
                     }
