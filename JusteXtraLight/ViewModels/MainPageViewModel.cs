@@ -497,7 +497,17 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
         }
         string GetCorrectExecutablePath()
         {
-            string programFolderPath = Package.Current.InstalledPath;
+            string programFolderPath;
+
+            if (OperatingSystem.IsWindowsVersionAtLeast(10, 0, 19041))
+            {
+                programFolderPath = Package.Current.InstalledPath;
+            }
+            else
+            {
+                StorageFolder appFolder = Package.Current.InstalledLocation;
+                programFolderPath = appFolder.Path;
+            }
 
             return Environment.Is64BitOperatingSystem
                 ? ConvertToJXL
