@@ -511,11 +511,11 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
 
             return Environment.Is64BitOperatingSystem
                 ? ConvertToJXL
-                    ? $@"{programFolderPath}\Assets\Program\x64-windows-static\bin\cjxl.exe"
-                    : $@"{programFolderPath}\Assets\Program\x64-windows-static\bin\djxl.exe"
+                    ? $@"{programFolderPath}\Assets\Program\x64-windows\bin\cjxl.exe"
+                    : $@"{programFolderPath}\Assets\Program\x64-windows\bin\djxl.exe"
                 : ConvertToJXL
-                    ? $@"{programFolderPath}\Assets\Program\x86-windows-static\bin\cjxl.exe"
-                    : $@"{programFolderPath}\Assets\Program\x86-windows-static\bin\djxl.exe";
+                    ? $@"{programFolderPath}\Assets\Program\x86-windows\bin\cjxl.exe"
+                    : $@"{programFolderPath}\Assets\Program\x86-windows\bin\djxl.exe";
         }
     }
     private async void DeleteFilesAfterConversion()
