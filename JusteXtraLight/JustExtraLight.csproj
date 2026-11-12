@@ -25,13 +25,35 @@
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<PublishAot>true</PublishAot>
 		<CsWinRTAotWarningLevel>3</CsWinRTAotWarningLevel>
-		<Features>$(Features);runtime-async=on</Features>
+		<Features>runtime-async=on</Features>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' != 'Debug'">
-		<IncludePublishItemsOutputGroup>true</IncludePublishItemsOutputGroup>
+
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+
 	</PropertyGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x86'">
+
+		<Content Remove="Assets\Program\arm64-windows\**"/>
+		<Content Remove="Assets\Program\x64-windows\**"/>
+
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'x64'">
+
+		<Content Remove="Assets\Program\arm64-windows\**"/>
+		<Content Remove="Assets\Program\x86-windows\**"/>
+
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Platform)' == 'ARM64'">
+
+		<Content Remove="Assets\Program\x86-windows\**"/>
+		<Content Remove="Assets\Program\x64-windows\**"/>
+
+	</ItemGroup>
 
 	<PropertyGroup>
 		<EnabledXamlOptionalChanges>

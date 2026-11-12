@@ -147,7 +147,7 @@
                             </Hyperlink>
                             
                             <Run FontSize="12"
-                                 Text="(ver 0.13.0)" />
+                                    Text="(ver 0.13.0)" />
 
                                 </TextBlock>
 
@@ -473,7 +473,8 @@
                                       x:Name="LoadingRing"
                                       Width="24" />
 
-                        <TextBlock Style="{StaticResource BodyLargeStrongTextBlockStyle}"
+                        <TextBlock Margin="8,0,0,0"
+                                   Style="{StaticResource BodyLargeStrongTextBlockStyle}"
                                    Text="{x:Bind viewModel.ImagesCount, Mode=OneWay}" />
 
                     </StackPanel>
