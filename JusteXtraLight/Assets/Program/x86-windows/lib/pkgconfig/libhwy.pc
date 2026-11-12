@@ -1,4 +1,4 @@
-prefix=D:/a/libjxl/libjxl/x86-windows
+prefix=D:/a/libjxl/libjxl/x86-windows-static
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib
 includedir=${prefix}/include

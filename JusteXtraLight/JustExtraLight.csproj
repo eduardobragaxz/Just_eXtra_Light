@@ -71,12 +71,12 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.1" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.9169" />
-		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.260930100">
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.9457" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools.MSIX" Version="1.7.261102100">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.4" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.5" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Update="MainPage.xaml">

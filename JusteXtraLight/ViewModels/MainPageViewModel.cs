@@ -509,13 +509,18 @@ public sealed partial class MainPageViewModel : INotifyPropertyChanged
                 programFolderPath = appFolder.Path;
             }
 
-            return Environment.Is64BitOperatingSystem
-                ? ConvertToJXL
-                    ? $@"{programFolderPath}\Assets\Program\x64-windows\bin\cjxl.exe"
-                    : $@"{programFolderPath}\Assets\Program\x64-windows\bin\djxl.exe"
-                : ConvertToJXL
-                    ? $@"{programFolderPath}\Assets\Program\x86-windows\bin\cjxl.exe"
-                    : $@"{programFolderPath}\Assets\Program\x86-windows\bin\djxl.exe";
+            return RuntimeInformation.ProcessArchitecture switch
+            {
+                Architecture.X86 => ConvertToJXL
+                                        ? $@"{programFolderPath}\Assets\Program\x86-windows\bin\cjxl.exe"
+                                        : $@"{programFolderPath}\Assets\Program\x86-windows\bin\djxl.exe",
+                Architecture.Arm64 => ConvertToJXL
+                                        ? $@"{programFolderPath}\Assets\Program\arm64-windows\bin\cjxl.exe"
+                                        : $@"{programFolderPath}\Assets\Program\arm64-windows\bin\djxl.exe",
+                _ => ConvertToJXL
+                                        ? $@"{programFolderPath}\Assets\Program\x64-windows\bin\cjxl.exe"
+                                        : $@"{programFolderPath}\Assets\Program\x64-windows\bin\djxl.exe"
+            };
         }
     }
     private async void DeleteFilesAfterConversion()
