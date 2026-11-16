@@ -36,22 +36,22 @@
 
 	<ItemGroup Condition="'$(Platform)' == 'x86'">
 
-		<Content Remove="Assets\Program\arm64-windows\**"/>
-		<Content Remove="Assets\Program\x64-windows\**"/>
+		<Content Remove="Assets\Program\arm64-windows\**\*"/>
+		<Content Remove="Assets\Program\x64-windows\**\*"/>
 
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Platform)' == 'x64'">
 
-		<Content Remove="Assets\Program\arm64-windows\**"/>
-		<Content Remove="Assets\Program\x86-windows\**"/>
+		<Content Remove="Assets\Program\arm64-windows\**\*"/>
+		<Content Remove="Assets\Program\x86-windows\**\*"/>
 
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Platform)' == 'ARM64'">
 
-		<Content Remove="Assets\Program\x86-windows\**"/>
-		<Content Remove="Assets\Program\x64-windows\**"/>
+		<Content Remove="Assets\Program\x86-windows\**\*"/>
+		<Content Remove="Assets\Program\x64-windows\**\*"/>
 
 	</ItemGroup>
 
